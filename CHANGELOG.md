@@ -1,0 +1,43 @@
+# Changelog
+
+All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and Semantic Versioning.
+
+## [Unreleased]
+
+### Changed
+
+- Replaced historical third-party framework positioning with ForgeMind-native journey, artifact, orchestration, and benchmark terminology.
+
+## [1.7.0] - 2026-07-30
+
+### Added
+
+- ForgeMind Trust Fabric with nine integrated capabilities: Agent Trust Protocol, Strategy-to-Code Compiler, Engineering Genome, Delivery Flight Recorder, Parallel Future Tournament, Self-Shrinking Software, Autonomous Product Loop, Evidence Escrow, and Federated Learning Network.
+- Canonically sealed and redacted Forge records, hash-linked flight events, public JSON schemas, portable templates, CLI actions, and nineteen-section offline dashboard.
+- Hard-gated trust, strategy drift checks, cohort suppression, deterministic Pareto selection, evidence-only escrow receipts, and measured scale/iterate/rollback decisions.
+
+### Security
+
+- Imported agent content remains untrusted data; oversized or malformed JSON is rejected.
+- Federation explicitly excludes raw identifying and source fields and makes no differential-privacy claim.
+- Shrink is plan-only, replay is non-executing, and evidence escrow cannot hold funds.
+
+## [1.6.0] - 2026-07-30
+
+### Added
+
+- Portable Node.js CLI for Windows, macOS, and Linux.
+- Governed team and personal memory with provenance, expiry, conflict reporting, and secret rejection.
+- Proof-carrying delivery evidence, offline command center, explainable routing, product signal ingestion, and reproducible packages.
+- Six primary journeys: Discover, Design, Build, Verify, Release, and Learn.
+
+### Changed
+
+- PowerShell scripts are compatibility launchers for the portable CLI.
+- Release, support, privacy, security, and community documentation now support internal and public distribution.
+
+## [1.5.0] - 2026-07-30
+
+### Added
+
+- ForgeMind skill collection, personas, prompts, dashboard, workflow artifacts, and PowerShell automation baseline.

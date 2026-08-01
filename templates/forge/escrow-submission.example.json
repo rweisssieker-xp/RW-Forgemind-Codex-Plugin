@@ -1,0 +1,4 @@
+{
+  "milestoneEvidence": { "release": ["proof", "test"] },
+  "approvals": [{ "party": "owner", "status": "approved" }, { "party": "reviewer", "status": "approved" }]
+}

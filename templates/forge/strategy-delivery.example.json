@@ -1,0 +1,7 @@
+{
+  "changedFiles": ["src/feature.mjs", "tests/feature.test.mjs"],
+  "evidence": ["delivery-proof"],
+  "userSteps": 2,
+  "metrics": { "completion_rate": 95, "error_rate": 0.5 },
+  "verificationStatus": "passed"
+}

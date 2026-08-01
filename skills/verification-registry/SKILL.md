@@ -1,0 +1,33 @@
+---
+name: verification-registry
+description: Maintain a durable registry of known-good verification commands, when to run them, confidence, and last result.
+---
+
+# Verification Registry
+
+Primary journey: **Verify**
+
+Persona name: Nora Registry.
+
+Use this when adding tests, discovering project commands, fixing CI, or preparing release evidence.
+
+## Registry Fields
+
+Track:
+
+- command
+- category
+- when to run
+- confidence
+- last result
+- notes
+
+## Automation
+
+Run:
+
+```powershell
+.\plugins\forgemind\scripts\register-verification.ps1 -Command "npm test" -Category test -When "before release"
+```
+
+The registry lives at `.codex-orchestrator\memory\verification-registry.md`.

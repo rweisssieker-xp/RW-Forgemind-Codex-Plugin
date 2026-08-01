@@ -1,0 +1,38 @@
+{
+  "localCi": {
+    "status": "passed",
+    "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation."
+  },
+  "remoteCi": {
+    "status": "passed",
+    "result": "GitHub Actions run 30652281355 passed all six Windows, macOS, and Linux jobs for Node 20 and 24, followed by the verified release-artifact job: https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin/actions/runs/30652281355"
+  },
+  "sourceValidator": {
+    "status": "passed",
+    "result": "The generic Codex validator and ForgeMind source validator passed the repository root."
+  },
+  "builtValidator": {
+    "status": "passed",
+    "result": "The generic Codex validator and strict ForgeMind validator passed dist/plugin; marketplace path assertions passed."
+  },
+  "build": {
+    "status": "passed",
+    "result": "npm run build created checksum-valid standalone and marketplace packages."
+  },
+  "reproducibility": {
+    "status": "passed",
+    "result": "Two independent builds produced identical checksums.json content."
+  },
+  "lifecycle": {
+    "status": "passed",
+    "result": "Fresh install, upgrade, valid downgrade, injected-failure rollback, uninstall, preservation, and approved purge passed in isolated temporary homes."
+  },
+  "packageValidation": {
+    "status": "passed",
+    "result": "Standalone and marketplace plugin checksum validation passed."
+  },
+  "secretScan": {
+    "status": "passed",
+    "result": "Package hygiene test found no development state, personal memory directories, private-key blocks, or live GitHub token forms."
+  }
+}

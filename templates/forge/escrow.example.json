@@ -1,0 +1,6 @@
+{
+  "name": "Governed delivery acceptance",
+  "contractId": "replace-with-contract-id",
+  "milestones": [{ "id": "release", "requiredEvidence": ["proof", "test"] }],
+  "requiredApprovers": ["owner", "reviewer"]
+}

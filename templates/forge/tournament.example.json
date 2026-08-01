@@ -1,0 +1,9 @@
+{
+  "name": "Competing implementation futures",
+  "minimumAcceptance": 80,
+  "budgets": { "maxCostUnits": 20, "maxDurationMinutes": 120 },
+  "candidates": [
+    { "id": "safe-fast", "outcomeScore": 90, "acceptancePercent": 95, "verificationStatus": "passed", "proofStatus": "valid", "policyViolations": [], "risk": "low", "complexity": 3, "costUnits": 8, "durationMinutes": 45 },
+    { "id": "cheap", "outcomeScore": 75, "acceptancePercent": 90, "verificationStatus": "passed", "proofStatus": "valid", "policyViolations": [], "risk": "medium", "complexity": 2, "costUnits": 3, "durationMinutes": 25 }
+  ]
+}

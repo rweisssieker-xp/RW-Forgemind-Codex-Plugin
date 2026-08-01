@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "policy": {
+    "actions": {
+      "destructive": "deny",
+      "deployment": "approval",
+      "migration": "approval",
+      "network": "approval",
+      "cost": "approval"
+    },
+    "protectedPaths": [
+      ".git/",
+      ".env",
+      "infra/production/"
+    ]
+  },
+  "redaction": {
+    "allowlist": [
+      "EXAMPLE_TOKEN"
+    ]
+  }
+}

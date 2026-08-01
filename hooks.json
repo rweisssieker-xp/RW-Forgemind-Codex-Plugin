@@ -1,0 +1,240 @@
+{
+  "version": "0.1.0",
+  "description": "Advisory workflow hooks for the ForgeMind plugin.",
+  "hooks": [
+    {
+      "name": "before-project-work",
+      "event": "workflow.inspect",
+      "skill": "project-intelligence",
+      "purpose": "Build a compact repository profile before planning unfamiliar work."
+    },
+    {
+      "name": "help-menu",
+      "event": "workflow.help",
+      "skill": "forgemind-help",
+      "purpose": "Show ForgeMind commands, modes, skill menu, and usage examples."
+    },
+    {
+      "name": "before-feature-work",
+      "event": "workflow.start",
+      "skill": "master-orchestrator",
+      "purpose": "Route ambiguous coding requests through intent, risk, plan, implementation, and verification."
+    },
+    {
+      "name": "workflow-init",
+      "event": "workflow.init",
+      "skill": "workflow-init",
+      "purpose": "Initialize project profile, memory, verification baseline, and next workflow action."
+    },
+    {
+      "name": "workflow-status",
+      "event": "workflow.status",
+      "skill": "workflow-status",
+      "purpose": "Report phase, mode, active skill, progress, blockers, verification, and next action."
+    },
+    {
+      "name": "skill-router-confidence",
+      "event": "workflow.route",
+      "skill": "skill-router",
+      "purpose": "Recommend the best ForgeMind skill with confidence, alternatives, risk level, and next action."
+    },
+    {
+      "name": "workflow-graph",
+      "event": "workflow.graph",
+      "skill": "workflow-graph",
+      "purpose": "Show the ForgeMind workflow graph from idea through release and learning."
+    },
+    {
+      "name": "agent-menu",
+      "event": "workflow.agent-menu",
+      "skill": "agent-menu",
+      "purpose": "Show available ForgeMind specialist agents and recommend a role."
+    },
+    {
+      "name": "prd-builder",
+      "event": "workflow.prd",
+      "skill": "prd-builder",
+      "purpose": "Create a concise, buildable product requirements document."
+    },
+    {
+      "name": "epic-story-builder",
+      "event": "workflow.stories",
+      "skill": "epic-story-builder",
+      "purpose": "Convert product scope into epics, stories, acceptance criteria, and implementation order."
+    },
+    {
+      "name": "scrum-master-agent",
+      "event": "workflow.scrum-master",
+      "skill": "scrum-master-agent",
+      "purpose": "Prepare stories, tasks, blockers, and development handoff."
+    },
+    {
+      "name": "story-status",
+      "event": "workflow.story-status",
+      "skill": "story-status",
+      "purpose": "Report story, epic, backlog, or feature status."
+    },
+    {
+      "name": "acceptance-criteria-builder",
+      "event": "workflow.acceptance",
+      "skill": "acceptance-criteria-builder",
+      "purpose": "Create acceptance criteria, test cases, definition of done, and verification checklist."
+    },
+    {
+      "name": "before-autopilot-work",
+      "event": "workflow.autopilot",
+      "skill": "autonomous-orchestrator",
+      "purpose": "Inspect, route, decide, act, verify, learn, and report with minimal questions."
+    },
+    {
+      "name": "before-innovation-first-work",
+      "event": "workflow.innovation-first",
+      "skill": "innovation-first-autopilot",
+      "purpose": "Read app structure first, then produce radical AI/KI ideas and maximum USP proposals before build planning."
+    },
+    {
+      "name": "before-product-feature",
+      "event": "workflow.product",
+      "skill": "usp-ai-strategist",
+      "purpose": "Surface useful USP and AI/KI leverage before building user-facing features."
+    },
+    {
+      "name": "usp-backlog",
+      "event": "workflow.usp-backlog",
+      "skill": "usp-backlog",
+      "purpose": "Store and prioritize AI/KI USP ideas with score, experiment, status, and evidence."
+    },
+    {
+      "name": "before-radical-feature",
+      "event": "workflow.radical",
+      "skill": "radical-vibe-builder",
+      "purpose": "Generate radical AI/KI 10x feature concepts and a build-ready vibe-coding MVP."
+    },
+    {
+      "name": "before-app-evolution",
+      "event": "workflow.evolve",
+      "skill": "app-evolution-builder",
+      "purpose": "Review code, propose optimizations, generate six feasible feature ideas, implement one feature, and verify it."
+    },
+    {
+      "name": "before-autonomous-work",
+      "event": "workflow.yolo",
+      "skill": "yolo-feature",
+      "purpose": "Apply explicit autonomy boundaries before end-to-end feature work."
+    },
+    {
+      "name": "before-completion",
+      "event": "workflow.complete",
+      "skill": "verification-gate",
+      "purpose": "Confirm tests, diffs, and residual risk before reporting completion."
+    },
+    {
+      "name": "gap-scanner",
+      "event": "workflow.gap-scan",
+      "skill": "gap-scanner",
+      "purpose": "Scan for missing release, quality, documentation, CI, packaging, traceability, and runtime evidence."
+    },
+    {
+      "name": "release-readiness-score",
+      "event": "workflow.release-score",
+      "skill": "release-readiness-score",
+      "purpose": "Score release readiness using verification, CI, docs, traceability, security, runtime, and handoff evidence."
+    },
+    {
+      "name": "risk-radar",
+      "event": "workflow.risk-radar",
+      "skill": "risk-radar",
+      "purpose": "Detect implementation, release, security, dependency, migration, generated-file, and handoff risks."
+    },
+    {
+      "name": "rollback-planner",
+      "event": "workflow.rollback",
+      "skill": "rollback-planner",
+      "purpose": "Generate rollback, recovery, and release fallback steps."
+    },
+    {
+      "name": "pr-summary-builder",
+      "event": "workflow.pr-summary",
+      "skill": "pr-summary-builder",
+      "purpose": "Generate PR or handoff summaries from changed files, verification, gaps, readiness, risks, and rollback evidence."
+    },
+    {
+      "name": "traceability-mapper",
+      "event": "workflow.traceability",
+      "skill": "traceability-mapper",
+      "purpose": "Map PRD goals, stories, acceptance criteria, code changes, and verification evidence."
+    },
+    {
+      "name": "runtime-discovery-test",
+      "event": "workflow.runtime-test",
+      "skill": "runtime-discovery-test",
+      "purpose": "Check installed plugin discovery through cache, marketplace, config, skills, and hooks."
+    },
+    {
+      "name": "command-center",
+      "event": "workflow.command-center",
+      "skill": "command-center",
+      "purpose": "Refresh the ForgeMind command center dashboard with status, gaps, readiness, memory, traceability, and USP backlog."
+    },
+    {
+      "name": "before-tdd-work",
+      "event": "workflow.tdd",
+      "skill": "tdd-builder",
+      "purpose": "Use red-green-refactor for test-first implementation where practical."
+    },
+    {
+      "name": "finish-branch",
+      "event": "workflow.finish",
+      "skill": "finish-branch",
+      "purpose": "Prepare final verification, release notes, changed file summary, and handoff."
+    },
+    {
+      "name": "after-substantial-work",
+      "event": "workflow.memory",
+      "skill": "project-memory",
+      "purpose": "Capture durable decisions, conventions, verification commands, risk zones, and USP ideas."
+    },
+    {
+      "name": "after-learning-signal",
+      "event": "workflow.learning",
+      "skill": "learning-loop",
+      "purpose": "Capture mistakes, preferences, patterns, feedback, and self-update proposals."
+    },
+    {
+      "name": "outcome-memory",
+      "event": "workflow.outcome",
+      "skill": "outcome-memory",
+      "purpose": "Record outcome evidence for completed work, failed checks, release decisions, and routing effectiveness."
+    },
+    {
+      "name": "verification-registry",
+      "event": "workflow.verification-registry",
+      "skill": "verification-registry",
+      "purpose": "Maintain known-good verification commands, confidence, and last result."
+    },
+    {
+      "name": "decision-log",
+      "event": "workflow.decision",
+      "skill": "decision-log",
+      "purpose": "Record architecture, product, scope, release, and workflow decisions."
+    },
+    {
+      "name": "learning-to-skill-patch",
+      "event": "workflow.skill-patch",
+      "skill": "learning-to-skill-patch",
+      "purpose": "Convert repeated failures and review findings into concrete ForgeMind self-update patch proposals."
+    },
+    {
+      "name": "differentiation-matrix",
+      "event": "workflow.differentiation",
+      "skill": "differentiation-matrix",
+      "purpose": "Compare ForgeMind capabilities with relevant market baselines and alternatives."
+    },
+    {
+      "name": "before-self-update",
+      "event": "workflow.self-update",
+      "skill": "apply-self-update",
+      "purpose": "Review and apply approved ForgeMind self-update proposals."
+    }
+  ]
+}

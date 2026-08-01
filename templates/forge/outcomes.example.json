@@ -1,0 +1,8 @@
+{
+  "minCohort": 3,
+  "outcomes": [
+    { "id": "outcome-1", "taskCategory": "feature", "route": "structured-feature", "project": { "stacks": ["node"] }, "durationMinutes": 30, "verificationStatus": "passed", "correctionCount": 0, "userAccepted": true, "residualDefects": 0 },
+    { "id": "outcome-2", "taskCategory": "feature", "route": "structured-feature", "project": { "stacks": ["node"] }, "durationMinutes": 35, "verificationStatus": "passed", "correctionCount": 1, "userAccepted": true, "residualDefects": 0 },
+    { "id": "outcome-3", "taskCategory": "feature", "route": "structured-feature", "project": { "stacks": ["node"] }, "durationMinutes": 28, "verificationStatus": "passed", "correctionCount": 0, "userAccepted": true, "residualDefects": 0 }
+  ]
+}

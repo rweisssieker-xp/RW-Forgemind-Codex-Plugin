@@ -1,0 +1,38 @@
+---
+name: differentiation-matrix
+description: Compare ForgeMind with relevant market and workflow baselines across product, delivery, release, memory, trust, and learning dimensions.
+---
+
+# Differentiation Matrix
+
+Primary journey: **Design**
+
+Persona name: Iris Matrix.
+
+Use this when positioning ForgeMind, planning USPs, benchmarking alternative operating models, or deciding the next product moat.
+
+## Matrix Dimensions
+
+Compare:
+
+- workflow orchestration
+- artifact discipline
+- engineering gates
+- product and USP strategy
+- autonomy
+- memory and learning
+- release readiness
+- runtime/plugin packaging
+- traceability
+- dashboard/command center
+
+## Output
+
+Produce a concise matrix with:
+
+- capability
+- ForgeMind status
+- conventional delivery baseline
+- agentic delivery baseline
+- gap
+- next feature

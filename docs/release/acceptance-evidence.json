@@ -1,0 +1,419 @@
+{
+  "criteria": [
+    {
+      "commands": [
+        "npm run ci"
+      ],
+      "criterion": "Local test suite passes.",
+      "evidence": [
+        "package.json",
+        "tests/"
+      ],
+      "id": 1,
+      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
+      "status": "passed"
+    },
+    {
+      "commands": [
+        "python validate_plugin.py .",
+        "python validate_plugin.py dist/plugin"
+      ],
+      "criterion": "Generic validator passes source and built plugins.",
+      "evidence": [
+        ".codex-plugin/plugin.json",
+        "dist/plugin/.codex-plugin/plugin.json"
+      ],
+      "id": 2,
+      "result": "The generic Codex validator and ForgeMind source validator passed the repository root. The generic Codex validator and strict ForgeMind validator passed dist/plugin; marketplace path assertions passed.",
+      "status": "passed"
+    },
+    {
+      "commands": [
+        "GitHub Actions: Validate ForgeMind"
+      ],
+      "criterion": "CI defines and passes Windows, macOS, and Linux jobs.",
+      "evidence": [
+        ".github/workflows/validate.yml"
+      ],
+      "id": 3,
+      "result": "GitHub Actions run 30652281355 passed all six Windows, macOS, and Linux jobs for Node 20 and 24, followed by the verified release-artifact job: https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin/actions/runs/30652281355",
+      "status": "passed"
+    },
+    {
+      "commands": [
+        "node --test tests/wrappers.test.mjs"
+      ],
+      "criterion": "Runtime features do not require PowerShell; PowerShell files are wrappers.",
+      "evidence": [
+        "tests/wrappers.test.mjs",
+        "scripts/"
+      ],
+      "id": 4,
+      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
+      "status": "passed"
+    },
+    {
+      "commands": [
+        "npm run validate"
+      ],
+      "criterion": "Source validation works from repository root.",
+      "evidence": [
+        "src/validate.mjs",
+        "tests/validate.test.mjs"
+      ],
+      "id": 5,
+      "result": "The generic Codex validator and ForgeMind source validator passed the repository root.",
+      "status": "passed"
+    },
+    {
+      "commands": [
+        "npm run build",
+        "node scripts/release-audit.mjs"
+      ],
+      "criterion": "Build reproducibly creates standalone and marketplace artifacts.",
+      "evidence": [
+        "src/package.mjs",
+        "dist/plugin/checksums.json",
+        "dist/marketplace/"
+      ],
+      "id": 6,
+      "result": "npm run build created checksum-valid standalone and marketplace packages. Two independent builds produced identical checksums.json content.",
+      "status": "passed"
+    },
+    {
+      "commands": [
+        "npm run build"
+      ],
+      "criterion": "Built marketplace metadata resolves ./plugins/forgemind and validates.",
+      "evidence": [
+        "dist/marketplace/.agents/plugins/marketplace.json",
+        "tests/package.test.mjs"
+      ],
+      "id": 7,
+      "result": "The generic Codex validator and strict ForgeMind validator passed dist/plugin; marketplace path assertions passed.",
+      "status": "passed"
+    },
+    {
+      "commands": [
+        "node --test tests/lifecycle.test.mjs"
+      ],
+      "criterion": "Install, upgrade, rollback, downgrade, and uninstall pass in isolated homes.",
+      "evidence": [
+        "tests/lifecycle.test.mjs",
+        "src/lifecycle.mjs"
+      ],
+      "id": 8,
+      "result": "Fresh install, upgrade, valid downgrade, injected-failure rollback, uninstall, preservation, and approved purge passed in isolated temporary homes.",
+      "status": "passed"
+    },
+    {
+      "commands": [
+        "node --test tests/memory.test.mjs"
+      ],
+      "criterion": "Shared and personal memory separation, provenance, conflict, expiry, and redaction pass.",
+      "evidence": [
+        "tests/memory.test.mjs",
+        "src/memory.mjs"
+      ],
+      "id": 9,
+      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
+      "status": "passed"
+    },
+    {
+      "commands": [
+        "node --test tests/policy.test.mjs"
+      ],
+      "criterion": "Unapproved personal configuration cannot weaken policy.",
+      "evidence": [
+        "tests/policy.test.mjs",
+        "src/policy.mjs"
+      ],
+      "id": 10,
+      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
+      "status": "passed"
+    },
+    {
+      "commands": [
+        "node --test tests/evidence.test.mjs"
+      ],
+      "criterion": "Successful fixture produces valid proof and matching digest.",
+      "evidence": [
+        "tests/evidence.test.mjs",
+        "src/evidence.mjs"
+      ],
+      "id": 11,
+      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
+      "status": "passed"
+    },
+    {
+      "commands": [
+        "node --test tests/evidence.test.mjs"
+      ],
+      "criterion": "Failed verification, blocker risk, or stale Git state prevents ready proof.",
+      "evidence": [
+        "tests/evidence.test.mjs",
+        "src/readiness.mjs"
+      ],
+      "id": 12,
+      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
+      "status": "passed"
+    },
+    {
+      "commands": [
+        "node --test tests/router.test.mjs tests/outcomes.test.mjs"
+      ],
+      "criterion": "Outcomes influence routing with explainable evidence.",
+      "evidence": [
+        "tests/router.test.mjs",
+        "src/router.mjs"
+      ],
+      "id": 13,
+      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
+      "status": "passed"
+    },
+    {
+      "commands": [
+        "node --test tests/signals.test.mjs"
+      ],
+      "criterion": "Product signals remain traceable into scored USP records.",
+      "evidence": [
+        "tests/signals.test.mjs",
+        "src/signals.mjs"
+      ],
+      "id": 14,
+      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
+      "status": "passed"
+    },
+    {
+      "commands": [
+        "node --test tests/dashboard.test.mjs"
+      ],
+      "criterion": "Offline dashboard renders all core evidence.",
+      "evidence": [
+        "tests/dashboard.test.mjs",
+        "src/dashboard.mjs"
+      ],
+      "id": 15,
+      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
+      "status": "passed"
+    },
+    {
+      "commands": [
+        "node --test tests/workflow-routing.test.mjs"
+      ],
+      "criterion": "Six primary workflows and overlapping route precedence are consistent.",
+      "evidence": [
+        "tests/workflow-routing.test.mjs",
+        "docs/WORKFLOWS.md"
+      ],
+      "id": 16,
+      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
+      "status": "passed"
+    },
+    {
+      "commands": [
+        "node --test tests/release-metadata.test.mjs"
+      ],
+      "criterion": "Release metadata has real identity and repository links.",
+      "evidence": [
+        "tests/release-metadata.test.mjs",
+        ".codex-plugin/plugin.json"
+      ],
+      "id": 17,
+      "result": "The generic Codex validator and ForgeMind source validator passed the repository root.",
+      "status": "passed"
+    },
+    {
+      "commands": [
+        "node --test tests/release-metadata.test.mjs"
+      ],
+      "criterion": "License and all community policy documents exist.",
+      "evidence": [
+        "LICENSE",
+        "CHANGELOG.md",
+        "SECURITY.md",
+        "SUPPORT.md",
+        "PRIVACY.md",
+        "TERMS.md",
+        "CONTRIBUTING.md",
+        "CODE_OF_CONDUCT.md"
+      ],
+      "id": 18,
+      "result": "All required policy documents exist.",
+      "status": "passed"
+    },
+    {
+      "commands": [
+        "npm run build",
+        "secret scan"
+      ],
+      "criterion": "Package is allowlisted, checksummed, and excludes development/personal state.",
+      "evidence": [
+        "package-allowlist.json",
+        "dist/plugin/checksums.json",
+        "tests/package.test.mjs"
+      ],
+      "id": 19,
+      "result": "npm run build created checksum-valid standalone and marketplace packages. Standalone and marketplace plugin checksum validation passed. Package hygiene test found no development state, personal memory directories, private-key blocks, or live GitHub token forms.",
+      "status": "passed"
+    },
+    {
+      "commands": [
+        "node --test tests/release-audit.test.mjs",
+        "node scripts/release-audit.mjs"
+      ],
+      "criterion": "Release audit maps all acceptance criteria to authoritative evidence.",
+      "evidence": [
+        "tests/release-audit.test.mjs",
+        "docs/release/acceptance-evidence.md"
+      ],
+      "id": 20,
+      "result": "All 29 criteria have explicit commands and evidence paths.",
+      "status": "passed"
+    },
+    {
+      "commands": [
+        "node --test tests/forge-trust-strategy.test.mjs"
+      ],
+      "criterion": "Agent Trust Protocol rejects any delivery that fails acceptance, verification, policy, provenance, rollback, or budget gates.",
+      "evidence": [
+        "src/forge/trust.mjs",
+        "tests/forge-trust-strategy.test.mjs",
+        "schemas/agent-trust-v1.schema.json"
+      ],
+      "id": 21,
+      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
+      "status": "passed"
+    },
+    {
+      "commands": [
+        "node --test tests/forge-trust-strategy.test.mjs"
+      ],
+      "criterion": "Strategy Compiler emits deterministic executable rules and blocks rule-level strategic drift.",
+      "evidence": [
+        "src/forge/strategy.mjs",
+        "tests/forge-trust-strategy.test.mjs",
+        "schemas/executable-strategy-v1.schema.json"
+      ],
+      "id": 22,
+      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
+      "status": "passed"
+    },
+    {
+      "commands": [
+        "node --test tests/forge-genome-tournament.test.mjs"
+      ],
+      "criterion": "Engineering Genome exposes measured cohorts and suppresses recommendations below the minimum sample.",
+      "evidence": [
+        "src/forge/genome.mjs",
+        "tests/forge-genome-tournament.test.mjs",
+        "schemas/engineering-genome-v1.schema.json"
+      ],
+      "id": 23,
+      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
+      "status": "passed"
+    },
+    {
+      "commands": [
+        "node --test tests/forge-foundation.test.mjs"
+      ],
+      "criterion": "Delivery Flight Recorder detects mutation, deletion, reordering, and invalid anchors without executing replayed actions.",
+      "evidence": [
+        "src/forge/flight.mjs",
+        "tests/forge-foundation.test.mjs",
+        "schemas/flight-event-v1.schema.json"
+      ],
+      "id": 24,
+      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
+      "status": "passed"
+    },
+    {
+      "commands": [
+        "node --test tests/forge-genome-tournament.test.mjs"
+      ],
+      "criterion": "Parallel Future Tournament applies hard gates before scoring and preserves ties and the Pareto frontier.",
+      "evidence": [
+        "src/forge/tournament.mjs",
+        "tests/forge-genome-tournament.test.mjs",
+        "schemas/future-tournament-v1.schema.json"
+      ],
+      "id": 25,
+      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
+      "status": "passed"
+    },
+    {
+      "commands": [
+        "node --test tests/forge-shrink-loop.test.mjs"
+      ],
+      "criterion": "Self-Shrinking Software produces reversible evidence plans and never mutates source.",
+      "evidence": [
+        "src/forge/shrink.mjs",
+        "tests/forge-shrink-loop.test.mjs",
+        "schemas/shrink-plan-v1.schema.json"
+      ],
+      "id": 26,
+      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
+      "status": "passed"
+    },
+    {
+      "commands": [
+        "node --test tests/forge-shrink-loop.test.mjs"
+      ],
+      "criterion": "Autonomous Product Loop enforces ordered proof gates and measured scale, iterate, or rollback decisions.",
+      "evidence": [
+        "src/forge/product-loop.mjs",
+        "tests/forge-shrink-loop.test.mjs",
+        "schemas/product-loop-v1.schema.json"
+      ],
+      "id": 27,
+      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
+      "status": "passed"
+    },
+    {
+      "commands": [
+        "node --test tests/forge-escrow-federate.test.mjs"
+      ],
+      "criterion": "Evidence Escrow stays held until trusted proof, all milestones, and every required approval pass, and never handles funds.",
+      "evidence": [
+        "src/forge/escrow.mjs",
+        "tests/forge-escrow-federate.test.mjs",
+        "schemas/evidence-escrow-v1.schema.json"
+      ],
+      "id": 28,
+      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
+      "status": "passed"
+    },
+    {
+      "commands": [
+        "node --test tests/forge-escrow-federate.test.mjs"
+      ],
+      "criterion": "Federated Learning exports verified k-suppressed aggregates without raw identifiers and makes no differential-privacy claim.",
+      "evidence": [
+        "src/forge/federate.mjs",
+        "tests/forge-escrow-federate.test.mjs",
+        "schemas/federated-bundle-v1.schema.json"
+      ],
+      "id": 29,
+      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
+      "status": "passed"
+    }
+  ],
+  "generatedAt": "2026-07-31T17:45:28.516Z",
+  "publicSubmission": {
+    "result": "Public marketplace submission is an external authenticated action.",
+    "status": "not-claimed"
+  },
+  "remoteCi": {
+    "result": "GitHub Actions run 30652281355 passed all six Windows, macOS, and Linux jobs for Node 20 and 24, followed by the verified release-artifact job: https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin/actions/runs/30652281355",
+    "status": "passed"
+  },
+  "schemaVersion": 1,
+  "status": "passed",
+  "summary": {
+    "failed": 0,
+    "passed": 29,
+    "pending": 0,
+    "total": 29
+  },
+  "version": "1.7.0"
+}

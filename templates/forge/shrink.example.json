@@ -1,0 +1,6 @@
+{
+  "name": "Low-value complexity review",
+  "usageThreshold": 2,
+  "outcomeThreshold": 5,
+  "capabilities": [{ "id": "legacy-view", "files": ["src/legacy-view.mjs"], "usageCount": 0, "outcomeContribution": 0, "complexityPoints": 30, "essential": false, "protectedBehaviors": ["release visibility"], "preservationTests": ["npm test"], "rollback": ["Restore the removed files from the reviewed commit."] }]
+}
