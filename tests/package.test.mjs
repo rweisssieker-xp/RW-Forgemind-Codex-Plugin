@@ -20,8 +20,10 @@ test('build creates reproducible standalone and marketplace packages', async (t)
 
   assert.equal(firstChecksums, secondChecksums);
   assert.equal(marketplace.plugins[0].source.path, './plugins/forgemind');
+  assert.equal(marketplace.plugins[1].source.path, './plugins/forgemind-trust-fabric');
   assert.equal((await verifyPackage(first.pluginPath)).status, 'passed');
   assert.equal((await verifyPackage(path.join(first.marketplacePath, 'plugins', 'forgemind'))).status, 'passed');
+  assert.equal((await verifyPackage(path.join(first.marketplacePath, 'plugins', 'forgemind-trust-fabric'))).status, 'passed');
 });
 
 test('package verification rejects files outside the checksum allowlist', async (t) => {

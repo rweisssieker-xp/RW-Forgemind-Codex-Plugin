@@ -169,6 +169,7 @@ export async function runCli(argv, context = {}) {
         task: { category: options.category ?? 'unknown', risk: options.risk, path: options.path },
         outcomes: await listOutcomes({ workspace }),
         policy: config.policy,
+        routing: config.routing,
       }), errors: [] };
     } else if (command === 'signals') {
       const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());

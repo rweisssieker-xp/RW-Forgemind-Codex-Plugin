@@ -18,5 +18,8 @@
     "allowlist": [
       "EXAMPLE_TOKEN"
     ]
+  },
+  "routing": {
+    "maxSkillTokens": 800
   }
 }

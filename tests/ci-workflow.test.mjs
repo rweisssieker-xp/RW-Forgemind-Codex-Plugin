@@ -20,4 +20,6 @@ test('one gated release job uploads the verified marketplace and standalone pack
   assert.match(workflow, /actions\/upload-artifact@v4/);
   assert.match(workflow, /dist\/plugin/);
   assert.match(workflow, /dist\/marketplace/);
+  assert.match(workflow, /publish-release/);
+  assert.match(workflow, /gh release create/);
 });

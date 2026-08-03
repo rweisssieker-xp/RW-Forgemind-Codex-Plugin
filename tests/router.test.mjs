@@ -48,3 +48,17 @@ test('learned preferences cannot bypass a denied safety action', () => {
   assert.equal(result.primaryRoute, 'master-orchestrator');
   assert.match(result.escalation.rationale, /denies destructive/);
 });
+
+test('routing falls back to a smaller sufficient route when the context budget requires it', () => {
+  const result = recommendRoute({
+    profile,
+    task: { category: 'feature' },
+    outcomes: [successful('o1', 'yolo-feature'), successful('o2', 'yolo-feature')],
+    policy: DEFAULT_POLICY,
+    routing: { maxSkillTokens: 600 },
+  });
+
+  assert.equal(result.primaryRoute, 'structured-feature');
+  assert.equal(result.budget.decision, 'fallback');
+  assert.equal(result.budget.fallback, 'yolo-feature');
+});

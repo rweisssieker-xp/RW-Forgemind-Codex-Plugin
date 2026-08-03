@@ -17,6 +17,16 @@ ForgeMind is the evidence-first delivery system for Codex: autonomous execution 
 - **Reproducible collaboration:** sealed records, flight replay, versioned artifacts, and outcome memory make work inspectable and repeatable.
 - **Strategy stays connected to delivery:** USP experiments, acceptance criteria, implementation, and verification remain traceable through the same workflow.
 
+## Start Here
+
+Choose one visible path; ForgeMind routes to the smallest sufficient specialist.
+
+- **Ship a feature:** plan, implement, test, and retain delivery evidence.
+- **Fix a bug:** reproduce, diagnose, fix, verify, and record the outcome.
+- **Prepare a release:** assess gaps and risks, verify proof, plan rollback, and make a Go/No-Go decision.
+
+Use `guided-start` for an interactive selection or `outcome-feedback` after a completed workflow to record opt-in acceptance and correction data without raw prompts or source.
+
 See [docs/TRUST_FABRIC.md](docs/TRUST_FABRIC.md) for commands, team adoption, and precise safety boundaries.
 
 ## Six Primary Journeys

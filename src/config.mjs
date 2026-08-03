@@ -17,6 +17,9 @@ export async function loadConfig(workspace, options = {}) {
     redaction: {
       allowlist: [...new Set([...(shared?.redaction?.allowlist ?? []), ...(personal?.redaction?.allowlist ?? [])])],
     },
+    routing: {
+      maxSkillTokens: Math.min(shared?.routing?.maxSkillTokens ?? 800, personal?.routing?.maxSkillTokens ?? 800),
+    },
     sources: {
       shared: shared ? 'forgemind.config.json' : null,
       personal: personal ? '.forgemind.local.json' : null,
@@ -41,9 +44,12 @@ async function readConfig(candidate) {
   if (config.schemaVersion !== 1) {
     throw new ForgeMindError('FM_CONFIG_INVALID', `${path.basename(candidate)} must use schemaVersion 1`);
   }
-  const unsupported = Object.keys(config).filter((key) => !['schemaVersion', 'policy', 'redaction'].includes(key));
+  const unsupported = Object.keys(config).filter((key) => !['schemaVersion', 'policy', 'redaction', 'routing'].includes(key));
   if (unsupported.length) {
     throw new ForgeMindError('FM_CONFIG_INVALID', `${path.basename(candidate)} has unsupported fields: ${unsupported.join(', ')}`);
+  }
+  if (config.routing?.maxSkillTokens !== undefined && (!Number.isInteger(config.routing.maxSkillTokens) || config.routing.maxSkillTokens < 100)) {
+    throw new ForgeMindError('FM_CONFIG_INVALID', `${path.basename(candidate)} routing.maxSkillTokens must be an integer of at least 100`);
   }
   return config;
 }

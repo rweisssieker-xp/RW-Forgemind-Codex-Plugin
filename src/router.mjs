@@ -8,7 +8,17 @@ const BASE_ROUTES = {
   security: 'security-reviewer',
 };
 
-export function recommendRoute({ profile, task, outcomes = [], policy }) {
+const ROUTE_TOKEN_COST = {
+  'master-orchestrator': 850,
+  'structured-feature': 500,
+  'systematic-debugging': 450,
+  'innovation-first-autopilot': 700,
+  'finish-branch': 420,
+  'security-reviewer': 380,
+  'skill-router': 180,
+};
+
+export function recommendRoute({ profile, task, outcomes = [], policy, routing = {} }) {
   const base = BASE_ROUTES[task.category] ?? 'master-orchestrator';
   const matching = outcomes.filter((outcome) =>
     outcome.taskCategory === task.category && stackMatch(profile.stacks ?? [], outcome.project?.stacks ?? []),
@@ -33,6 +43,21 @@ export function recommendRoute({ profile, task, outcomes = [], policy }) {
       confidence = 1;
     }
   }
+  const maxSkillTokens = routing.maxSkillTokens ?? 800;
+  const selectedCost = ROUTE_TOKEN_COST[primaryRoute] ?? 650;
+  const alternativeCost = ROUTE_TOKEN_COST[alternative] ?? 650;
+  const budget = { maxSkillTokens, selectedCost, decision: 'within-budget', fallback: null };
+  if (escalation.decision !== 'deny' && selectedCost > maxSkillTokens && alternativeCost <= maxSkillTokens) {
+    const previous = primaryRoute;
+    primaryRoute = alternative;
+    alternative = previous;
+    budget.decision = 'fallback';
+    budget.fallback = previous;
+    confidence = Math.min(confidence, 0.7);
+  } else if (escalation.decision !== 'deny' && selectedCost > maxSkillTokens) {
+    budget.decision = 'escalate';
+    budget.fallback = 'skill-router';
+  }
   return {
     schemaVersion: 1,
     primaryRoute,
@@ -40,6 +65,7 @@ export function recommendRoute({ profile, task, outcomes = [], policy }) {
     evidence: selectedEvidence,
     alternative,
     escalation,
+    budget,
     missingEvidence,
     rationale: selectedEvidence.length
       ? `${primaryRoute} has the strongest matching local outcome score.`

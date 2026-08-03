@@ -4,7 +4,7 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
-## [1.7.1] - 2026-08-01
+## [1.8.0] - 2026-08-03
 
 ### Changed
 
@@ -14,6 +14,7 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Added a repeatable ForgeMind benchmark configuration for release validation, trust verification, and destructive-action boundaries.
 - Removed the marketplace screenshot because ForgeMind does not ship an embedded plugin UI.
 - Clarified the Marketplace positioning around evidence-first delivery, safe autonomy, cost-aware routing, reproducible collaboration, and privacy-preserving team learning.
+- Added budget-enforced route fallback, guided entry paths, opt-in outcome feedback, and a Core plus optional Trust Fabric marketplace package split.
 
 ## [1.7.0] - 2026-07-30
 
