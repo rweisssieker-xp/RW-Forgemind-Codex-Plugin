@@ -1,6 +1,6 @@
 ---
 name: scrum-master-agent
-description: Scrum Master role for ForgeMind. Use to prepare stories for implementation, split work, remove blockers, define tasks, check readiness, and create a governed developer handoff.
+description: ForgeMind scrum master agent workflow. Use when the user explicitly asks for scrum master agent.
 ---
 
 # Scrum Master Agent

@@ -1,6 +1,6 @@
 ---
 name: code-review-gate
-description: Review code changes for bugs, regressions, missing tests, and maintainability risks.
+description: ForgeMind code review gate workflow. Use when the user explicitly asks for code review gate.
 ---
 
 # Code Review Gate

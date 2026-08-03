@@ -1,6 +1,6 @@
 ---
 name: senior-developer-agent
-description: Senior developer role for ForgeMind. Use for implementation approach, code quality, local patterns, tests, refactoring, and pragmatic delivery.
+description: ForgeMind senior developer agent workflow. Use when the user explicitly asks for senior developer agent.
 ---
 
 # Senior Developer Agent

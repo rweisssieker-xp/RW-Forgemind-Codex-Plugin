@@ -65,7 +65,7 @@ MasterOrchestrator: route this task, choose the right ForgeMind workflow, and st
 ```
 
 ```text
-SuperDeveloper mode: inspect this repo, plan the work, implement, verify, and review.
+Delivery Acceleration mode: inspect this repo, plan the work, implement, verify, and review.
 ```
 
 ```text

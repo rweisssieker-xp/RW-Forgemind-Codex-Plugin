@@ -1,6 +1,6 @@
 ---
 name: architect-agent
-description: Architect role for ForgeMind. Use for technical design, boundaries, data flow, integration, migration, scalability, and architecture risks.
+description: ForgeMind architect agent workflow. Use when the user explicitly asks for architect agent.
 ---
 
 # Architect Agent

@@ -1,6 +1,6 @@
 ---
 name: app-evolution-builder
-description: One-command app evolution workflow. Use when the user asks to review code, suggest optimizations, analyze base functionality, identify extensible areas and possible USPs, generate 6 feature ideas, evaluate feasibility, add a new feature, and test/verify the implementation.
+description: ForgeMind app evolution builder workflow. Use when the user explicitly asks for app evolution builder.
 ---
 
 # App Evolution Builder

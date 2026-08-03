@@ -1,6 +1,6 @@
 ---
 name: qa-agent
-description: QA role for ForgeMind. Use for test plans, regression risk, edge cases, acceptance checks, app smoke tests, and quality gates.
+description: ForgeMind qa agent workflow. Use when the user explicitly asks for qa agent.
 ---
 
 # QA Agent

@@ -1,6 +1,6 @@
 ---
 name: structured-feature
-description: Implement feature work with a lightweight spec, ordered tasks, tests, and verification. Use for normal non-YOLO feature requests.
+description: ForgeMind structured feature workflow. Use when the user explicitly asks for structured feature.
 ---
 
 # Structured Feature

@@ -1,6 +1,6 @@
 ---
 name: skill-router
-description: Recommend ForgeMind skills with confidence, alternatives, risk level, and the next action for ambiguous work.
+description: Routes ambiguous ForgeMind requests to the safest next workflow. Use when a request is unclear or needs a workflow recommendation.
 ---
 
 # Skill Router
@@ -14,6 +14,10 @@ Use this before ambiguous coding, product, review, release, debugging, or workfl
 ## Routing Output
 
 When outcome evidence exists, run `forgemind route --category <category> --json`. Report its evidence IDs, confidence, alternative, safety escalation, and missing evidence. Learned preferences never override a policy denial.
+
+## Context Budget
+
+Keep routing cost-aware: use the router or Autopilot to identify the smallest sufficient specialist, then invoke only that specialist. Do not load adjacent skills merely because they are related. Escalate to an implementation plan only when scope, risk, or uncertainty warrants it.
 
 Provide:
 

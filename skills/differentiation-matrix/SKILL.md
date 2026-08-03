@@ -1,6 +1,6 @@
 ---
 name: differentiation-matrix
-description: Compare ForgeMind with relevant market and workflow baselines across product, delivery, release, memory, trust, and learning dimensions.
+description: ForgeMind differentiation matrix workflow. Use when the user explicitly asks for differentiation matrix.
 ---
 
 # Differentiation Matrix

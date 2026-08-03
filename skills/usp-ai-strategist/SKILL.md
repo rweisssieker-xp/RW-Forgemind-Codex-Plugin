@@ -1,6 +1,6 @@
 ---
 name: usp-ai-strategist
-description: Generate practical USP, AI, and KI feature suggestions for products, apps, workflows, and coding tasks. Use whenever the user asks for USPs, differentiation, AI ideas, product advantages, business value, or better feature suggestions.
+description: ForgeMind usp ai strategist workflow. Use when the user explicitly asks for usp ai strategist.
 ---
 
 # USP AI Strategist

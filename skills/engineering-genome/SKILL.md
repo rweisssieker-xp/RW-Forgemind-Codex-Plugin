@@ -1,6 +1,6 @@
 ---
 name: engineering-genome
-description: Learn transparent route recommendations from measured delivery outcomes while suppressing weak cohorts. Use to improve engineering routing with auditable local evidence.
+description: ForgeMind engineering genome workflow. Use when the user explicitly asks for engineering genome.
 ---
 
 # Engineering Genome

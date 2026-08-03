@@ -1,6 +1,6 @@
 ---
 name: gap-scanner
-description: Scan a ForgeMind project or branch for missing release, quality, documentation, traceability, installer, CI, and runtime-readiness work.
+description: ForgeMind gap scanner workflow. Use when the user explicitly asks for gap scanner.
 ---
 
 # Gap Scanner

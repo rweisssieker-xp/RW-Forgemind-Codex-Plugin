@@ -33,16 +33,11 @@ test('release package includes community, support, privacy, and terms documents'
   assert.match(security, /security\/advisories\/new/);
 });
 
-test('marketplace policies and screenshots point to publishable assets', async () => {
+test('marketplace policies omit screenshots when the plugin has no embedded UI', async () => {
   const manifest = JSON.parse(await readFile(path.join(root, '.codex-plugin', 'plugin.json'), 'utf8'));
   assert.equal(manifest.interface.privacyPolicyURL, `${repository}/blob/main/PRIVACY.md`);
   assert.equal(manifest.interface.termsOfServiceURL, `${repository}/blob/main/TERMS.md`);
-  assert.ok(manifest.interface.screenshots.length > 0);
-  for (const asset of manifest.interface.screenshots) {
-    assert.match(asset, /^\.\/assets\/.*\.png$/);
-    const bytes = await readFile(path.join(root, asset));
-    assert.deepEqual([...bytes.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);
-  }
+  assert.equal(Object.hasOwn(manifest.interface, 'screenshots'), false);
 });
 
 test('installation and release docs use the portable lifecycle commands', async () => {

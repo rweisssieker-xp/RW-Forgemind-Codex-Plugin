@@ -1,6 +1,6 @@
 ---
 name: risk-radar
-description: Detect implementation, release, security, dependency, migration, generated-file, and handoff risks before coding or release.
+description: ForgeMind risk radar workflow. Use when the user explicitly asks for risk radar.
 ---
 
 # Risk Radar

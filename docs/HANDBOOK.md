@@ -1,6 +1,8 @@
 # ForgeMind Handbook
 
-ForgeMind is a Codex plugin for structured, product-aware, autonomous development. Its native operating model combines specialist roles, governed artifacts, and evidence-driven execution: inspect first, choose the right workflow, build in small useful steps, verify, review, and learn.
+ForgeMind is the evidence-first delivery system for Codex: autonomous execution with verifiable proof, safe escalation, and release-ready decisions. Its operating model combines specialist roles, governed artifacts, and evidence-driven execution: inspect first, choose the smallest sufficient workflow, build in small useful steps, verify, review, and learn.
+
+Its distinguishing promises are concrete: proof before completion claims; autonomous work with explicit safety stops; cost-aware specialist selection; a single evidence-backed Go/No-Go release decision; privacy-preserving aggregate learning; vendor-neutral trust contracts; reproducible records and replay; and traceability from product strategy through verification.
 
 ## Choose One Of Six Journeys
 

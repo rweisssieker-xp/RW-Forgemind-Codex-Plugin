@@ -1,9 +1,9 @@
 ---
-name: superdeveloper-mode
-description: Full-spectrum developer mode combining project intelligence, product strategy, architecture, implementation, verification, and self-improvement.
+name: delivery-acceleration-mode
+description: ForgeMind delivery-acceleration mode workflow. Use when the user explicitly asks for delivery-acceleration mode.
 ---
 
-# SuperDeveloper Mode
+# Delivery Acceleration Mode
 
 Primary journey: **Build**
 

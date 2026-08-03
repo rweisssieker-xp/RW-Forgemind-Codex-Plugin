@@ -1,6 +1,6 @@
 ---
 name: tdd-builder
-description: Test-driven development workflow for ForgeMind. Use for test-first implementation, regression tests, red-green-refactor, bug fixes, or features where behavior can be specified with tests.
+description: ForgeMind tdd builder workflow. Use when the user explicitly asks for tdd builder.
 ---
 
 # TDD Builder

@@ -1,6 +1,6 @@
 ---
 name: security-reviewer
-description: Review changes for secrets, auth, permissions, data exposure, injection, dependency, and abuse risks.
+description: ForgeMind security reviewer workflow. Use when the user explicitly asks for security reviewer.
 ---
 
 # Security Reviewer

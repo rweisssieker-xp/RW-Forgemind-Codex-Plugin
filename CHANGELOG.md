@@ -4,9 +4,16 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [1.7.1] - 2026-08-01
+
 ### Changed
 
 - Replaced historical third-party framework positioning with ForgeMind-native journey, artifact, orchestration, and benchmark terminology.
+- Renamed Delivery Acceleration Mode and removed legacy framework-like naming from skills, prompts, documentation, and metadata.
+- Made specialist skills explicit-only while keeping the router and autonomous workflow available for automatic selection, reducing active skill context.
+- Added a repeatable ForgeMind benchmark configuration for release validation, trust verification, and destructive-action boundaries.
+- Removed the marketplace screenshot because ForgeMind does not ship an embedded plugin UI.
+- Clarified the Marketplace positioning around evidence-first delivery, safe autonomy, cost-aware routing, reproducible collaboration, and privacy-preserving team learning.
 
 ## [1.7.0] - 2026-07-30
 

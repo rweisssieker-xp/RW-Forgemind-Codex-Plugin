@@ -1,6 +1,6 @@
 ---
 name: learning-to-skill-patch
-description: Convert repeated failures, review findings, user corrections, and outcome-memory evidence into concrete ForgeMind skill, script, template, or documentation patch proposals.
+description: ForgeMind learning to skill patch workflow. Use when the user explicitly asks for learning to skill patch.
 ---
 
 # Learning To Skill Patch

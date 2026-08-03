@@ -1,6 +1,6 @@
 ---
 name: outcome-memory
-description: Record outcome evidence for features, fixes, releases, experiments, verification attempts, and USP decisions so ForgeMind can improve routing over time.
+description: ForgeMind outcome memory workflow. Use when the user explicitly asks for outcome memory.
 ---
 
 # Outcome Memory

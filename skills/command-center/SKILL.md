@@ -1,6 +1,6 @@
 ---
 name: command-center
-description: Build or refresh a ForgeMind command center dashboard for workflow status, gaps, release readiness, verification, memory, traceability, and USP backlog.
+description: ForgeMind command center workflow. Use when the user explicitly asks for command center.
 ---
 
 # Command Center

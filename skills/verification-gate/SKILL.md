@@ -1,6 +1,6 @@
 ---
 name: verification-gate
-description: Verify completed coding work before claiming success. Use before final responses, commits, PRs, or handoff.
+description: ForgeMind verification gate workflow. Use when the user explicitly asks for verification gate.
 ---
 
 # Verification Gate

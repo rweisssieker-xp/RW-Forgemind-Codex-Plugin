@@ -1,7 +1,7 @@
 {
   "name": "forgemind",
-  "version": "1.7.0",
-  "description": "Vendor-neutral agent trust and evidence-driven product delivery for individuals and governed teams using Codex.",
+  "version": "1.7.1",
+  "description": "Evidence-first autonomous delivery for Codex: verifiable proof, safe escalation, and release-ready decisions for people and governed teams.",
   "author": {
     "name": "rweisssieker-xp",
     "url": "https://github.com/rweisssieker-xp"
@@ -17,7 +17,7 @@
     "automation",
     "usp",
     "ai-strategy",
-    "superdeveloper",
+    "delivery-acceleration",
     "product-engineering",
     "learning",
     "feedback",
@@ -50,8 +50,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "ForgeMind",
-    "shortDescription": "Evidence-driven delivery for people and governed teams.",
-    "longDescription": "ForgeMind provides six stable journeys and a nine-capability Trust Fabric over a portable Node.js CLI. It combines vendor-neutral agent contracts, executable strategy, measured engineering learning, tamper-evident delivery history, governed product loops, evidence-gated acceptance, privacy-preserving aggregate federation, offline dashboards, and reproducible installation on Windows, macOS, and Linux.",
+    "shortDescription": "Autonomous delivery with verifiable proof and safe escalation.",
+    "longDescription": "ForgeMind is the evidence-first delivery system for Codex. It routes work through the smallest sufficient workflow, runs autonomous delivery with explicit safety stops, produces tamper-evident verification and release evidence, connects product strategy to implementation, and enables privacy-preserving team learning without exporting raw prompts or source. Six journeys and a nine-capability Trust Fabric run locally on Windows, macOS, and Linux.",
     "developerName": "rweisssieker-xp",
     "category": "Productivity",
     "capabilities": [
@@ -77,15 +77,12 @@
     "privacyPolicyURL": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin/blob/main/PRIVACY.md",
     "termsOfServiceURL": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin/blob/main/TERMS.md",
     "defaultPrompt": [
-      "Discover this repository and recommend the next journey.",
-      "Build this outcome end to end with governed evidence.",
-      "Use the Trust Fabric to verify this outcome with portable proof."
+      "Use ForgeMind to inspect this repository and recommend the smallest safe workflow.",
+      "Use ForgeMind to build this outcome end to end with governed evidence and safe escalation.",
+      "Use the Trust Fabric to produce portable proof and a release-ready Go/No-Go decision."
     ],
     "brandColor": "#2563EB",
     "composerIcon": "./assets/icon.svg",
-    "logo": "./assets/logo.svg",
-    "screenshots": [
-      "./assets/forgemind-command-center.png"
-    ]
+    "logo": "./assets/logo.svg"
   }
 }

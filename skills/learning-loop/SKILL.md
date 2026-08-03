@@ -1,6 +1,6 @@
 ---
 name: learning-loop
-description: Turn completed work, failures, user feedback, and verification results into durable ForgeMind learning.
+description: ForgeMind learning loop workflow. Use when the user explicitly asks for learning loop.
 ---
 
 # Learning Loop

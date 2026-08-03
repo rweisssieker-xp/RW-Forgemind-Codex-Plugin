@@ -1,6 +1,6 @@
 ---
 name: rollback-planner
-description: Generate rollback, recovery, and release fallback steps for feature, installer, plugin, migration, or production-impacting work.
+description: ForgeMind rollback planner workflow. Use when the user explicitly asks for rollback planner.
 ---
 
 # Rollback Planner

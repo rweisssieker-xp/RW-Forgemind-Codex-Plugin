@@ -1,6 +1,6 @@
 ---
 name: prd-builder
-description: Build a product requirements document. Use when the user asks for PRD, product spec, requirements, product brief, scope, goals, non-goals, user value, features, MVP, risks, or governed product planning.
+description: ForgeMind prd builder workflow. Use when the user explicitly asks for prd builder.
 ---
 
 # PRD Builder

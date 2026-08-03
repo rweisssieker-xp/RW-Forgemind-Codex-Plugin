@@ -1,6 +1,6 @@
 ---
 name: usp-backlog
-description: Maintain a scored backlog of USP, AI, KI, and radical feature ideas with experiments, status, risk, and next action.
+description: ForgeMind usp backlog workflow. Use when the user explicitly asks for usp backlog.
 ---
 
 # USP Backlog

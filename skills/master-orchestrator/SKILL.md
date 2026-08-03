@@ -1,6 +1,6 @@
 ---
 name: master-orchestrator
-description: Route and coordinate Codex coding work through ForgeMind workflows. Use for structure, orchestration, subskill selection, end-to-end coding, task routing, planning, feature implementation, app evolution, radical innovation, debugging, review, verification, or multi-step software work.
+description: ForgeMind master orchestrator workflow. Use when the user explicitly asks for master orchestrator.
 ---
 
 # MasterOrchestrator

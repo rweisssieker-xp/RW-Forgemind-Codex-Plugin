@@ -1,6 +1,6 @@
 ---
 name: yolo-feature
-description: Autonomously implement a feature end to end in Codex with explicit guardrails. Use when the user says yolo, YOLO feature, autonomous mode, mach einfach, or asks Codex to take a feature from idea to verified result.
+description: ForgeMind yolo feature workflow. Use when the user explicitly asks for yolo feature.
 ---
 
 # YOLO Feature

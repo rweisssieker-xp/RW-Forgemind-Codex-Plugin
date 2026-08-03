@@ -1,6 +1,6 @@
 ---
 name: release-readiness-score
-description: Score release readiness using verification, CI, docs, changelog, traceability, security, installer, and runtime-discovery evidence.
+description: ForgeMind release readiness score workflow. Use when the user explicitly asks for release readiness score.
 ---
 
 # Release Readiness Score

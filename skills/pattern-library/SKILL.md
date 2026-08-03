@@ -1,6 +1,6 @@
 ---
 name: pattern-library
-description: Capture and reuse successful implementation, architecture, testing, and USP patterns.
+description: ForgeMind pattern library workflow. Use when the user explicitly asks for pattern library.
 ---
 
 # Pattern Library

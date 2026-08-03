@@ -1,6 +1,6 @@
 ---
 name: autonomous-product-loop
-description: Run a governed signal-to-scale product loop with measured guardrails, trust contracts, delivery proof, and explicit scale, iterate, or rollback decisions.
+description: ForgeMind autonomous product loop workflow. Use when the user explicitly asks for autonomous product loop.
 ---
 
 # Autonomous Product Loop

@@ -1,6 +1,6 @@
 ---
 name: innovation-first-autopilot
-description: Innovation-first ForgeMind autopilot. Use when the user wants Codex to first read the current app structure, then always produce radical AI/KI ideas and maximum USP proposals before choosing a buildable MVP, planning implementation, verifying, and learning. Trigger on "Innovation First Autopilot", "max USPs", "immer radical oder USPs", "lies zuerst die App-Struktur", or similar.
+description: ForgeMind innovation first autopilot workflow. Use when the user explicitly asks for innovation first autopilot.
 ---
 
 # Innovation First Autopilot

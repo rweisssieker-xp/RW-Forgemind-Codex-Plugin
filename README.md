@@ -1,10 +1,21 @@
 # ForgeMind
 
-ForgeMind is a learning Codex SuperDeveloper plugin with a local, vendor-neutral Trust Fabric: orchestration, executable strategy, cross-agent evidence, autonomous product loops, delivery verification, reusable project memory, and privacy-preserving team learning.
+ForgeMind is the evidence-first delivery system for Codex: autonomous execution with verifiable proof, safe escalation, and release-ready decisions. It combines local orchestration, executable strategy, cross-agent evidence, autonomous product loops, reusable project memory, and privacy-preserving team learning.
 
 ## Trust Fabric: Nine Disruptive USPs
 
 `forgemind forge help` exposes nine integrated capabilities: Agent Trust Protocol, Strategy-to-Code Compiler, Engineering Genome, Delivery Flight Recorder, Parallel Future Tournament, Self-Shrinking Software, Autonomous Product Loop, Evidence Escrow, and Federated Learning Network. They share sealed local records, secret redaction, deterministic CLI contracts, and explicit failure states.
+
+## Why ForgeMind
+
+- **Proof before promise:** claims of completion are backed by test, risk, traceability, rollback, and delivery evidence.
+- **Autopilot with a brake:** autonomous work proceeds end to end but stops before destructive, secret-bearing, external, or high-stakes actions.
+- **Cost-aware routing:** the router keeps only the routing and autopilot entry points implicit, then selects specialists explicitly to minimize unnecessary context.
+- **One release decision:** readiness converts verification, gaps, risks, proof, and rollback context into a clear Go/No-Go outcome.
+- **Learn without leaking:** federation uses k-suppressed aggregates and excludes raw prompts, source, paths, and identities.
+- **Vendor-neutral trust:** portable contracts and attestations let humans and different agents share the same evidence model.
+- **Reproducible collaboration:** sealed records, flight replay, versioned artifacts, and outcome memory make work inspectable and repeatable.
+- **Strategy stays connected to delivery:** USP experiments, acceptance criteria, implementation, and verification remain traceable through the same workflow.
 
 See [docs/TRUST_FABRIC.md](docs/TRUST_FABRIC.md) for commands, team adoption, and precise safety boundaries.
 
@@ -34,7 +45,7 @@ Installation, upgrade, downgrade, rollback, and uninstall are documented in [doc
 - ForgeMind product artifacts for `docs/forgemind/prd.md`, `docs/forgemind/epics.md`, `docs/forgemind/stories/`, `docs/forgemind/acceptance/`, and `.codex-orchestrator/workflow-status.md`.
 - Autonomous Orchestrator for inspect -> decide -> act -> verify -> learn autopilot execution.
 - Innovation First Autopilot for app-structure-first analysis and maximum AI/KI USP generation before build planning.
-- SuperDeveloper mode for product-aware end-to-end delivery.
+- Delivery Acceleration mode for product-aware end-to-end delivery.
 - USP AI Strategist for practical AI/KI product advantages.
 - Specialist agent profiles for product, architecture, development, QA, security, USP, and release.
 - Stack detection, project profiling, verification reports, and memory templates.
@@ -83,7 +94,7 @@ Installation, upgrade, downgrade, rollback, and uninstall are documented in [doc
 - `command-center`: refreshes the dashboard with all ForgeMind evidence.
 - `autonomous-orchestrator`: handles work end to end with automatic subskill selection and risk escalation.
 - `innovation-first-autopilot`: reads the current app structure first, then generates radical AI/KI ideas and maximum USP proposals before choosing an MVP.
-- `superdeveloper-mode`: full project intelligence, product strategy, architecture, build, verify, review, and memory loop.
+- `delivery-acceleration-mode`: full project intelligence, product strategy, architecture, build, verify, review, and memory loop.
 - `project-intelligence`: detects stack, commands, architecture, conventions, and risk zones.
 - `project-memory`: reads and updates durable project memory.
 - `learning-loop`: turns completed work and failures into durable learning.
@@ -147,7 +158,7 @@ Acceptance Criteria Builder: create acceptance criteria, test cases, definition 
 MasterOrchestrator: route this coding task.
 ForgeMind Autopilot: inspect, route, decide, act, verify, learn, and report.
 Innovation First Autopilot: read the current app structure first, then generate maximum AI/KI USPs and radical ideas before choosing the best MVP.
-SuperDeveloper mode: inspect this repo, plan, implement, verify, and review.
+Delivery Acceleration mode: inspect this repo, plan, implement, verify, and review.
 YOLO feature: implement this end to end with ForgeMind guardrails.
 USP Strategist: find 10 practical AI/KI USPs and recommend the first MVP.
 Radical Vibe Builder: generate 5 radical AI/KI features and a build-ready future MVP.

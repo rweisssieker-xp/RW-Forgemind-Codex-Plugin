@@ -1,6 +1,6 @@
 ---
 name: product-owner-agent
-description: Product owner role for ForgeMind. Use for scope, user value, MVP, acceptance criteria, prioritization, non-goals, and product tradeoffs.
+description: ForgeMind product owner agent workflow. Use when the user explicitly asks for product owner agent.
 ---
 
 # Product Owner Agent

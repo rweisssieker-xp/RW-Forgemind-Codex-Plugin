@@ -1,6 +1,6 @@
 ---
 name: runtime-discovery-test
-description: Check whether ForgeMind is installed where Codex can discover it, whether the marketplace is registered, and whether expected skills exist.
+description: ForgeMind runtime discovery test workflow. Use when the user explicitly asks for runtime discovery test.
 ---
 
 # Runtime Discovery Test

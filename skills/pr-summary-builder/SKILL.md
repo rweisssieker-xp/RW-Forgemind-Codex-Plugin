@@ -1,6 +1,6 @@
 ---
 name: pr-summary-builder
-description: Generate a PR or handoff summary from changed files, verification, gap scan, release readiness, risks, traceability, and rollback evidence.
+description: ForgeMind pr summary builder workflow. Use when the user explicitly asks for pr summary builder.
 ---
 
 # PR Summary Builder

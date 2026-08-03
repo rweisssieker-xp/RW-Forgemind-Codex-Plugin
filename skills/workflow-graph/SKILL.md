@@ -1,6 +1,6 @@
 ---
 name: workflow-graph
-description: Generate or explain the active ForgeMind workflow graph from idea through PRD, story, build, verification, release, and learning.
+description: ForgeMind workflow graph workflow. Use when the user explicitly asks for workflow graph.
 ---
 
 # Workflow Graph

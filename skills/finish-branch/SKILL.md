@@ -1,6 +1,6 @@
 ---
 name: finish-branch
-description: Finish a ForgeMind development branch or task. Use before commit, PR, release handoff, merge readiness, final verification, changelog, or release summary.
+description: ForgeMind finish branch workflow. Use when the user explicitly asks for finish branch.
 ---
 
 # Finish Branch

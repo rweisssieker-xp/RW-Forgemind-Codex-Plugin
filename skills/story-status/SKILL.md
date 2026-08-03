@@ -1,6 +1,6 @@
 ---
 name: story-status
-description: Report status for stories, epics, backlog items, or feature work. Use when the user asks what is done, in progress, blocked, next, ready, or needs verification.
+description: ForgeMind story status workflow. Use when the user explicitly asks for story status.
 ---
 
 # Story Status

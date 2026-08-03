@@ -1,6 +1,6 @@
 ---
 name: project-intelligence
-description: "Build a compact profile of a repository: stack, commands, architecture, risks, conventions, and useful next actions. Use at the start of work in an unfamiliar repo or before YOLO mode."
+description: ForgeMind project intelligence workflow. Use when the user explicitly asks for project intelligence.
 ---
 
 # Project Intelligence

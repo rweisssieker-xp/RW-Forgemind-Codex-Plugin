@@ -1,6 +1,6 @@
 ---
 name: implementation-plan
-description: Convert approved intent or feature scope into an executable implementation plan with tasks, file ownership, verification, and rollback notes.
+description: ForgeMind implementation plan workflow. Use when the user explicitly asks for implementation plan.
 ---
 
 # Implementation Plan

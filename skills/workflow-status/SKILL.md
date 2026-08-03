@@ -1,6 +1,6 @@
 ---
 name: workflow-status
-description: Report governed ForgeMind workflow status. Use when the user asks for current status, phase, progress, next action, blockers, selected skill, current mode, or journey status.
+description: ForgeMind workflow status workflow. Use when the user explicitly asks for workflow status.
 ---
 
 # Workflow Status

@@ -1,6 +1,6 @@
 ---
 name: systematic-debugging
-description: Diagnose bugs, failing tests, and unexpected behavior before proposing fixes.
+description: ForgeMind systematic debugging workflow. Use when the user explicitly asks for systematic debugging.
 ---
 
 # Systematic Debugging

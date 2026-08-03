@@ -1,6 +1,6 @@
 ---
 name: agent-trust-protocol
-description: Govern work from any coding agent with portable contracts, normalized evidence, hard gates, and tamper-evident trust attestations. Use for cross-agent handoffs or acceptance decisions.
+description: ForgeMind agent trust protocol workflow. Use when the user explicitly asks for agent trust protocol.
 ---
 
 # Agent Trust Protocol

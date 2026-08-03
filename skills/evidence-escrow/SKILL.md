@@ -1,6 +1,6 @@
 ---
 name: evidence-escrow
-description: Hold delivery acceptance until trusted proof, milestone evidence, and named approvals are complete, then issue a sealed release receipt. Use for governed handoffs.
+description: ForgeMind evidence escrow workflow. Use when the user explicitly asks for evidence escrow.
 ---
 
 # Evidence Escrow

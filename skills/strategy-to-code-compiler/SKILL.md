@@ -1,6 +1,6 @@
 ---
 name: strategy-to-code-compiler
-description: Compile strategy into machine-checkable constraints, acceptance rules, telemetry, policy additions, and drift checks. Use when delivery must remain aligned with product strategy.
+description: ForgeMind strategy to code compiler workflow. Use when the user explicitly asks for strategy to code compiler.
 ---
 
 # Strategy-to-Code Compiler

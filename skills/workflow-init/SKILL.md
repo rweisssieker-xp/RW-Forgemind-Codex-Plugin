@@ -1,6 +1,6 @@
 ---
 name: workflow-init
-description: Initialize a governed ForgeMind project workflow. Use when the user asks to start, initialize, set up, onboard, or prepare a project workflow, project profile, memory, verification baseline, or journey state.
+description: ForgeMind workflow init workflow. Use when the user explicitly asks for workflow init.
 ---
 
 # Workflow Init

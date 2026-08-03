@@ -1,6 +1,6 @@
 ---
 name: parallel-future-tournament
-description: Compare multiple implementation futures with hard safety gates, weighted outcomes, and a deterministic Pareto frontier. Use when selecting among competing approaches.
+description: ForgeMind parallel future tournament workflow. Use when the user explicitly asks for parallel future tournament.
 ---
 
 # Parallel Future Tournament

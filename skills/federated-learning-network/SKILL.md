@@ -1,6 +1,6 @@
 ---
 name: federated-learning-network
-description: Export and pool privacy-preserving cohort aggregates across teams without sharing prompts, code, paths, identities, or raw outcomes. Use for cross-project learning.
+description: ForgeMind federated learning network workflow. Use when the user explicitly asks for federated learning network.
 ---
 
 # Federated Learning Network

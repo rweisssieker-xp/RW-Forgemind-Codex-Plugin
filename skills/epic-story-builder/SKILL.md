@@ -1,6 +1,6 @@
 ---
 name: epic-story-builder
-description: Convert a PRD, feature, or product idea into epics, user stories, tasks, dependencies, and implementation order. Use for governed story creation, backlog slicing, epics, stories, tasks, or sprint-ready planning.
+description: ForgeMind epic story builder workflow. Use when the user explicitly asks for epic story builder.
 ---
 
 # Epic Story Builder

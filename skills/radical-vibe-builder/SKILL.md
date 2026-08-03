@@ -1,6 +1,6 @@
 ---
 name: radical-vibe-builder
-description: Radical AI Product Innovator and Vibe Coding Builder. Use when the user asks for radical AI/KI features, 10x product ideas, future feature concepts, app disruption, UI elimination, agent-first UX, vibe-coding build plans, or commands like "build the future feature", "keine Verbesserungen", "radikale Ideen", "zu krass", or "1 click statt 10 Schritte".
+description: ForgeMind radical vibe builder workflow. Use when the user explicitly asks for radical vibe builder.
 ---
 
 # Radical Vibe Builder

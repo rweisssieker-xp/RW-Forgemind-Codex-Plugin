@@ -1,6 +1,6 @@
 ---
 name: verification-registry
-description: Maintain a durable registry of known-good verification commands, when to run them, confidence, and last result.
+description: ForgeMind verification registry workflow. Use when the user explicitly asks for verification registry.
 ---
 
 # Verification Registry

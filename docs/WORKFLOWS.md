@@ -24,7 +24,7 @@ Use `forgemind forge help` for the nine evidence-native capabilities that span a
 
 The complete action matrix and boundaries are in `TRUST_FABRIC.md`.
 
-## SuperDeveloper
+## Delivery Acceleration
 
 Use when Codex should behave like a senior product engineer.
 

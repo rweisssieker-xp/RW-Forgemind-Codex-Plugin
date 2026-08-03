@@ -1,6 +1,6 @@
 ---
 name: self-shrinking-software
-description: Find low-value complexity and create reversible, evidence-backed removal experiments without changing source. Use to reduce software safely while protecting behavior.
+description: ForgeMind self shrinking software workflow. Use when the user explicitly asks for self shrinking software.
 ---
 
 # Self-Shrinking Software

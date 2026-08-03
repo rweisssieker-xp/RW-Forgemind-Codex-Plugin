@@ -1,6 +1,6 @@
 ---
 name: forgemind-help
-description: ForgeMind help and command menu. Use when the user asks for help, available commands, modes, skills, what ForgeMind can do, journey menu, usage examples, prompt examples, or how to invoke ForgeMind workflows.
+description: ForgeMind forgemind help workflow. Use when the user explicitly asks for forgemind help.
 ---
 
 # ForgeMind Help
@@ -53,7 +53,7 @@ For cross-agent or cross-team work, begin with `agent-trust-protocol`. For an un
 - `ForgeMind Autopilot`: autonomous inspect -> route -> act -> verify -> learn.
 - `Innovation First Autopilot`: read app structure first, then max AI/KI USPs and radical ideas.
 - `YOLO feature`: end-to-end build with guardrails.
-- `SuperDeveloper mode`: product, architecture, implementation, verification, review, learning.
+- `Delivery Acceleration mode`: product, architecture, implementation, verification, review, learning.
 - `safe`: analysis only.
 - `normal`: bounded implementation.
 - `surgery`: high-risk work, requires approval.

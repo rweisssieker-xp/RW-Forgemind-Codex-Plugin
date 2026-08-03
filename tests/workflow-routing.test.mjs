@@ -21,7 +21,7 @@ test('every ForgeMind skill declares exactly one primary journey', async () => {
 
 test('overlapping autonomous workflows declare Build and common routing precedence', async () => {
   const root = await resolvePluginRoot();
-  for (const name of ['autonomous-orchestrator', 'innovation-first-autopilot', 'superdeveloper-mode', 'yolo-feature', 'structured-feature', 'app-evolution-builder']) {
+  for (const name of ['autonomous-orchestrator', 'innovation-first-autopilot', 'delivery-acceleration-mode', 'yolo-feature', 'structured-feature', 'app-evolution-builder']) {
     const content = await readFile(path.join(root, 'skills', name, 'SKILL.md'), 'utf8');
     assert.match(content, /Primary journey: \*\*Build\*\*/);
     assert.match(content, /Shared orchestration precedence:/);

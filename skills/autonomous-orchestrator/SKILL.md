@@ -1,6 +1,6 @@
 ---
 name: autonomous-orchestrator
-description: ForgeMind Autopilot. Use when the user asks to handle work autonomously, choose subskills automatically, inspect, route, decide, act, verify, learn, and report with minimal questions. Trigger on "ForgeMind Autopilot", "autonomous orchestrator", "handle this end to end", "arbeite autark", "mach den Workflow selbst", or similar.
+description: Runs ForgeMind work end to end with safety gates. Use when the user asks for autonomous or end-to-end delivery.
 ---
 
 # Autonomous Orchestrator

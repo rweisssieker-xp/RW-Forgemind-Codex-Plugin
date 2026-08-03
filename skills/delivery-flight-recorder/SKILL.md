@@ -1,6 +1,6 @@
 ---
 name: delivery-flight-recorder
-description: Verify and replay ForgeMind's tamper-evident delivery event chain. Use for incident reconstruction, audits, handoffs, and proof that workflow records were not silently changed.
+description: ForgeMind delivery flight recorder workflow. Use when the user explicitly asks for delivery flight recorder.
 ---
 
 # Delivery Flight Recorder

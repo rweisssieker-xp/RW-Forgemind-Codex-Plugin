@@ -1,6 +1,6 @@
 ---
 name: project-memory
-description: Create, read, and update ForgeMind project memory for decisions, conventions, preferences, mistakes, patterns, risk zones, verification commands, and USP ideas.
+description: ForgeMind project memory workflow. Use when the user explicitly asks for project memory.
 ---
 
 # Project Memory
@@ -53,9 +53,9 @@ At the end of substantial work, ask:
 
 If yes, update the relevant memory file.
 
-## Required In SuperDeveloper Mode
+## Required In Delivery Acceleration Mode
 
-SuperDeveloper, YOLO, implementation planning, and verification workflows should use memory as follows:
+Delivery Acceleration, YOLO, implementation planning, and verification workflows should use memory as follows:
 
 1. Read memory before planning.
 2. Write memory after durable decisions or discoveries.

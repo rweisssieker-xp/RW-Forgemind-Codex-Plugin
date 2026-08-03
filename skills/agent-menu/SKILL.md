@@ -1,6 +1,6 @@
 ---
 name: agent-menu
-description: ForgeMind specialist agent menu. Use when the user asks for roles, personas, agents, specialist routing, product owner, architect, QA, developer, security, release, or which agent should handle a task.
+description: ForgeMind agent menu workflow. Use when the user explicitly asks for agent menu.
 ---
 
 # Agent Menu

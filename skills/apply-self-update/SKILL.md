@@ -1,6 +1,6 @@
 ---
 name: apply-self-update
-description: Review ForgeMind self-update proposals and apply approved changes to skills, templates, prompts, docs, or scripts.
+description: ForgeMind apply self update workflow. Use when the user explicitly asks for apply self update.
 ---
 
 # Apply Self-Update

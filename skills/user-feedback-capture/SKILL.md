@@ -1,6 +1,6 @@
 ---
 name: user-feedback-capture
-description: Capture user feedback as durable ForgeMind preferences, mistakes, or self-update proposals.
+description: ForgeMind user feedback capture workflow. Use when the user explicitly asks for user feedback capture.
 ---
 
 # User Feedback Capture

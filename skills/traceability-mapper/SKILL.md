@@ -1,6 +1,6 @@
 ---
 name: traceability-mapper
-description: Map PRD goals, stories, acceptance criteria, code changes, tests, and verification evidence into a traceability record.
+description: ForgeMind traceability mapper workflow. Use when the user explicitly asks for traceability mapper.
 ---
 
 # Traceability Mapper

@@ -1,6 +1,6 @@
 ---
 name: acceptance-criteria-builder
-description: Create acceptance criteria, test cases, definition of done, and verification checklist for a feature, story, bug, or product requirement.
+description: ForgeMind acceptance criteria builder workflow. Use when the user explicitly asks for acceptance criteria builder.
 ---
 
 # Acceptance Criteria Builder

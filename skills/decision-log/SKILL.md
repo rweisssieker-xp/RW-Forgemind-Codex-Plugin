@@ -1,6 +1,6 @@
 ---
 name: decision-log
-description: Record architecture, product, scope, release, and workflow decisions with rationale, alternatives, and review date.
+description: ForgeMind decision log workflow. Use when the user explicitly asks for decision log.
 ---
 
 # Decision Log

@@ -1,6 +1,6 @@
 ---
 name: refactorer
-description: Improve code structure only when it directly supports the current task, with behavior preserved and verification required.
+description: ForgeMind refactorer workflow. Use when the user explicitly asks for refactorer.
 ---
 
 # Refactorer
