@@ -4,6 +4,12 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [1.12.1] - 2026-08-05
+
+### Fixed
+
+- Added versioned Core and Trust Fabric Marketplace payloads under `plugins/` and changed the repository catalog to the required `./plugins/<plugin-name>` paths for direct GitHub installation.
+
 ## [1.12.0] - 2026-08-05
 
 ### Changed

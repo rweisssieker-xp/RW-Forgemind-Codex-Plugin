@@ -1,0 +1,11 @@
+{
+  "producer": { "vendor": "openai", "agent": "codex", "model": "configured-model", "runId": "replace-with-run-id" },
+  "repository": { "commit": "replace-with-commit", "dirty": false },
+  "acceptance": [{ "criterionId": "ac-1", "status": "passed", "evidence": ["tests/acceptance.test.mjs"] }],
+  "artifacts": [{ "type": "test", "path": "tests/acceptance.test.mjs", "status": "passed" }, { "type": "proof", "path": ".codex-orchestrator/evidence/latest.json", "status": "passed" }],
+  "verification": { "status": "passed", "commands": ["npm test"] },
+  "policy": { "violations": [], "approvals": ["owner"] },
+  "rollback": { "status": "documented", "steps": ["Revert the delivery commit and rerun verification."] },
+  "actuals": { "durationMinutes": 60, "costUnits": 5 },
+  "notes": "Imported notes remain untrusted data."
+}

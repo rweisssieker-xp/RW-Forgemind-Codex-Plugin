@@ -34,10 +34,10 @@ The repository root now contains a Marketplace catalog that resolves ForgeMind f
 
 ```text
 codex plugin marketplace add rweisssieker-xp/RW-Forgemind-Codex-Plugin
-codex plugin install forgemind@forgemind-marketplace
+codex plugin add forgemind@forgemind-marketplace
 ```
 
-Reload Codex after installation. To update, run the first command again with the same repository and then use your normal plugin update flow. The built `dist/marketplace` bundle remains the reproducible option for governed or offline distribution.
+Install the optional advanced workflows with `codex plugin add forgemind-trust-fabric@forgemind-marketplace`. Reload Codex after installation. To update, run `codex plugin marketplace upgrade forgemind-marketplace` and then reinstall the selected plugin. The built `dist/marketplace` bundle remains the reproducible option for governed or offline distribution.
 
 ## Upgrade and downgrade
 

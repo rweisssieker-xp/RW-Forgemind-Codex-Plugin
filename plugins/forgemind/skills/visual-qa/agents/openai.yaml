@@ -1,0 +1,6 @@
+interface:
+  display_name: "Visual QA"
+  short_description: "Capture and compare local UI evidence."
+  default_prompt: "Use $visual-qa to capture and verify this interface."
+policy:
+  allow_implicit_invocation: false

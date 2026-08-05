@@ -1,0 +1,7 @@
+{
+  "name": "Measured support automation",
+  "signalRefs": ["signal-1"],
+  "hypothesis": "Automation reduces handling time without increasing errors.",
+  "successMetric": { "id": "handling_minutes", "direction": "decrease-by-percent", "target": 20, "baseline": 100 },
+  "guardrails": [{ "id": "error_rate", "direction": "max", "target": 1 }]
+}

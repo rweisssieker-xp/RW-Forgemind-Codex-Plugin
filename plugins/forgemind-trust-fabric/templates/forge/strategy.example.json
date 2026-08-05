@@ -1,0 +1,7 @@
+{
+  "name": "Frictionless governed delivery",
+  "goal": "Reduce user effort while preserving verification and rollback.",
+  "nonGoals": ["Production deployment", "Removing approval gates"],
+  "constraints": [{ "id": "proof", "type": "require-evidence", "value": "delivery-proof" }, { "id": "steps", "type": "max-user-steps", "value": 3 }, { "id": "protect-secrets", "type": "forbid-path", "value": ".secrets/" }],
+  "metrics": [{ "id": "completion_rate", "direction": "min", "target": 90 }, { "id": "error_rate", "direction": "max", "target": 1, "guardrail": true }]
+}

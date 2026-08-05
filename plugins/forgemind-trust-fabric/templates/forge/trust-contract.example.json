@@ -1,0 +1,9 @@
+{
+  "title": "Portable agent delivery contract",
+  "intent": "Deliver the change with accepted behavior and reproducible proof.",
+  "acceptanceCriteria": [{ "id": "ac-1", "description": "Automated acceptance test passes", "evidenceType": "test" }],
+  "requiredEvidence": ["proof", "test"],
+  "policy": { "allowedVendors": ["openai", "anthropic", "github", "cursor", "ci", "custom"], "requireNoViolations": true, "requiredApprovals": ["owner"] },
+  "rollbackRequired": true,
+  "budgets": { "maxDurationMinutes": 120, "maxCostUnits": 20 }
+}

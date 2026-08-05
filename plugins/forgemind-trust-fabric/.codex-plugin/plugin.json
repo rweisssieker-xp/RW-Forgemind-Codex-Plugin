@@ -1,0 +1,39 @@
+{
+  "author": {
+    "name": "rweisssieker-xp",
+    "url": "https://github.com/rweisssieker-xp"
+  },
+  "description": "Optional advanced evidence workflows for ForgeMind Core. Use when cross-agent trust, strategy, governed learning, or sealed delivery proof is required.",
+  "homepage": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin#readme",
+  "interface": {
+    "brandColor": "#2563EB",
+    "capabilities": [
+      "Agent Trust",
+      "Executable Strategy",
+      "Trust Fabric",
+      "Federated Learning"
+    ],
+    "category": "Productivity",
+    "defaultPrompt": [
+      "Use ForgeMind Trust Fabric to verify this outcome with portable proof."
+    ],
+    "developerName": "rweisssieker-xp",
+    "displayName": "ForgeMind Trust Fabric",
+    "longDescription": "Adds nine evidence-native workflows for portable trust contracts, executable strategy, learning, replay, experiments, evidence escrow, and privacy-preserving federation. Requires ForgeMind Core.",
+    "privacyPolicyURL": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin/blob/main/PRIVACY.md",
+    "shortDescription": "Optional advanced evidence workflows for ForgeMind Core.",
+    "termsOfServiceURL": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin/blob/main/TERMS.md",
+    "websiteURL": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin"
+  },
+  "keywords": [
+    "forgemind",
+    "trust-fabric",
+    "evidence",
+    "governance"
+  ],
+  "license": "MIT",
+  "name": "forgemind-trust-fabric",
+  "repository": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin",
+  "skills": "./skills/",
+  "version": "1.12.0"
+}

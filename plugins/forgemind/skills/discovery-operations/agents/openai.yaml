@@ -1,0 +1,6 @@
+interface:
+  display_name: "Discovery Operations"
+  short_description: "Turn assumptions into measurable experiments."
+  default_prompt: "Use $discovery-operations to plan and score a product experiment."
+policy:
+  allow_implicit_invocation: false
