@@ -1,14 +1,14 @@
 {
   "algorithm": "sha256",
   "files": {
-    ".codex-plugin/plugin.json": "7bb438c92360587f8fe20acae16bcf6586123801c956cbda1a0cf9a75b4fb57f",
+    ".codex-plugin/plugin.json": "794ae9825d6e927396bb90f16614ed74e98093ee6770077d96e17a7ff2efe13f",
     "assets/forgemind-command-center.png": "94589df74f0aa0d430465cdd6ee2a4351dd69d4e0251f6aa408117de5a01f577",
     "assets/icon.svg": "2fd54af55e62e62786c8ae28966f7c312e752f3aa366d58df7e41904c95ce3ca",
     "assets/logo.svg": "fcdae36d8a6d3d55a5e6923e67c7d9c41cf3ede428430d59c876aee69a6f6113",
     "bin/forgemind.mjs": "9e69303e5b4d26c4f7303eb282193d89747cf00bfb7c61245c857b0c4765f1ee",
     "LICENSE": "ea01fa8ec6c11a1b36084740fc73695ce494c15cc03d3cf855f9ff31d66adda4",
     "package-allowlist.json": "87292cfacc6c75044ae6b8b196b3d3790027156d9fd6587d2b488c664c313802",
-    "package.json": "361ef8744c90dbc8d086ed2285aa5fd8d5fc4571aab2cf06747148aa4c5f383d",
+    "package.json": "3be134147ee8e3d82ecf17f819f892f0327d54a05fef48b170e7e151401c82bc",
     "schemas/agent-trust-v1.schema.json": "6598620f26aa14fab8d804628390d7e96677b491f46d78182d15b48dbb8ffb10",
     "schemas/config-v1.schema.json": "e7bb6496eb30d558caedec0a7bdbbbacf3d9d0f22b3299fe9d98b087dbe2a75d",
     "schemas/delivery-proof-v1.schema.json": "19a3886762a0274ed362fd6782d5bd4a640efc60dd29347cfce76c473bf24ff5",

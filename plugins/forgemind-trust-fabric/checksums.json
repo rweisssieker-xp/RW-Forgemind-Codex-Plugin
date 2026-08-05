@@ -1,7 +1,7 @@
 {
   "algorithm": "sha256",
   "files": {
-    ".codex-plugin/plugin.json": "0fda4fdc30b006cdf5cbc3f262d6a47fa3ad8bb6d1ba0efaccebb23bae123843",
+    ".codex-plugin/plugin.json": "6ac2327560e09485da000d1a60da1410145bf11351d680c71132184c9bbbfec8",
     "skills/agent-trust-protocol/agents/openai.yaml": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
     "skills/agent-trust-protocol/SKILL.md": "97cf559526edff28b4496c86a0cfa7ddceea362d2fd4495b3b8c5da6a7987581",
     "skills/autonomous-product-loop/agents/openai.yaml": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
