@@ -1,36 +1,17 @@
 {
   "directories": [
     ".codex-plugin",
-    "agents",
     "assets",
     "bin",
-    "evals",
-    "prompts",
     "schemas",
-    "scripts",
     "skills",
     "src",
     "templates"
   ],
   "files": [
-    "README.md",
-    "hooks.json",
     "package-allowlist.json",
     "package.json",
     "forgemind.config.example.json",
-    "LICENSE",
-    "CHANGELOG.md",
-    "SECURITY.md",
-    "SUPPORT.md",
-    "PRIVACY.md",
-    "TERMS.md",
-    "CONTRIBUTING.md",
-    "CODE_OF_CONDUCT.md",
-    "docs/HANDBOOK.md",
-    "docs/INSTALL.md",
-    "docs/RELEASE.md",
-    "docs/RUNTIME_TEST.md",
-    "docs/TRUST_FABRIC.md",
-    "docs/WORKFLOWS.md"
+    "LICENSE"
   ]
 }

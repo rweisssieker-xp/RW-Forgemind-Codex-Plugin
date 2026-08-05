@@ -45,6 +45,9 @@ test('package excludes development state, personal memory, and raw secrets', asy
   const files = await walk(built.pluginPath);
   const relative = files.map((file) => path.relative(built.pluginPath, file).replaceAll(path.sep, '/'));
   assert.ok(relative.every((file) => !/(^|\/)(?:\.git|\.github|\.worktrees|tests|dist|\.codex-orchestrator|\.forgemind)(\/|$)/.test(file)));
+  assert.ok(relative.every((file) => !/^(?:agents|docs|evals|prompts|scripts)\//.test(file)));
+  assert.ok(!relative.includes('README.md'));
+  assert.ok(!relative.includes('hooks.json'));
   for (const file of files) {
     if (/\.(?:png|ico)$/i.test(file)) continue;
     const content = await readFile(file, 'utf8');

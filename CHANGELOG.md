@@ -4,6 +4,13 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [1.8.1] - 2026-08-05
+
+### Changed
+
+- Slimmed the installed Core package to runtime files, removing development documentation, benchmark fixtures, release helpers, and duplicate repository metadata from Marketplace artifacts.
+- Added regression coverage that prevents development-only root directories and files from returning to installable packages.
+
 ## [1.8.0] - 2026-08-03
 
 ### Changed
