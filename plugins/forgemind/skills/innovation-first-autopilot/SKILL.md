@@ -1,6 +1,6 @@
 ---
 name: innovation-first-autopilot
-description: ForgeMind innovation first autopilot workflow. Use when the user explicitly asks for innovation first autopilot.
+description: Create a developer-focused, maximum-USP innovation portfolio for a new or existing app. Use for disruptive ideas, product moats, monetization options, AI advantages, category-creation bets, or when the user asks to make their product more innovative.
 ---
 
 # Innovation First Autopilot
@@ -9,13 +9,11 @@ Primary journey: **Build**
 
 Shared orchestration precedence: safety -> debugging -> discovery -> product/USP -> implementation -> verification -> learning.
 
-Persona name: Innovation Design.
-
-You are ForgeMind's innovation-first product engineer. Always understand the current app before proposing ideas. Always generate radical AI/KI or USP options before implementation.
+Always understand the current app before proposing ideas. Always generate radical AI or USP options before implementation.
 
 ## Prime Directive
 
-Read the app structure first. Then produce maximum useful AI/KI USPs and radical feature options. Only then choose an MVP and move toward implementation.
+Read the app structure first. Create a ranked innovation portfolio, then produce maximum useful AI USPs and radical feature options. Only then choose an MVP and move toward implementation.
 
 ## Required Workflow
 
@@ -24,6 +22,7 @@ Read the app structure first. Then produce maximum useful AI/KI USPs and radical
    - identify app type, screens, modules, routes, data flow, core functions
    - read project memory if present
    - infer current user workflow
+   - run `forgemind innovation portfolio --goal "<outcome>"` to persist project-aware bets
 2. Current App Breakdown
    - what the app does today
    - basis functions
@@ -32,7 +31,8 @@ Read the app structure first. Then produce maximum useful AI/KI USPs and radical
    - extensible areas
    - steps that could disappear
 3. Innovation Pass
-   - generate 5 radical AI/KI 10x ideas
+   - use the portfolio to cover workflow elimination, contextual intelligence, trust, learning, collaboration, vertical wedge, proactive operations, integrations, outcome pricing, and autonomous micro-products
+   - generate 5 radical AI 10x ideas
    - generate 6 practical feature-evolution ideas
    - generate maximum USP proposals with USP Score
    - include at least one idea where UI disappears or the system acts automatically
@@ -76,16 +76,16 @@ Use bands:
 
 Use this structure:
 
-1. App-Struktur und aktueller Workflow
-2. Basisfunktionen, Erweiterungsbereiche, verschwindbare Schritte
-3. 5 radikale AI/KI-Ideen
-4. 6 umsetzbare Feature-Ideen
-5. Max-USP-Liste mit USP Score
-6. Beste MVP-Auswahl
-7. Build-ready Plan
-8. Umsetzung und Verification, falls ausgefuehrt
-9. App-Test / Smoke-Test Ergebnis
-10. Risiken, Learning, naechste Schritte
+1. Current app structure and workflow
+2. Core functions, expansion points, and removable steps
+3. Ranked innovation portfolio: thesis, moat, monetization, experiment, kill condition, and evidence basis
+4. Five radical AI ideas and six practical feature ideas
+5. Maximum USP list with scores
+6. Best MVP selection and the alternatives it beats
+7. Build-ready plan
+8. Implementation and verification, if executed
+9. App or smoke-test result
+10. Risks, learning, and next steps
 
 ## Guardrails
 

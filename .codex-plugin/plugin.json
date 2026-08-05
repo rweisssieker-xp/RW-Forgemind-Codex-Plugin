@@ -1,6 +1,6 @@
 {
   "name": "forgemind",
-  "version": "1.14.3",
+  "version": "1.15.0",
   "description": "Evidence-first discovery and delivery for Codex: market-tested MVPs, safe execution, and release-ready proof.",
   "author": {
     "name": "rweisssieker-xp",
@@ -50,8 +50,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "ForgeMind",
-    "shortDescription": "Scored discovery, safe delivery, and verifiable release evidence.",
-    "longDescription": "ForgeMind turns product uncertainty into scored experiments and verified delivery. It composes focused roles, preserves resumable checkpoints, captures local visual evidence, creates capability manifests, and routes work through the smallest sufficient workflow. YOLO mode remains available for bounded fast MVPs while destructive, credential, production, and high-stakes actions always stop for approval. All records stay local on Windows, macOS, and Linux.",
+    "shortDescription": "Maximum-USP innovation portfolios and verifiable MVP delivery.",
+    "longDescription": "ForgeMind turns a new or existing app into a ranked innovation portfolio: differentiated product bets with explicit evidence basis, moat, monetization hypothesis, MVP experiment, and kill condition. It then routes the selected bet through market-tested, evidence-backed delivery. YOLO mode remains available for bounded fast MVPs while destructive, credential, production, and high-stakes actions always stop for approval. All records stay local on Windows, macOS, and Linux.",
     "developerName": "rweisssieker-xp",
     "category": "Productivity",
     "capabilities": [
@@ -71,14 +71,16 @@
       "Agent Trust",
       "Executable Strategy",
       "Trust Fabric",
-    "Federated Learning",
-    "MVP Testing"
+      "Federated Learning",
+      "MVP Testing",
+      "Innovation Portfolio"
     ],
     "websiteURL": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin",
     "privacyPolicyURL": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin/blob/main/PRIVACY.md",
     "termsOfServiceURL": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin/blob/main/TERMS.md",
     "defaultPrompt": [
       "Use $forgemind-explore to find the strongest MVP opportunity in this app.",
+      "Use $innovation-first-autopilot to create maximum USPs, moats, monetization options, and testable MVP bets for this app.",
       "Use $forgemind-build to implement and verify this outcome.",
       "Use $forgemind-guide to choose the best next step for this goal."
     ],

@@ -35,6 +35,7 @@ For one continuous idea-to-release session, use explicit `$launch-mvp`: it creat
 - **Kill conditions prevent feature theater:** success, iteration, and stop decisions are defined before delivery rather than rationalized afterwards.
 - **Fast without blind spots:** YOLO keeps a narrow MVP moving while preserving test, risk, rollback, and release boundaries.
 - **Existing apps get product-aware innovation:** repository evidence and current constraints shape opportunities instead of generic idea lists.
+- **Innovation portfolio, not an idea dump:** ten app-aware bets cover workflow elimination, intelligence, trust, learning, integrations, monetization, and autonomous work; each has a moat, test, and kill condition.
 
 ## Start Here
 
@@ -46,6 +47,7 @@ Choose one visible path; ForgeMind routes to the smallest sufficient specialist.
 - **Prepare a release:** assess gaps and risks, verify proof, plan rollback, and make a Go/No-Go decision.
 - **Test an MVP:** create a target-user, functional, accessibility, and trust test plan before scaling it.
 - **Launch an idea end to end:** use `$launch-mvp` for market thesis → MVP → testers → build → verification → Go/No-Go.
+- **Maximize product advantage:** use `$innovation-first-autopilot` or `forgemind innovation portfolio --goal "<outcome>"` to rank radical but testable product bets before coding.
 
 Use `guided-start` for an interactive selection or `outcome-feedback` after a completed workflow to record opt-in acceptance and correction data without raw prompts or source.
 
@@ -77,6 +79,7 @@ Installation, upgrade, downgrade, rollback, and uninstall are documented in [doc
 - ForgeMind product artifacts for `docs/forgemind/prd.md`, `docs/forgemind/epics.md`, `docs/forgemind/stories/`, `docs/forgemind/acceptance/`, and `.codex-orchestrator/workflow-status.md`.
 - Autonomous Orchestrator for inspect -> decide -> act -> verify -> learn autopilot execution.
 - Innovation First Autopilot for app-structure-first analysis and maximum AI/KI USP generation before build planning.
+- Innovation Portfolio for ten ranked, project-aware bets with evidence basis, moat, monetization, MVP, experiment, and kill condition.
 - Delivery Acceleration mode for product-aware end-to-end delivery.
 - USP AI Strategist for practical AI/KI product advantages.
 - Specialist agent profiles for product, architecture, development, QA, security, USP, and release.

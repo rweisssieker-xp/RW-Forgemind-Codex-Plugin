@@ -31,6 +31,14 @@ Use this for innovation before implementation:
 Innovation Design: inspect the current app structure first, generate high-leverage AI product advantages and radical ideas, select the strongest buildable MVP, and plan implementation with tests.
 ```
 
+For a durable, developer-focused innovation portfolio, run:
+
+```powershell
+node bin/forgemind.mjs innovation portfolio --goal "Reduce approval time for existing customers" --json
+```
+
+The result is stored in `.codex-orchestrator/product/innovation-portfolio-latest.json`. It creates ten ranked hypotheses across workflow elimination, contextual intelligence, explainable automation, product learning, collaboration, vertical specialization, proactive operations, integrations, outcome pricing, and bounded autonomous work. Every bet records an evidence basis, moat, monetization hypothesis, MVP experiment, and kill condition. Repository signals are project evidence; missing customer signals remain clearly labeled assumptions.
+
 Use this for direct autonomous implementation:
 
 ```text

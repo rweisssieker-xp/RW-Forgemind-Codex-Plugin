@@ -18,6 +18,7 @@ const PRIMARY_COMMANDS = [
   'outcome',
   'route',
   'signals',
+  'innovation',
   'discovery',
   'checkpoint',
   'visual',
@@ -193,6 +194,14 @@ export async function runCli(argv, context = {}) {
           ? await saveUspRecords({ workspace, records: createUspRecords(clusters) })
           : { schemaVersion: 1, status: 'passed', clusters, errors: [] };
       }
+    } else if (command === 'innovation') {
+      const action = positionals[0] ?? 'portfolio';
+      if (action !== 'portfolio') throw invalidInput('FM_INNOVATION_ACTION_INVALID', 'Innovation supports portfolio.');
+      const { createInnovationPortfolio } = await import('./innovation-portfolio.mjs');
+      data = await createInnovationPortfolio({
+        workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()),
+        goal: options.goal,
+      });
     } else if (command === 'discovery') {
       const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
       const action = positionals[0] ?? 'list';

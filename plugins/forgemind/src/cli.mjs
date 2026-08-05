@@ -18,6 +18,7 @@ const PRIMARY_COMMANDS = [
   'outcome',
   'route',
   'signals',
+  'innovation',
   'discovery',
   'checkpoint',
   'visual',
@@ -32,6 +33,9 @@ const PRIMARY_COMMANDS = [
   'dashboard',
   'forge',
   'eval',
+  'package',
+  'install',
+  'uninstall',
 ];
 
 const HELP = `ForgeMind — vendor-neutral trust and evidence-driven delivery for Codex
@@ -190,6 +194,14 @@ export async function runCli(argv, context = {}) {
           ? await saveUspRecords({ workspace, records: createUspRecords(clusters) })
           : { schemaVersion: 1, status: 'passed', clusters, errors: [] };
       }
+    } else if (command === 'innovation') {
+      const action = positionals[0] ?? 'portfolio';
+      if (action !== 'portfolio') throw invalidInput('FM_INNOVATION_ACTION_INVALID', 'Innovation supports portfolio.');
+      const { createInnovationPortfolio } = await import('./innovation-portfolio.mjs');
+      data = await createInnovationPortfolio({
+        workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()),
+        goal: options.goal,
+      });
     } else if (command === 'discovery') {
       const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
       const action = positionals[0] ?? 'list';
@@ -260,6 +272,21 @@ export async function runCli(argv, context = {}) {
       const pluginRoot = await resolvePluginRoot(options.plugin ?? MODULE_PLUGIN_ROOT);
       const fixturesRoot = path.resolve(options.fixtures ?? path.join(pluginRoot, 'evals', 'fixtures'));
       data = await runStructuralEvals(await loadEvalFixtures(fixturesRoot));
+    } else if (command === 'package') {
+      const { buildPackages } = await import('./package.mjs');
+      const pluginRoot = await resolvePluginRoot(options.plugin ?? MODULE_PLUGIN_ROOT);
+      data = await buildPackages({ pluginRoot, outputRoot: options.output });
+    } else if (command === 'install') {
+      const { installPlugin } = await import('./lifecycle.mjs');
+      data = await installPlugin({ packagePath: options.package, home: options.home ?? await defaultHome() });
+    } else if (command === 'uninstall') {
+      const { uninstallPlugin } = await import('./lifecycle.mjs');
+      data = await uninstallPlugin({
+        home: options.home ?? await defaultHome(),
+        workspace: options.workspace,
+        purgeData: Boolean(options['purge-data']),
+        approvedPurge: Boolean(options.approved),
+      });
     } else if (command === 'legacy') {
       const { runLegacy } = await import('./legacy.mjs');
       const pluginRoot = await resolvePluginRoot(MODULE_PLUGIN_ROOT);
@@ -290,6 +317,12 @@ async function readWorkspaceReport(workspace, name, fallback) {
   } catch {
     return fallback;
   }
+}
+
+async function defaultHome() {
+  const { homedir } = await import('node:os');
+  const path = await import('node:path');
+  return process.env.CODEX_HOME ?? path.join(homedir(), '.codex');
 }
 
 async function readLatestProof(workspace) {

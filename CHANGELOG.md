@@ -4,6 +4,16 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [1.15.0] - 2026-08-05
+
+### Added
+
+- Added `forgemind innovation portfolio`, a persisted, project-aware portfolio of ten differentiated product bets with evidence basis, moat, monetization, MVP experiment, and kill condition.
+
+### Changed
+
+- Expanded the innovation and USP workflows from idea scoring to developer-focused portfolio strategy for existing and new apps.
+
 ## [1.14.3] - 2026-08-05
 
 ### Changed

@@ -25,21 +25,23 @@
       "Executable Strategy",
       "Trust Fabric",
       "Federated Learning",
-      "MVP Testing"
+      "MVP Testing",
+      "Innovation Portfolio"
     ],
     "category": "Productivity",
     "composerIcon": "./assets/icon.svg",
     "defaultPrompt": [
       "Use $forgemind-explore to find the strongest MVP opportunity in this app.",
+      "Use $innovation-first-autopilot to create maximum USPs, moats, monetization options, and testable MVP bets for this app.",
       "Use $forgemind-build to implement and verify this outcome.",
       "Use $forgemind-guide to choose the best next step for this goal."
     ],
     "developerName": "rweisssieker-xp",
     "displayName": "ForgeMind",
     "logo": "./assets/logo.svg",
-    "longDescription": "ForgeMind Core turns discovery, creative exploration, existing-app evidence, and product intent into market-tested MVPs and safe, cost-aware delivery with verifiable release proof. Install the optional ForgeMind Trust Fabric add-on for cross-agent contracts, strategy, learning, and advanced evidence workflows.",
+    "longDescription": "ForgeMind Core turns a new or existing app into a ranked innovation portfolio with evidence basis, moats, monetization hypotheses, MVP experiments, and kill conditions, then moves the selected bet into market-tested delivery with verifiable release proof. Install the optional ForgeMind Trust Fabric add-on for cross-agent contracts, strategy, learning, and advanced evidence workflows.",
     "privacyPolicyURL": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin/blob/main/PRIVACY.md",
-    "shortDescription": "Market-tested MVPs and verifiable delivery.",
+    "shortDescription": "Maximum-USP portfolios and verifiable MVP delivery.",
     "termsOfServiceURL": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin/blob/main/TERMS.md",
     "websiteURL": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin"
   },
@@ -85,5 +87,5 @@
   "name": "forgemind",
   "repository": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin",
   "skills": "./skills/",
-  "version": "1.14.3"
+  "version": "1.15.0"
 }

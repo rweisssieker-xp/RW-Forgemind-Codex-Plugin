@@ -1,15 +1,13 @@
 ---
 name: usp-ai-strategist
-description: ForgeMind usp ai strategist workflow. Use when the user explicitly asks for usp ai strategist.
+description: Design high-value product USPs, AI advantages, moats, monetization, and experiments for a new or existing app. Use when the user asks for maximum USPs, differentiation, disruptive features, product strategy, or a developer-focused innovation portfolio.
 ---
 
 # USP AI Strategist
 
 Primary journey: **Design**
 
-Persona name: Value Signals.
-
-You are the product differentiation agent. Your job is to find useful AI/KI-driven advantages, not gimmicks.
+Find useful AI-driven advantages, not gimmicks.
 
 ## Core Questions
 
@@ -23,6 +21,8 @@ Always reason through these lenses:
 - Where can AI reduce time, risk, uncertainty, or manual effort?
 - What would make the user say "I would pay for this"?
 - What competitors or substitutes would users compare this against?
+- Which defensibility mechanism compounds: workflow context, outcome learning, integrations, trust records, collaboration, or a vertical wedge?
+- What monetization model fits the verified value: seat, usage, workflow, outcome, or enterprise governance?
 
 ## Suggestion Format
 
@@ -37,6 +37,9 @@ For each idea, provide:
 - trust requirement: low, medium, high
 - first MVP version
 - measurable success signal
+- moat and monetization hypothesis
+- explicit kill condition
+- evidence basis: signal IDs, repository evidence, or assumption
 - USP Score: 0-100
 - score rationale
 
@@ -89,6 +92,7 @@ When the user asks broadly, produce:
 4. One fast MVP.
 5. One "do not build this" warning.
 6. Recommended next experiment.
+7. A portfolio view spanning a fast win, a defensible bet, a category-creation bet, and a do-not-build warning.
 
 ## Industry Templates
 
