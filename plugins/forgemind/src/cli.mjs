@@ -26,6 +26,7 @@ const PRIMARY_COMMANDS = [
   'factory',
   'delegation',
   'idea-to-mvp',
+  'testing',
   'memory',
   'dashboard',
   'forge',
@@ -230,6 +231,10 @@ export async function runCli(argv, context = {}) {
     } else if (command === 'idea-to-mvp') {
       const { createIdeaToMvpBrief } = await import('./idea-to-mvp.mjs');
       data = await createIdeaToMvpBrief({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), goal: options.goal });
+    } else if (command === 'testing') {
+      const { createMvpTestPlan } = await import('./mvp-testing.mjs');
+      if ((positionals[0] ?? 'plan') !== 'plan') throw invalidInput('FM_TESTING_ACTION_INVALID', 'Testing supports only the plan action.');
+      data = await createMvpTestPlan({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), goal: options.goal, audience: options.audience });
     } else if (command === 'dashboard') {
       const { generateDashboard } = await import('./dashboard.mjs');
       data = await generateDashboard({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()) });

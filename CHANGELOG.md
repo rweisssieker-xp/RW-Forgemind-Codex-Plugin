@@ -4,6 +4,17 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [1.13.0] - 2026-08-05
+
+### Added
+
+- Added MVP Test Lab: a privacy-conscious tester plan that combines target-user, functional, accessibility, and adversarial perspectives with explicit scale, iterate, or stop rules.
+- Added the `forgemind testing plan` command and integrated test planning into opportunity-to-MVP routing.
+
+### Changed
+
+- Expanded the Marketplace positioning around market-tested MVPs, existing-app innovation, kill conditions, evidence-first delivery, and guarded fast MVP execution.
+
 ## [1.12.2] - 2026-08-05
 
 ### Changed

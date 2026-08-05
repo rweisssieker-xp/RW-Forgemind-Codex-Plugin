@@ -6,7 +6,7 @@ ForgeMind is the evidence-first delivery system for Codex: autonomous execution 
 
 | Path | Use it for | What happens |
 | --- | --- | --- |
-| `$forgemind-explore` | Existing apps, market opportunities, disruptive ideas, MVP choice | Understand → research → brainstorm → rank → measurable MVP |
+| `$forgemind-explore` | Existing apps, market opportunities, disruptive ideas, MVP choice | Understand → research → brainstorm → rank → test plan → measurable MVP |
 | `$forgemind-build` | A clear feature, fix, or delivery outcome | Scope → implement → verify → review → report |
 | `$forgemind-guide` | An unclear goal or uncertainty about the right path | Clarify once if needed → select a safe first action |
 
@@ -29,6 +29,10 @@ The Delivery Engine, routing, and specialists work underneath these paths. Expli
 - **Creativity becomes delivery:** structured ideation, human-centered discovery, lateral solutions, opportunity design, narrative, and presentation flow into measurable MVP contracts.
 - **Discovery compounds:** hypotheses become local experiments with evidence-backed pivot, patch, persevere, or stop decisions.
 - **Work resumes cleanly:** checkpoints preserve the local Git state, decisions, and next action; visual QA seals screenshot evidence locally.
+- **MVPs face real tests early:** each selected concept gets target-user, functional, accessibility, and adversarial test coverage before it is called validated.
+- **Kill conditions prevent feature theater:** success, iteration, and stop decisions are defined before delivery rather than rationalized afterwards.
+- **Fast without blind spots:** YOLO keeps a narrow MVP moving while preserving test, risk, rollback, and release boundaries.
+- **Existing apps get product-aware innovation:** repository evidence and current constraints shape opportunities instead of generic idea lists.
 
 ## Start Here
 
@@ -38,6 +42,7 @@ Choose one visible path; ForgeMind routes to the smallest sufficient specialist.
 - **Ship a fast MVP:** say “YOLO” or ask for a fast MVP; ForgeMind takes the direct build path while retaining hard safety boundaries.
 - **Fix a bug:** reproduce, diagnose, fix, verify, and record the outcome.
 - **Prepare a release:** assess gaps and risks, verify proof, plan rollback, and make a Go/No-Go decision.
+- **Test an MVP:** create a target-user, functional, accessibility, and trust test plan before scaling it.
 
 Use `guided-start` for an interactive selection or `outcome-feedback` after a completed workflow to record opt-in acceptance and correction data without raw prompts or source.
 
@@ -95,6 +100,7 @@ Installation, upgrade, downgrade, rollback, and uninstall are documented in [doc
 - Creative Intelligence for structured ideation, human-centered design, systems diagnosis, lateral solutions, opportunity design, product narrative, and presentation architecture.
 - Innovation Delivery Lab for outcome contracts, counterfactual route selection, change budgets, proof-carrying PRs, expiring knowledge, and privacy-preserving team learning.
 - Discovery Operations, Checkpoint Resume, and Visual QA for experiment evidence, resumable handoffs, and screenshot-based release proof.
+- MVP Test Lab for decisive target-user, functional, accessibility, and adversarial testing with scale, iterate, or stop rules.
 
 ## Skills
 
@@ -109,6 +115,7 @@ Installation, upgrade, downgrade, rollback, and uninstall are documented in [doc
 - `work-planning`: prepares stories for implementation.
 - `story-status`: reports story, epic, backlog, or feature status.
 - `acceptance-criteria-builder`: creates acceptance criteria, tests, and definition of done.
+- `mvp-test-lab`: plans a multi-perspective MVP test and evidence-gated product decision.
 - `tdd-builder`: red-green-refactor workflow where practical.
 - `finish-branch`: final verification, release notes, changed-file summary, and handoff.
 - `gap-scanner`: scans for missing release, quality, docs, CI, packaging, traceability, and runtime work.

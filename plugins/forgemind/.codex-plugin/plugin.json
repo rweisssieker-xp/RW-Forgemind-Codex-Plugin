@@ -3,7 +3,7 @@
     "name": "rweisssieker-xp",
     "url": "https://github.com/rweisssieker-xp"
   },
-  "description": "Evidence-first product discovery and autonomous delivery for Codex: safe execution, experiments, verifiable proof, and release-ready decisions.",
+  "description": "Evidence-first product discovery and delivery for Codex: market-tested MVPs, safe execution, and release-ready proof.",
   "homepage": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin#readme",
   "interface": {
     "brandColor": "#2563EB",
@@ -24,7 +24,8 @@
       "Agent Trust",
       "Executable Strategy",
       "Trust Fabric",
-      "Federated Learning"
+      "Federated Learning",
+      "MVP Testing"
     ],
     "category": "Productivity",
     "composerIcon": "./assets/icon.svg",
@@ -36,9 +37,9 @@
     "developerName": "rweisssieker-xp",
     "displayName": "ForgeMind",
     "logo": "./assets/logo.svg",
-    "longDescription": "ForgeMind Core turns discovery, creative exploration, and product intent into safe, cost-aware delivery with verifiable release evidence. Install the optional ForgeMind Trust Fabric add-on for cross-agent contracts, strategy, learning, and advanced evidence workflows.",
+    "longDescription": "ForgeMind Core turns discovery, creative exploration, existing-app evidence, and product intent into market-tested MVPs and safe, cost-aware delivery with verifiable release proof. Install the optional ForgeMind Trust Fabric add-on for cross-agent contracts, strategy, learning, and advanced evidence workflows.",
     "privacyPolicyURL": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin/blob/main/PRIVACY.md",
-    "shortDescription": "Evidence-first discovery, delivery, and release-ready decisions.",
+    "shortDescription": "Market-tested MVPs and verifiable delivery.",
     "termsOfServiceURL": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin/blob/main/TERMS.md",
     "websiteURL": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin"
   },
@@ -84,5 +85,5 @@
   "name": "forgemind",
   "repository": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin",
   "skills": "./skills/",
-  "version": "1.12.2"
+  "version": "1.13.0"
 }

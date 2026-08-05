@@ -1,7 +1,7 @@
 {
   "name": "forgemind",
-  "version": "1.12.2",
-  "description": "Evidence-first discovery and autonomous delivery for Codex: scored experiments, visual evidence, safe execution, and release-ready decisions.",
+  "version": "1.13.0",
+  "description": "Evidence-first discovery and delivery for Codex: market-tested MVPs, safe execution, and release-ready proof.",
   "author": {
     "name": "rweisssieker-xp",
     "url": "https://github.com/rweisssieker-xp"
@@ -71,7 +71,8 @@
       "Agent Trust",
       "Executable Strategy",
       "Trust Fabric",
-      "Federated Learning"
+    "Federated Learning",
+    "MVP Testing"
     ],
     "websiteURL": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin",
     "privacyPolicyURL": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin/blob/main/PRIVACY.md",

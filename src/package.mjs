@@ -71,9 +71,9 @@ async function hasTrustFabricSkills(root) {
 async function writeCoreManifest(pluginPath) {
   const manifestPath = path.join(pluginPath, '.codex-plugin', 'plugin.json');
   const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
-  manifest.description = 'Evidence-first product discovery and autonomous delivery for Codex: safe execution, experiments, verifiable proof, and release-ready decisions.';
-  manifest.interface.shortDescription = 'Evidence-first discovery, delivery, and release-ready decisions.';
-  manifest.interface.longDescription = 'ForgeMind Core turns discovery, creative exploration, and product intent into safe, cost-aware delivery with verifiable release evidence. Install the optional ForgeMind Trust Fabric add-on for cross-agent contracts, strategy, learning, and advanced evidence workflows.';
+  manifest.description = 'Evidence-first product discovery and delivery for Codex: market-tested MVPs, safe execution, and release-ready proof.';
+  manifest.interface.shortDescription = 'Market-tested MVPs and verifiable delivery.';
+  manifest.interface.longDescription = 'ForgeMind Core turns discovery, creative exploration, existing-app evidence, and product intent into market-tested MVPs and safe, cost-aware delivery with verifiable release proof. Install the optional ForgeMind Trust Fabric add-on for cross-agent contracts, strategy, learning, and advanced evidence workflows.';
   await writeJsonAtomic(manifestPath, manifest);
 }
 

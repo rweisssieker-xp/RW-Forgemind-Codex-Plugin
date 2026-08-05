@@ -38,6 +38,15 @@ test('idea-to-MVP is the focused entry point for existing-app opportunity work',
   assert.match(instructions, /existing app/i);
   assert.match(instructions, /market alternatives/i);
   assert.match(orchestrator, /start with `idea-to-mvp`/i);
+  assert.match(orchestrator, /mvp-test-lab/i);
+});
+
+test('MVP Test Lab is an explicit tester workflow', async () => {
+  const root = await resolvePluginRoot();
+  const instructions = await readFile(path.join(root, 'skills', 'mvp-test-lab', 'SKILL.md'), 'utf8');
+  const policy = await readFile(path.join(root, 'skills', 'mvp-test-lab', 'agents', 'openai.yaml'), 'utf8');
+  assert.match(instructions, /target user.*functional.*accessibility.*adversarial/i);
+  assert.match(policy, /allow_implicit_invocation: false/);
 });
 
 test('three front doors are implicit while internal routing stays explicit', async () => {

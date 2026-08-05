@@ -14,8 +14,9 @@ export async function createIdeaToMvpBrief({ workspace, goal }) {
     { id: 'opportunity', outcome: 'Ranked customer problems, alternatives, and market evidence.' },
     { id: 'ideation', outcome: 'Divergent disruptive concepts, then a ranked shortlist.' },
     { id: 'mvp', outcome: 'One measurable hypothesis with scope, success metric, and kill condition.' },
+    { id: 'testing', outcome: 'A decisive tester plan covering desirability, reliability, inclusion, and trust.' },
     { id: 'delivery', outcome: 'Smallest implementation, verification, visual review when relevant, and release evidence.' },
-  ], routing: ['discovery-operations', 'creative-ideation', 'opportunity-design', 'product-scope', 'architecture-review', 'delivery-builder', 'quality-review'], errors: [] };
+  ], routing: ['discovery-operations', 'creative-ideation', 'opportunity-design', 'mvp-test-lab', 'product-scope', 'architecture-review', 'delivery-builder', 'quality-review'], errors: [] };
   await writeJsonAtomic(assertContained(root, path.join(root, '.codex-orchestrator', 'product', 'idea-to-mvp-latest.json')), brief);
   return brief;
 }

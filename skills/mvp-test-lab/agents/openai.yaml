@@ -1,0 +1,7 @@
+interface:
+  display_name: "MVP Test Lab"
+  short_description: "Plan tests that decide an MVP"
+  default_prompt: "Use $mvp-test-lab to prepare a decisive MVP test plan."
+
+policy:
+  allow_implicit_invocation: false
