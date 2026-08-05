@@ -1,6 +1,6 @@
 ---
 name: forgemind-verify
-description: Prove that a change, MVP, or release is safe and ready. Use for tests, code review, security checks, visual QA, traceability, delivery proof, rollback readiness, tester decisions, or Go/No-Go release decisions.
+description: Prove that a change, MVP, or release is safe and ready. Use when tests, code review, security checks, delivery proof, rollback readiness, tester decisions, or Go/No-Go release decisions are needed.
 ---
 
 # Verify

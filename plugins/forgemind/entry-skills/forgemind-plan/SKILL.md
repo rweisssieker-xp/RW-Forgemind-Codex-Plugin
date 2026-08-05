@@ -1,6 +1,6 @@
 ---
 name: forgemind-plan
-description: Turn a selected product bet, feature, or existing-app opportunity into a build-ready plan. Use for MVP scope, PRDs, architecture, epics, stories, acceptance criteria, experiments, risk boundaries, or delivery sequencing.
+description: Turn a selected product bet, feature, or existing-app opportunity into a build-ready plan. Use when defining MVP scope, PRDs, architecture, acceptance criteria, experiments, risk boundaries, or delivery sequencing.
 ---
 
 # Plan

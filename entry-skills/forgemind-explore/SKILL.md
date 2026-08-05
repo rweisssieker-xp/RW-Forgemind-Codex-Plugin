@@ -1,6 +1,6 @@
 ---
 name: forgemind-explore
-description: Discover the strongest opportunity in a new or existing app. Use for market gaps, disruptive ideas, maximum-USP portfolios, product moats, monetization, app evolution, or selecting a measurable MVP before coding.
+description: Discover the strongest opportunity in a new or existing app. Use when assessing market gaps, disruptive ideas, maximum-USP portfolios, product moats, monetization, app evolution, or a measurable MVP before coding.
 ---
 
 # Explore

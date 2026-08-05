@@ -4,6 +4,13 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [1.17.1] - 2026-08-05
+
+### Fixed
+
+- Trimmed the direct GitHub Core runtime, corrected all six Marketplace trigger descriptions, and limited the manifest to three supported starter prompts.
+- Rewrote installation and runtime verification documentation for the six-journey structure and current CLI commands.
+
 ## [1.17.0] - 2026-08-05
 
 ### Changed

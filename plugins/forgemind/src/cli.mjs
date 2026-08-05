@@ -287,10 +287,6 @@ export async function runCli(argv, context = {}) {
         purgeData: Boolean(options['purge-data']),
         approvedPurge: Boolean(options.approved),
       });
-    } else if (command === 'legacy') {
-      const { runLegacy } = await import('./legacy.mjs');
-      const pluginRoot = await resolvePluginRoot(MODULE_PLUGIN_ROOT);
-      data = await runLegacy(positionals[0], positionals.slice(1), { pluginRoot, cwd: context.cwd ?? process.cwd() });
     } else {
       throw invalidInput('FM_COMMAND_UNKNOWN', `Unknown command: ${command}`);
     }

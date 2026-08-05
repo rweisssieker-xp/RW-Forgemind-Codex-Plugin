@@ -72,7 +72,7 @@ From an installed plugin root or source checkout:
 ```text
 node bin/forgemind.mjs doctor
 node bin/forgemind.mjs validate
-node bin/forgemind.mjs legacy runtime-discovery-test --json
+node bin/forgemind.mjs help
 ```
 
 Then restart or reload Codex, confirm `ForgeMind` is discoverable, and follow [RUNTIME_TEST.md](RUNTIME_TEST.md).

@@ -1,6 +1,6 @@
 ---
 name: forgemind-build
-description: Implement a scoped feature, fix, or MVP end to end. Use for normal delivery, rapid YOLO MVPs, refactors, debugging, autonomous execution, or moving an approved plan into tested code.
+description: Implement a scoped feature, fix, or MVP end to end. Use when delivering normal work, rapid YOLO MVPs, refactors, debugging, autonomous execution, or an approved plan as tested code.
 ---
 
 # Build

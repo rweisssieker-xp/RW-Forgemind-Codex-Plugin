@@ -1,6 +1,6 @@
 ---
 name: forgemind-learn
-description: Convert delivery outcomes, experiments, tester feedback, and corrections into durable project learning. Use after completed work, failed verification, product experiments, recurring issues, user feedback, routing improvements, or portfolio updates.
+description: Convert delivery outcomes, experiments, tester feedback, and corrections into durable project learning. Use when work completes, verification fails, feedback arrives, experiments run, issues recur, or a portfolio needs updating.
 ---
 
 # Learn

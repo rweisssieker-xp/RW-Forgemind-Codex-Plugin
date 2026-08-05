@@ -305,8 +305,8 @@ For the complete user manual, see `docs/HANDBOOK.md`.
 
 After generating a project profile, memory, or verification report, run:
 
-```powershell
-.\plugins\forgemind\scripts\generate-dashboard.ps1
+```text
+node bin/forgemind.mjs dashboard
 ```
 
 The dashboard is written to `.codex-orchestrator/dashboard/index.html` and includes project profile, verification, learning log, memory, and patterns.
