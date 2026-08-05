@@ -16,12 +16,14 @@ ForgeMind is the evidence-first delivery system for Codex: autonomous execution 
 - **Vendor-neutral trust:** portable contracts and attestations let humans and different agents share the same evidence model.
 - **Reproducible collaboration:** sealed records, flight replay, versioned artifacts, and outcome memory make work inspectable and repeatable.
 - **Strategy stays connected to delivery:** USP experiments, acceptance criteria, implementation, and verification remain traceable through the same workflow.
+- **Creativity becomes delivery:** structured ideation, human-centered discovery, lateral solutions, opportunity design, narrative, and presentation flow into measurable MVP contracts.
 
 ## Start Here
 
 Choose one visible path; ForgeMind routes to the smallest sufficient specialist.
 
 - **Ship a feature:** plan, implement, test, and retain delivery evidence.
+- **Ship a fast MVP:** say “YOLO” or ask for a fast MVP; ForgeMind takes the direct build path while retaining hard safety boundaries.
 - **Fix a bug:** reproduce, diagnose, fix, verify, and record the outcome.
 - **Prepare a release:** assess gaps and risks, verify proof, plan rollback, and make a Go/No-Go decision.
 
@@ -78,6 +80,8 @@ Installation, upgrade, downgrade, rollback, and uninstall are documented in [doc
 - Max USP mode for AI/KI differentiation, monetization, MVP leverage, trust, and "do not build" warnings.
 - Prompt library and workflow documentation.
 - Nine-capability Trust Fabric for portable agent contracts, executable strategy, learned routing, tamper-evident history, future selection, reversible simplification, measured product autonomy, evidence-gated acceptance, and aggregate cross-team learning.
+- Creative Intelligence for structured ideation, human-centered design, systems diagnosis, lateral solutions, opportunity design, product narrative, and presentation architecture.
+- Innovation Delivery Lab for outcome contracts, counterfactual route selection, change budgets, proof-carrying PRs, expiring knowledge, and privacy-preserving team learning.
 
 ## Skills
 

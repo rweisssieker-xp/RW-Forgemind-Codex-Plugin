@@ -68,7 +68,7 @@ async function writeCoreManifest(pluginPath) {
   const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
   manifest.description = 'Evidence-first autonomous delivery for Codex: safe execution, verifiable proof, and release-ready decisions.';
   manifest.interface.shortDescription = 'Evidence-first delivery, safe autonomy, and release-ready decisions.';
-  manifest.interface.longDescription = 'ForgeMind Core routes work through safe, cost-aware workflows and produces verifiable delivery and release evidence. Install the optional ForgeMind Trust Fabric add-on for cross-agent contracts, strategy, learning, and advanced evidence workflows.';
+  manifest.interface.longDescription = 'ForgeMind Core turns discovery, creative exploration, and product intent into safe, cost-aware delivery with verifiable release evidence. Install the optional ForgeMind Trust Fabric add-on for cross-agent contracts, strategy, learning, and advanced evidence workflows.';
   await writeJsonAtomic(manifestPath, manifest);
 }
 

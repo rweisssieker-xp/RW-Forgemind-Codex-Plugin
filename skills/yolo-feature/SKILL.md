@@ -1,6 +1,6 @@
 ---
 name: yolo-feature
-description: ForgeMind yolo feature workflow. Use when the user explicitly asks for yolo feature.
+description: Use for explicit YOLO or fast MVP delivery. Hard safety boundaries still apply.
 ---
 
 # YOLO Feature
@@ -9,7 +9,7 @@ Primary journey: **Build**
 
 Shared orchestration precedence: safety -> debugging -> discovery -> product/USP -> implementation -> verification -> learning.
 
-YOLO mode means high autonomy, not low standards. Move decisively, but keep the blast radius bounded.
+YOLO mode means high autonomy, not low standards. Move decisively, but keep the blast radius bounded. An explicit YOLO request always selects this workflow; do not reroute it to a slower planning flow.
 
 ## Autonomy Contract
 

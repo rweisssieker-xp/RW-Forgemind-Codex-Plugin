@@ -4,6 +4,17 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [1.9.0] - 2026-08-05
+
+### Added
+
+- Native Creative Intelligence workflows for ideation, human-centered design, systems diagnosis, lateral solutions, opportunity design, product narrative, and presentation architecture.
+- Innovation Delivery Lab for outcome contracts, counterfactual delivery choices, change budgets, proof-carrying PR evidence, expiring knowledge, and privacy-preserving team learning.
+
+### Changed
+
+- Made explicit YOLO and fast-MVP requests select the rapid build workflow automatically while preserving destructive, credential, cost, and production safeguards.
+
 ## [1.8.1] - 2026-08-05
 
 ### Changed
