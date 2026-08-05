@@ -4,6 +4,12 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [1.14.0] - 2026-08-05
+
+### Added
+
+- Added `launch-mvp`, an explicit one-session entry that persists the market/MVP brief and tester plan, then governs build, verification, and a Go/No-Go release decision with hard stop conditions.
+
 ## [1.13.0] - 2026-08-05
 
 ### Added

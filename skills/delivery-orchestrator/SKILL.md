@@ -59,6 +59,7 @@ Default to `normal`. Use `autonomous` when the user asks to handle a task end to
 - radical 10x AI/KI feature, UI elimination, vibe build, "zu krass" -> `radical-vibe-builder`
 - product ideas, USP, AI/KI differentiation, monetization, moat -> `usp-ai-strategist`
 - market opportunity to implementation, disruptive existing-app evolution -> `idea-to-mvp`
+- one session from idea to verified MVP release decision -> `launch-mvp`
 - tester recruitment, beta validation, usability sessions, acceptance evidence -> `mvp-test-lab`
 - clear feature implementation -> `structured-feature` or `implementation-plan`
 - test-first implementation, regression tests, red-green-refactor -> `tdd-builder`

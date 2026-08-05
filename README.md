@@ -12,6 +12,8 @@ ForgeMind is the evidence-first delivery system for Codex: autonomous execution 
 
 The Delivery Engine, routing, and specialists work underneath these paths. Explicit `$yolo-feature` remains available for the fastest bounded MVP.
 
+For one continuous idea-to-release session, use explicit `$launch-mvp`: it creates the market/MVP brief and tester plan, then drives scoped delivery, verification, and the release decision through stop gates.
+
 ## Trust Fabric: Nine Disruptive USPs
 
 `forgemind forge help` exposes nine integrated capabilities: Agent Trust Protocol, Strategy-to-Code Compiler, Engineering Genome, Delivery Flight Recorder, Parallel Future Tournament, Self-Shrinking Software, Autonomous Product Loop, Evidence Escrow, and Federated Learning Network. They share sealed local records, secret redaction, deterministic CLI contracts, and explicit failure states.
@@ -43,6 +45,7 @@ Choose one visible path; ForgeMind routes to the smallest sufficient specialist.
 - **Fix a bug:** reproduce, diagnose, fix, verify, and record the outcome.
 - **Prepare a release:** assess gaps and risks, verify proof, plan rollback, and make a Go/No-Go decision.
 - **Test an MVP:** create a target-user, functional, accessibility, and trust test plan before scaling it.
+- **Launch an idea end to end:** use `$launch-mvp` for market thesis → MVP → testers → build → verification → Go/No-Go.
 
 Use `guided-start` for an interactive selection or `outcome-feedback` after a completed workflow to record opt-in acceptance and correction data without raw prompts or source.
 
@@ -116,6 +119,7 @@ Installation, upgrade, downgrade, rollback, and uninstall are documented in [doc
 - `story-status`: reports story, epic, backlog, or feature status.
 - `acceptance-criteria-builder`: creates acceptance criteria, tests, and definition of done.
 - `mvp-test-lab`: plans a multi-perspective MVP test and evidence-gated product decision.
+- `launch-mvp`: runs the persisted one-session idea-to-release MVP workflow with hard stop gates.
 - `tdd-builder`: red-green-refactor workflow where practical.
 - `finish-branch`: final verification, release notes, changed-file summary, and handoff.
 - `gap-scanner`: scans for missing release, quality, docs, CI, packaging, traceability, and runtime work.

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Launch MVP"
+  short_description: "Run an idea-to-release MVP path"
+  default_prompt: "Use $launch-mvp to take this idea to a verified MVP release decision."
+
+policy:
+  allow_implicit_invocation: false
