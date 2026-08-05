@@ -39,3 +39,15 @@ test('idea-to-MVP is the focused entry point for existing-app opportunity work',
   assert.match(instructions, /market alternatives/i);
   assert.match(orchestrator, /start with `idea-to-mvp`/i);
 });
+
+test('three front doors are implicit while internal routing stays explicit', async () => {
+  const root = await resolvePluginRoot();
+  for (const skill of ['forgemind-explore', 'forgemind-build', 'forgemind-guide']) {
+    const policy = await readFile(path.join(root, 'skills', skill, 'agents', 'openai.yaml'), 'utf8');
+    assert.match(policy, /allow_implicit_invocation: true/);
+  }
+  for (const skill of ['autonomous-orchestrator', 'guided-start', 'skill-router']) {
+    const policy = await readFile(path.join(root, 'skills', skill, 'agents', 'openai.yaml'), 'utf8');
+    assert.match(policy, /allow_implicit_invocation: false/);
+  }
+});

@@ -1,6 +1,6 @@
 ---
 name: delivery-builder
-description: ForgeMind senior developer agent workflow. Use when the user explicitly asks for senior developer agent.
+description: Implement a scoped change with code quality and tests. Use when a task needs focused delivery work after scope and acceptance criteria are clear.
 ---
 
 # Senior Developer Agent

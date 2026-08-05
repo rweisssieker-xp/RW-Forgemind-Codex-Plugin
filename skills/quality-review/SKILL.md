@@ -1,6 +1,6 @@
 ---
 name: quality-review
-description: ForgeMind qa agent workflow. Use when the user explicitly asks for qa agent.
+description: Plan and assess verification, regressions, edge cases, and release confidence. Use when a change needs quality review or a test strategy.
 ---
 
 # QA Agent

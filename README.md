@@ -2,9 +2,15 @@
 
 ForgeMind is the evidence-first delivery system for Codex: autonomous execution with verifiable proof, safe escalation, and release-ready decisions. It combines local orchestration, executable strategy, cross-agent evidence, autonomous product loops, reusable project memory, and privacy-preserving team learning.
 
-## Simplest product entry
+## Start with one of three paths
 
-Use `$idea-to-mvp` when you want ForgeMind to understand an existing app, find and rank market opportunities, brainstorm disruptive ideas, choose a measurable MVP, then implement and verify it. The Delivery Orchestrator applies this sequence automatically for product, market, innovation, and existing-app evolution requests.
+| Path | Use it for | What happens |
+| --- | --- | --- |
+| `$forgemind-explore` | Existing apps, market opportunities, disruptive ideas, MVP choice | Understand → research → brainstorm → rank → measurable MVP |
+| `$forgemind-build` | A clear feature, fix, or delivery outcome | Scope → implement → verify → review → report |
+| `$forgemind-guide` | An unclear goal or uncertainty about the right path | Clarify once if needed → select a safe first action |
+
+The Delivery Engine, routing, and specialists work underneath these paths. Explicit `$yolo-feature` remains available for the fastest bounded MVP.
 
 ## Trust Fabric: Nine Disruptive USPs
 

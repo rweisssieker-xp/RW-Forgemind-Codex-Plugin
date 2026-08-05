@@ -1,6 +1,6 @@
 ---
 name: work-planning
-description: ForgeMind scrum master agent workflow. Use when the user explicitly asks for scrum master agent.
+description: Prepare delivery work with tasks, blockers, dependencies, and handoffs. Use when a scoped outcome needs an implementation-ready plan.
 ---
 
 # Scrum Master Agent

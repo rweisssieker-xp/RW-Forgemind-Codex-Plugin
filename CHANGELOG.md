@@ -4,6 +4,13 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [1.12.0] - 2026-08-05
+
+### Changed
+
+- Simplified ForgeMind to three visible front doors: Explore for opportunity-to-MVP work, Build for concrete delivery, and Guide me for unclear goals.
+- Moved routing, guided start, and delivery orchestration behind those entry points; explicit YOLO remains available for fast bounded MVPs.
+
 ## [1.11.1] - 2026-08-05
 
 ### Added

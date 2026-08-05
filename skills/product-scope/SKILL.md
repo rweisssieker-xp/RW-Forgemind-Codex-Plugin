@@ -1,6 +1,6 @@
 ---
 name: product-scope
-description: ForgeMind product owner agent workflow. Use when the user explicitly asks for product owner agent.
+description: Define product scope, user value, acceptance criteria, and MVP boundaries. Use when a product decision needs concise, testable scope.
 ---
 
 # Product Owner Agent

@@ -1,6 +1,6 @@
 {
   "name": "forgemind",
-  "version": "1.11.1",
+  "version": "1.12.0",
   "description": "Evidence-first discovery and autonomous delivery for Codex: scored experiments, visual evidence, safe execution, and release-ready decisions.",
   "author": {
     "name": "rweisssieker-xp",
@@ -77,9 +77,9 @@
     "privacyPolicyURL": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin/blob/main/PRIVACY.md",
     "termsOfServiceURL": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin/blob/main/TERMS.md",
     "defaultPrompt": [
-      "Use ForgeMind to inspect this repository and recommend the smallest safe workflow.",
-      "Use ForgeMind to build this outcome end to end with governed evidence and safe escalation.",
-      "Use the Trust Fabric to produce portable proof and a release-ready Go/No-Go decision."
+      "Use $forgemind-explore to find the strongest MVP opportunity in this app.",
+      "Use $forgemind-build to implement and verify this outcome.",
+      "Use $forgemind-guide to choose the best next step for this goal."
     ],
     "brandColor": "#2563EB",
     "composerIcon": "./assets/icon.svg",

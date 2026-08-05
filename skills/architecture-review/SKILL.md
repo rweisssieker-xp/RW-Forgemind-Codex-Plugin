@@ -1,6 +1,6 @@
 ---
 name: architecture-review
-description: ForgeMind architect agent workflow. Use when the user explicitly asks for architect agent.
+description: Evaluate technical boundaries, data flow, risks, and implementation shape. Use when a product or delivery decision needs architecture review.
 ---
 
 # Architect Agent

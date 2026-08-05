@@ -3,4 +3,4 @@ interface:
   short_description: "Run safe end-to-end delivery with evidence."
   default_prompt: "Use $autonomous-orchestrator to deliver this outcome safely end to end."
 policy:
-  allow_implicit_invocation: true
+  allow_implicit_invocation: false

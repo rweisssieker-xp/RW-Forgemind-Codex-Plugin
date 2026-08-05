@@ -1,6 +1,6 @@
 ---
 name: delivery-orchestrator
-description: ForgeMind master orchestrator workflow. Use when the user explicitly asks for master orchestrator.
+description: Coordinate ForgeMind delivery across discovery, design, implementation, verification, and release. Use when a task needs a top-level delivery decision or end-to-end workflow selection.
 ---
 
 # Delivery Orchestrator
