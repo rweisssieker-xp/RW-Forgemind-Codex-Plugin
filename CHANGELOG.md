@@ -4,6 +4,16 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [1.11.1] - 2026-08-05
+
+### Added
+
+- Idea-to-MVP entry workflow that captures existing-app context and guides opportunity research, disruptive ideation, measurable MVP selection, implementation, and verification.
+
+### Changed
+
+- Delivery Orchestrator and YOLO mode now apply a compact Idea-to-MVP preflight for product, market, innovation, and existing-app evolution work while preserving immediate execution for narrow scoped changes.
+
 ## [1.11.0] - 2026-08-05
 
 ### Added

@@ -11,6 +11,8 @@ Shared orchestration precedence: safety -> debugging -> discovery -> product/USP
 
 YOLO mode means high autonomy, not low standards. Move decisively, but keep the blast radius bounded. An explicit YOLO request always selects this workflow; do not reroute it to a slower planning flow.
 
+For a new product, existing-app evolution, or disruptive-feature request, do a short Idea-to-MVP preflight first: inspect the app, identify the strongest user and market opportunity, generate and rank disruptive concepts, define one measurable MVP, then build it. For a narrow explicit implementation, build immediately.
+
 ## Autonomy Contract
 
 You may:

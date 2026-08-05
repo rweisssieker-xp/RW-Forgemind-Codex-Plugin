@@ -25,6 +25,7 @@ const PRIMARY_COMMANDS = [
   'compose',
   'factory',
   'delegation',
+  'idea-to-mvp',
   'memory',
   'dashboard',
   'forge',
@@ -226,6 +227,9 @@ export async function runCli(argv, context = {}) {
     } else if (command === 'delegation') {
       const { createDelegationPlan } = await import('./delegation.mjs');
       data = await createDelegationPlan({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), goal: options.goal, budget: options.budget });
+    } else if (command === 'idea-to-mvp') {
+      const { createIdeaToMvpBrief } = await import('./idea-to-mvp.mjs');
+      data = await createIdeaToMvpBrief({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), goal: options.goal });
     } else if (command === 'dashboard') {
       const { generateDashboard } = await import('./dashboard.mjs');
       data = await generateDashboard({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()) });

@@ -30,3 +30,12 @@ test('explicit YOLO requests remain an automatic rapid-MVP path', async () => {
   assert.match(instructions, /always selects this workflow/i);
   assert.match(policy, /allow_implicit_invocation: true/);
 });
+
+test('idea-to-MVP is the focused entry point for existing-app opportunity work', async () => {
+  const root = await resolvePluginRoot();
+  const instructions = await readFile(path.join(root, 'skills', 'idea-to-mvp', 'SKILL.md'), 'utf8');
+  const orchestrator = await readFile(path.join(root, 'skills', 'delivery-orchestrator', 'SKILL.md'), 'utf8');
+  assert.match(instructions, /existing app/i);
+  assert.match(instructions, /market alternatives/i);
+  assert.match(orchestrator, /start with `idea-to-mvp`/i);
+});

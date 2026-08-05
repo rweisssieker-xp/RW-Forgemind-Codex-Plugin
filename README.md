@@ -2,6 +2,10 @@
 
 ForgeMind is the evidence-first delivery system for Codex: autonomous execution with verifiable proof, safe escalation, and release-ready decisions. It combines local orchestration, executable strategy, cross-agent evidence, autonomous product loops, reusable project memory, and privacy-preserving team learning.
 
+## Simplest product entry
+
+Use `$idea-to-mvp` when you want ForgeMind to understand an existing app, find and rank market opportunities, brainstorm disruptive ideas, choose a measurable MVP, then implement and verify it. The Delivery Orchestrator applies this sequence automatically for product, market, innovation, and existing-app evolution requests.
+
 ## Trust Fabric: Nine Disruptive USPs
 
 `forgemind forge help` exposes nine integrated capabilities: Agent Trust Protocol, Strategy-to-Code Compiler, Engineering Genome, Delivery Flight Recorder, Parallel Future Tournament, Self-Shrinking Software, Autonomous Product Loop, Evidence Escrow, and Federated Learning Network. They share sealed local records, secret redaction, deterministic CLI contracts, and explicit failure states.
