@@ -31,7 +31,7 @@ For one continuous idea-to-release session, use explicit `$launch-mvp`: it creat
 - **Creativity becomes delivery:** structured ideation, human-centered discovery, lateral solutions, opportunity design, narrative, and presentation flow into measurable MVP contracts.
 - **Discovery compounds:** hypotheses become local experiments with evidence-backed pivot, patch, persevere, or stop decisions.
 - **Work resumes cleanly:** checkpoints preserve the local Git state, decisions, and next action; visual QA seals screenshot evidence locally.
-- **MVPs face real tests early:** each selected concept gets target-user, functional, accessibility, and adversarial test coverage before it is called validated.
+- **MVPs face real tests early:** each selected concept gets target-user, functional, accessibility, and adversarial test coverage; results automatically lead to scale, iterate, or stop.
 - **Kill conditions prevent feature theater:** success, iteration, and stop decisions are defined before delivery rather than rationalized afterwards.
 - **Fast without blind spots:** YOLO keeps a narrow MVP moving while preserving test, risk, rollback, and release boundaries.
 - **Existing apps get product-aware innovation:** repository evidence and current constraints shape opportunities instead of generic idea lists.
@@ -119,7 +119,7 @@ Installation, upgrade, downgrade, rollback, and uninstall are documented in [doc
 - `story-status`: reports story, epic, backlog, or feature status.
 - `acceptance-criteria-builder`: creates acceptance criteria, tests, and definition of done.
 - `mvp-test-lab`: plans a multi-perspective MVP test and evidence-gated product decision.
-- `launch-mvp`: runs the persisted one-session idea-to-release MVP workflow with hard stop gates.
+- `launch-mvp`: runs a resumable one-session idea-to-release MVP workflow with hard stop gates and evidence per stage.
 - `tdd-builder`: red-green-refactor workflow where practical.
 - `finish-branch`: final verification, release notes, changed-file summary, and handoff.
 - `gap-scanner`: scans for missing release, quality, docs, CI, packaging, traceability, and runtime work.
@@ -287,7 +287,7 @@ Templates live in `templates/usp/`:
 
 ## Installation
 
-Install directly from GitHub with `codex plugin marketplace add rweisssieker-xp/RW-Forgemind-Codex-Plugin`, then `codex plugin add forgemind@forgemind-marketplace`. The repository ships a lean Core snapshot at `plugins/forgemind`; add `forgemind-trust-fabric@forgemind-marketplace` for the optional advanced workflows. Generated release archives remain checksum-protected.
+Install directly from GitHub with `codex plugin marketplace add rweisssieker-xp/RW-Forgemind-Codex-Plugin`, then `codex plugin add forgemind@forgemind-marketplace`. The repository ships a lean Core runtime snapshot at `plugins/forgemind`; add `forgemind-trust-fabric@forgemind-marketplace` for the optional advanced workflows. Packaging and lifecycle tooling remain in the checksum-protected release archives.
 
 See `docs/INSTALL.md` for reload checks and `docs/WORKFLOWS.md` for operating workflows.
 

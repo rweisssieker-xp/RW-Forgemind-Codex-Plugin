@@ -7,12 +7,6 @@ description: Plan a decisive MVP test with target users, functional checks, acce
 
 Primary journey: **Verify**
 
-Run `forgemind testing plan --goal "<outcome>" --audience "<audience>" --json` before recruiting or simulating tests.
+Run `forgemind testing plan --goal "<outcome>" --audience "<audience>" --json`. Test target-user desirability, functional acceptance, accessibility, and trust/misuse; never present simulated feedback as real.
 
-1. State one testable hypothesis, the smallest realistic task, a success metric, and a kill condition.
-2. Use four complementary testers: target user for desirability, functional tester for acceptance and edge cases, accessibility tester for inclusion, and adversarial tester for misuse and trust gaps.
-3. Keep tests observational: do not coach a participant or treat simulated feedback as real evidence.
-4. Record quotes, task completion, time, defects, and confidence separately; redact personal data before storage.
-5. Decide only from the evidence: scale when the threshold passes, iterate when the signal is mixed, and stop when the kill condition is met.
-
-Hand off functional findings to `acceptance-criteria-builder`, visual findings to `visual-qa`, product evidence to `discovery-operations`, and durable feedback to `user-feedback-capture`.
+Record each result with `forgemind testing record --panel <panel> --outcome passed|failed|blocked --completed true|false --evidence "<items>" --json`; add `--critical` or `--simulated` when applicable. `forgemind testing evaluate --json` returns scale, iterate, stop, or collecting. It stops on critical findings or fewer than two independent completions after five target-user sessions.

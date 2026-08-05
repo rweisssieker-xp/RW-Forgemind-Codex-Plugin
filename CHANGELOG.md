@@ -4,6 +4,28 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [1.14.2] - 2026-08-05
+
+### Added
+
+- Added evidence-gated MVP launch transitions and persisted tester-result decisions across `collecting`, `scale`, `iterate`, and `stop`.
+
+### Changed
+
+- Reduced the direct GitHub Marketplace payload to runtime capabilities; release archives retain packaging and lifecycle tooling.
+- Compacted the MVP skills and restored an A-grade Marketplace evaluation.
+
+## [1.14.1] - 2026-08-05
+
+### Added
+
+- Added resumable `launch-mvp status` and evidence-gated `launch-mvp advance` transitions.
+- Added tester-result recording and deterministic `collecting`, `scale`, `iterate`, or `stop` decisions.
+
+### Changed
+
+- Compacted MVP workflow instructions to reduce Marketplace payload cost without reducing the workflow surface.
+
 ## [1.14.0] - 2026-08-05
 
 ### Added

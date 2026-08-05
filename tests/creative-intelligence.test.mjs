@@ -45,7 +45,7 @@ test('MVP Test Lab is an explicit tester workflow', async () => {
   const root = await resolvePluginRoot();
   const instructions = await readFile(path.join(root, 'skills', 'mvp-test-lab', 'SKILL.md'), 'utf8');
   const policy = await readFile(path.join(root, 'skills', 'mvp-test-lab', 'agents', 'openai.yaml'), 'utf8');
-  assert.match(instructions, /target user.*functional.*accessibility.*adversarial/i);
+  assert.match(instructions, /target-user desirability.*functional acceptance.*accessibility.*trust/i);
   assert.match(policy, /allow_implicit_invocation: false/);
 });
 
@@ -54,7 +54,7 @@ test('Launch MVP is an explicit one-session entry with hard stop gates', async (
   const instructions = await readFile(path.join(root, 'skills', 'launch-mvp', 'SKILL.md'), 'utf8');
   const policy = await readFile(path.join(root, 'skills', 'launch-mvp', 'agents', 'openai.yaml'), 'utf8');
   assert.match(instructions, /market thesis, MVP scope, tester plan, implementation, verification, and a release decision/i);
-  assert.match(instructions, /Stop rather than claim completion/i);
+  assert.match(instructions, /Stop on a kill condition/i);
   assert.match(policy, /allow_implicit_invocation: false/);
 });
 

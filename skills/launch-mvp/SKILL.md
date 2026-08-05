@@ -7,14 +7,8 @@ description: Drive one idea through market thesis, MVP scope, tester plan, imple
 
 Primary journey: **Build**
 
-Start with `forgemind launch-mvp --goal "<outcome>" --audience "<audience>" --json`. This creates the persisted launch record, an app-aware idea-to-MVP brief, and a decisive tester plan.
+Run `forgemind launch-mvp --goal "<outcome>" --audience "<audience>" --json`, then continue the persisted stages: discover → test → build → verify → release.
 
-Run the stages in order without asking routine clarification questions:
+Inspect and rank alternatives; select one scoped hypothesis, metric, and kill condition. Use the tester plan, implement the smallest scope, and retain acceptance, verification, risk, traceability, rollback, and delivery-proof evidence. Resume with `forgemind launch-mvp status --json`; complete a stage with `forgemind launch-mvp advance --stage <stage> --evidence "<items>" --json`.
 
-1. Inspect the existing app and separate market evidence from assumptions.
-2. Generate and rank alternatives; select one hypothesis, scope, metric, and kill condition.
-3. Use the tester plan to define target-user, functional, accessibility, and trust checks.
-4. Create acceptance criteria, implement the smallest useful scope, and run verification.
-5. Record risks, traceability, rollback, and a delivery proof; make a Go/No-Go release decision.
-
-Stop rather than claim completion when the kill condition is met, a critical tester finding remains, verification fails, or a safety gate requires approval. Use `$yolo-feature` only when the user explicitly requests the fastest bounded implementation; it never bypasses those stops.
+Stop on a kill condition, critical finding, failed verification, or approval gate. `$yolo-feature` may accelerate bounded implementation but never bypasses stops.

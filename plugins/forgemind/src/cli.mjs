@@ -32,9 +32,6 @@ const PRIMARY_COMMANDS = [
   'dashboard',
   'forge',
   'eval',
-  'package',
-  'install',
-  'uninstall',
 ];
 
 const HELP = `ForgeMind — vendor-neutral trust and evidence-driven delivery for Codex
@@ -233,12 +230,20 @@ export async function runCli(argv, context = {}) {
       const { createIdeaToMvpBrief } = await import('./idea-to-mvp.mjs');
       data = await createIdeaToMvpBrief({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), goal: options.goal });
     } else if (command === 'launch-mvp') {
-      const { launchMvp } = await import('./mvp-launch.mjs');
-      data = await launchMvp({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), goal: options.goal, audience: options.audience });
+      const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
+      const action = positionals[0] ?? 'start';
+      const { advanceMvpLaunch, getMvpLaunch, launchMvp } = await import('./mvp-launch.mjs');
+      data = action === 'status' ? await getMvpLaunch({ workspace })
+        : action === 'advance' ? await advanceMvpLaunch({ workspace, stage: options.stage, evidence: options.evidence })
+          : await launchMvp({ workspace, goal: options.goal, audience: options.audience });
     } else if (command === 'testing') {
-      const { createMvpTestPlan } = await import('./mvp-testing.mjs');
-      if ((positionals[0] ?? 'plan') !== 'plan') throw invalidInput('FM_TESTING_ACTION_INVALID', 'Testing supports only the plan action.');
-      data = await createMvpTestPlan({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), goal: options.goal, audience: options.audience });
+      const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
+      const action = positionals[0] ?? 'plan';
+      const { createMvpTestPlan, evaluateMvpTests, recordMvpTestResult } = await import('./mvp-testing.mjs');
+      data = action === 'record' ? await recordMvpTestResult({ workspace, result: { panel: options.panel, outcome: options.outcome, completed: options.completed, critical: options.critical, simulated: options.simulated, evidence: options.evidence, note: options.note } })
+        : action === 'evaluate' ? await evaluateMvpTests({ workspace })
+          : action === 'plan' ? await createMvpTestPlan({ workspace, goal: options.goal, audience: options.audience })
+            : (() => { throw invalidInput('FM_TESTING_ACTION_INVALID', 'Testing supports plan, record, and evaluate.'); })();
     } else if (command === 'dashboard') {
       const { generateDashboard } = await import('./dashboard.mjs');
       data = await generateDashboard({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()) });
@@ -255,21 +260,6 @@ export async function runCli(argv, context = {}) {
       const pluginRoot = await resolvePluginRoot(options.plugin ?? MODULE_PLUGIN_ROOT);
       const fixturesRoot = path.resolve(options.fixtures ?? path.join(pluginRoot, 'evals', 'fixtures'));
       data = await runStructuralEvals(await loadEvalFixtures(fixturesRoot));
-    } else if (command === 'package') {
-      const { buildPackages } = await import('./package.mjs');
-      const pluginRoot = await resolvePluginRoot(options.plugin ?? MODULE_PLUGIN_ROOT);
-      data = await buildPackages({ pluginRoot, outputRoot: options.output });
-    } else if (command === 'install') {
-      const { installPlugin } = await import('./lifecycle.mjs');
-      data = await installPlugin({ packagePath: options.package, home: options.home ?? await defaultHome() });
-    } else if (command === 'uninstall') {
-      const { uninstallPlugin } = await import('./lifecycle.mjs');
-      data = await uninstallPlugin({
-        home: options.home ?? await defaultHome(),
-        workspace: options.workspace,
-        purgeData: Boolean(options['purge-data']),
-        approvedPurge: Boolean(options.approved),
-      });
     } else if (command === 'legacy') {
       const { runLegacy } = await import('./legacy.mjs');
       const pluginRoot = await resolvePluginRoot(MODULE_PLUGIN_ROOT);
@@ -302,12 +292,6 @@ async function readWorkspaceReport(workspace, name, fallback) {
   }
 }
 
-async function defaultHome() {
-  const { homedir } = await import('node:os');
-  const path = await import('node:path');
-  return process.env.CODEX_HOME ?? path.join(homedir(), '.codex');
-}
-
 async function readLatestProof(workspace) {
   const { readFile } = await import('node:fs/promises');
   const path = await import('node:path');
@@ -328,7 +312,7 @@ function parseOptions(args) {
       continue;
     }
     const key = argument.slice(2);
-    if (['json', 'strict-release', 'memory', 'artifacts', 'run', 'allow-inferred', 'non-expiring', 'purge-data', 'approved'].includes(key)) {
+    if (['json', 'strict-release', 'memory', 'artifacts', 'run', 'allow-inferred', 'non-expiring', 'purge-data', 'approved', 'critical', 'simulated'].includes(key)) {
       options[key] = true;
       continue;
     }

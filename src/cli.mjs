@@ -233,12 +233,20 @@ export async function runCli(argv, context = {}) {
       const { createIdeaToMvpBrief } = await import('./idea-to-mvp.mjs');
       data = await createIdeaToMvpBrief({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), goal: options.goal });
     } else if (command === 'launch-mvp') {
-      const { launchMvp } = await import('./mvp-launch.mjs');
-      data = await launchMvp({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), goal: options.goal, audience: options.audience });
+      const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
+      const action = positionals[0] ?? 'start';
+      const { advanceMvpLaunch, getMvpLaunch, launchMvp } = await import('./mvp-launch.mjs');
+      data = action === 'status' ? await getMvpLaunch({ workspace })
+        : action === 'advance' ? await advanceMvpLaunch({ workspace, stage: options.stage, evidence: options.evidence })
+          : await launchMvp({ workspace, goal: options.goal, audience: options.audience });
     } else if (command === 'testing') {
-      const { createMvpTestPlan } = await import('./mvp-testing.mjs');
-      if ((positionals[0] ?? 'plan') !== 'plan') throw invalidInput('FM_TESTING_ACTION_INVALID', 'Testing supports only the plan action.');
-      data = await createMvpTestPlan({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), goal: options.goal, audience: options.audience });
+      const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
+      const action = positionals[0] ?? 'plan';
+      const { createMvpTestPlan, evaluateMvpTests, recordMvpTestResult } = await import('./mvp-testing.mjs');
+      data = action === 'record' ? await recordMvpTestResult({ workspace, result: { panel: options.panel, outcome: options.outcome, completed: options.completed, critical: options.critical, simulated: options.simulated, evidence: options.evidence, note: options.note } })
+        : action === 'evaluate' ? await evaluateMvpTests({ workspace })
+          : action === 'plan' ? await createMvpTestPlan({ workspace, goal: options.goal, audience: options.audience })
+            : (() => { throw invalidInput('FM_TESTING_ACTION_INVALID', 'Testing supports plan, record, and evaluate.'); })();
     } else if (command === 'dashboard') {
       const { generateDashboard } = await import('./dashboard.mjs');
       data = await generateDashboard({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()) });
@@ -328,7 +336,7 @@ function parseOptions(args) {
       continue;
     }
     const key = argument.slice(2);
-    if (['json', 'strict-release', 'memory', 'artifacts', 'run', 'allow-inferred', 'non-expiring', 'purge-data', 'approved'].includes(key)) {
+    if (['json', 'strict-release', 'memory', 'artifacts', 'run', 'allow-inferred', 'non-expiring', 'purge-data', 'approved', 'critical', 'simulated'].includes(key)) {
       options[key] = true;
       continue;
     }
