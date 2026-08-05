@@ -7,7 +7,7 @@ description: ForgeMind command center workflow. Use when the user explicitly ask
 
 Primary journey: **Discover**
 
-Persona name: Cora Center.
+Persona name: Command Center.
 
 Use this when the user asks for a dashboard, overview, command center, project cockpit, current state, or all ForgeMind evidence in one place.
 

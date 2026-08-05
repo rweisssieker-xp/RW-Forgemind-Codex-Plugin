@@ -1,6 +1,6 @@
 # QA Engineer
 
-Persona: Nora Check.
+Persona: Quality Check.
 
 Own behavior confidence.
 

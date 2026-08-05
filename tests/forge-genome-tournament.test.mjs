@@ -33,8 +33,8 @@ test('engineering genome aggregates transparent cohorts and recommends the empir
   const outcomes = [
     outcome('o1', 'structured-feature'),
     outcome('o2', 'structured-feature'),
-    outcome('o3', 'master-orchestrator', { correctionCount: 3, residualDefects: 1, userAccepted: false, durationMinutes: 90 }),
-    outcome('o4', 'master-orchestrator', { verificationStatus: 'failed', durationMinutes: 80 }),
+    outcome('o3', 'delivery-orchestrator', { correctionCount: 3, residualDefects: 1, userAccepted: false, durationMinutes: 90 }),
+    outcome('o4', 'delivery-orchestrator', { verificationStatus: 'failed', durationMinutes: 80 }),
   ];
   const genome = await analyzeGenome({ workspace: root, outcomes, minCohort: 2, now: new Date('2026-01-01T00:00:00Z') });
   assert.equal(genome.status, 'analyzed');
@@ -52,7 +52,7 @@ test('genome withholds recommendations below minimum cohort and reports missing 
   const genome = await analyzeGenome({ workspace: root, outcomes: [outcome('single', 'structured-feature')], minCohort: 3 });
   const recommendation = await recommendFromGenome({ genome: genome.record, task: { category: 'feature', stacks: ['node'] } });
   assert.equal(recommendation.status, 'insufficient-evidence');
-  assert.equal(recommendation.route, 'master-orchestrator');
+  assert.equal(recommendation.route, 'delivery-orchestrator');
   assert.match(recommendation.missingEvidence[0], /minimum cohort/i);
 });
 

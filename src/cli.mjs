@@ -21,6 +21,10 @@ const PRIMARY_COMMANDS = [
   'discovery',
   'checkpoint',
   'visual',
+  'capabilities',
+  'compose',
+  'factory',
+  'delegation',
   'memory',
   'dashboard',
   'forge',
@@ -189,19 +193,39 @@ export async function runCli(argv, context = {}) {
     } else if (command === 'discovery') {
       const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
       const action = positionals[0] ?? 'list';
-      const { createExperiment, decideExperiment, listExperiments } = await import('./discovery.mjs');
-      if (action === 'create') data = await createExperiment({ workspace, experiment: { title: options.title, hypothesis: options.hypothesis, metric: options.metric, audience: options.audience, evidence: options.evidence } });
+      const { createExperiment, decideExperiment, listExperiments, scoreDiscovery } = await import('./discovery.mjs');
+      if (action === 'create') data = await createExperiment({ workspace, experiment: { title: options.title, hypothesis: options.hypothesis, metric: options.metric, audience: options.audience, owner: options.owner, timeframe: options.timeframe, assumptions: options.assumptions, interviewSignals: options['interview-signals'], evidence: options.evidence } });
       else if (action === 'decide') data = await decideExperiment({ workspace, id: options.id, decision: options.decision, evidence: options.evidence });
+      else if (action === 'scorecard') data = await scoreDiscovery({ workspace });
       else data = { schemaVersion: 1, status: 'passed', experiments: await listExperiments({ workspace }), errors: [] };
     } else if (command === 'checkpoint') {
       const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
-      const { listCheckpoints, saveCheckpoint } = await import('./checkpoints.mjs');
+      const { listCheckpoints, resumeCheckpoint, saveCheckpoint } = await import('./checkpoints.mjs');
       data = positionals[0] === 'save'
         ? await saveCheckpoint({ workspace, summary: options.summary, next: options.next })
+        : positionals[0] === 'resume'
+          ? await resumeCheckpoint({ workspace, id: options.id })
         : { schemaVersion: 1, status: 'passed', checkpoints: await listCheckpoints({ workspace }), errors: [] };
     } else if (command === 'visual') {
-      const { recordVisualEvidence } = await import('./visual-qa.mjs');
-      data = await recordVisualEvidence({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), input: options.input, label: options.label, viewport: options.viewport });
+      const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
+      const { captureBrowserScreenshot, compareVisualEvidence, recordVisualEvidence } = await import('./visual-qa.mjs');
+      data = positionals[0] === 'capture'
+        ? await captureBrowserScreenshot({ workspace, url: options.url, output: options.output, label: options.label, viewport: options.viewport })
+        : positionals[0] === 'compare'
+          ? await compareVisualEvidence({ workspace, baseline: options.baseline, candidate: options.candidate, label: options.label })
+          : await recordVisualEvidence({ workspace, input: options.input, label: options.label, viewport: options.viewport });
+    } else if (command === 'capabilities') {
+      const { buildCapabilityManifest } = await import('./capabilities.mjs');
+      data = await buildCapabilityManifest({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()) });
+    } else if (command === 'compose') {
+      const { composeTeam } = await import('./composition.mjs');
+      data = await composeTeam({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), goal: options.goal, risk: options.risk });
+    } else if (command === 'factory') {
+      const { createWorkspaceSkill } = await import('./skill-factory.mjs');
+      data = await createWorkspaceSkill({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), name: options.name, description: options.description, journey: options.journey });
+    } else if (command === 'delegation') {
+      const { createDelegationPlan } = await import('./delegation.mjs');
+      data = await createDelegationPlan({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), goal: options.goal, budget: options.budget });
     } else if (command === 'dashboard') {
       const { generateDashboard } = await import('./dashboard.mjs');
       data = await generateDashboard({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()) });

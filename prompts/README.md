@@ -33,11 +33,11 @@ Workflow Graph: show the ForgeMind workflow graph and next gate.
 ```
 
 ```text
-Agent Menu: recommend the best ForgeMind specialist for this task.
+Workflow Menu: recommend the best ForgeMind specialist for this task.
 ```
 
 ```text
-Agent Menu: show named personas and recommend who should handle this task.
+Workflow Menu: show named personas and recommend who should handle this task.
 ```
 
 ```text
@@ -61,7 +61,7 @@ Story Status: show story, epic, backlog, or feature status.
 ```
 
 ```text
-MasterOrchestrator: route this task, choose the right ForgeMind workflow, and start.
+Delivery Orchestrator: route this task, choose the right ForgeMind workflow, and start.
 ```
 
 ```text
@@ -111,7 +111,7 @@ Radical Vibe Builder: analyze this app, generate 5 radical AI/KI 10x features, c
 ```
 
 ```text
-ForgeMind MasterOrchestrator: route to Radical Vibe Builder. Do not suggest improvements. Eliminate workflows and design the future feature.
+ForgeMind Delivery Orchestrator: route to Radical Vibe Builder. Do not suggest improvements. Eliminate workflows and design the future feature.
 ```
 
 ## App Evolution

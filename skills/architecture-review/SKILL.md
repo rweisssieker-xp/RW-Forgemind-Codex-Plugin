@@ -1,5 +1,5 @@
 ---
-name: architect-agent
+name: architecture-review
 description: ForgeMind architect agent workflow. Use when the user explicitly asks for architect agent.
 ---
 
@@ -7,7 +7,7 @@ description: ForgeMind architect agent workflow. Use when the user explicitly as
 
 Primary journey: **Design**
 
-Persona name: Atlas Forge.
+Persona name: Architecture Review.
 
 Own technical structure.
 

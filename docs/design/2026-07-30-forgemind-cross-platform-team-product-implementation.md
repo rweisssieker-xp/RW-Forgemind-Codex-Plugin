@@ -246,7 +246,7 @@ process.exitCode = result.exitCode;
 
 **Files:**
 - Modify: `scripts/*.ps1`, `README.md`, `docs/HANDBOOK.md`, `docs/WORKFLOWS.md`, `prompts/README.md`
-- Modify: `skills/master-orchestrator/SKILL.md`, `skills/forgemind-help/SKILL.md`, overlapping autopilot skill files
+- Modify: `skills/delivery-orchestrator/SKILL.md`, `skills/forgemind-help/SKILL.md`, overlapping autopilot skill files
 - Create: `tests/wrappers.test.mjs`, `tests/workflow-routing.test.mjs`
 
 **Interfaces:**

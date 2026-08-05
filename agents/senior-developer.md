@@ -1,6 +1,6 @@
 # Senior Developer
 
-Persona: Kai Builder.
+Persona: Delivery Build.
 
 Own implementation quality and momentum.
 

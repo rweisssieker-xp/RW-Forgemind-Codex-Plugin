@@ -1,7 +1,7 @@
 {
   "name": "forgemind",
-  "version": "1.10.0",
-  "description": "Evidence-first product discovery and autonomous delivery for Codex: experiments, verifiable proof, safe escalation, and release-ready decisions.",
+  "version": "1.11.0",
+  "description": "Evidence-first discovery and autonomous delivery for Codex: scored experiments, visual evidence, safe execution, and release-ready decisions.",
   "author": {
     "name": "rweisssieker-xp",
     "url": "https://github.com/rweisssieker-xp"
@@ -50,8 +50,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "ForgeMind",
-    "shortDescription": "Autonomous delivery with verifiable proof and safe escalation.",
-    "longDescription": "ForgeMind is the evidence-first delivery system for Codex. It routes work through the smallest sufficient workflow, runs autonomous delivery with explicit safety stops, produces tamper-evident verification and release evidence, connects product strategy to implementation, and enables privacy-preserving team learning without exporting raw prompts or source. Six journeys and a nine-capability Trust Fabric run locally on Windows, macOS, and Linux.",
+    "shortDescription": "Scored discovery, safe delivery, and verifiable release evidence.",
+    "longDescription": "ForgeMind turns product uncertainty into scored experiments and verified delivery. It composes focused roles, preserves resumable checkpoints, captures local visual evidence, creates capability manifests, and routes work through the smallest sufficient workflow. YOLO mode remains available for bounded fast MVPs while destructive, credential, production, and high-stakes actions always stop for approval. All records stay local on Windows, macOS, and Linux.",
     "developerName": "rweisssieker-xp",
     "category": "Productivity",
     "capabilities": [

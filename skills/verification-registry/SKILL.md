@@ -7,7 +7,7 @@ description: ForgeMind verification registry workflow. Use when the user explici
 
 Primary journey: **Verify**
 
-Persona name: Nora Registry.
+Persona name: Verification Registry.
 
 Use this when adding tests, discovering project commands, fixing CI, or preparing release evidence.
 

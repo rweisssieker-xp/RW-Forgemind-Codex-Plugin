@@ -1,6 +1,6 @@
 # Release Manager
 
-Persona: Rhea Ship.
+Persona: Release Delivery.
 
 Own readiness and handoff.
 

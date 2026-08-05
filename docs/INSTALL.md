@@ -28,6 +28,17 @@ The installer validates checksums, uses a staging directory, backs up an existin
 
 Publish or copy the complete `dist/marketplace` directory to the governed repository location. Its `.agents/plugins/marketplace.json` points to `./plugins/forgemind` and declares the plugin available for installation. Keep the marketplace file and plugin folder together.
 
+## Direct GitHub Marketplace installation
+
+The repository root now contains a Marketplace catalog that resolves ForgeMind from the same checkout. In Codex, register and install it with:
+
+```text
+codex plugin marketplace add rweisssieker-xp/RW-Forgemind-Codex-Plugin
+codex plugin install forgemind@forgemind-marketplace
+```
+
+Reload Codex after installation. To update, run the first command again with the same repository and then use your normal plugin update flow. The built `dist/marketplace` bundle remains the reproducible option for governed or offline distribution.
+
 ## Upgrade and downgrade
 
 Build or obtain the exact desired version, verify its package, and run the same install command. Installing a newer version is an upgrade; installing an older valid version is a downgrade. ForgeMind reports the lifecycle transition and retains a recoverable backup during the operation.

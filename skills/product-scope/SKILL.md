@@ -1,5 +1,5 @@
 ---
-name: product-owner-agent
+name: product-scope
 description: ForgeMind product owner agent workflow. Use when the user explicitly asks for product owner agent.
 ---
 
@@ -7,7 +7,7 @@ description: ForgeMind product owner agent workflow. Use when the user explicitl
 
 Primary journey: **Design**
 
-Persona name: Mira Value.
+Persona name: Product Scope.
 
 Own user value and scope.
 

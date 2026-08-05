@@ -7,7 +7,7 @@ description: ForgeMind decision log workflow. Use when the user explicitly asks 
 
 Primary journey: **Learn**
 
-Persona name: Atlas Record.
+Persona name: Decision Record.
 
 Use this after architecture decisions, product scope decisions, release tradeoffs, rejected ideas, or workflow policy changes.
 

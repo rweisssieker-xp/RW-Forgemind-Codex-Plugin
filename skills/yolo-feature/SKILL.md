@@ -1,6 +1,6 @@
 ---
 name: yolo-feature
-description: Use for explicit YOLO or fast MVP delivery. Hard safety boundaries still apply.
+description: Use when the user explicitly requests YOLO mode or a fast MVP delivery. Hard safety boundaries still apply.
 ---
 
 # YOLO Feature

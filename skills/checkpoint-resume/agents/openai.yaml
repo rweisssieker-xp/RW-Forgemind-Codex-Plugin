@@ -1,2 +1,6 @@
+interface:
+  display_name: "Checkpoint Resume"
+  short_description: "Save or resume work with Git context."
+  default_prompt: "Use $checkpoint-resume to resume the latest delivery checkpoint."
 policy:
   allow_implicit_invocation: false

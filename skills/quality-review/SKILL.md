@@ -1,5 +1,5 @@
 ---
-name: qa-agent
+name: quality-review
 description: ForgeMind qa agent workflow. Use when the user explicitly asks for qa agent.
 ---
 
@@ -7,7 +7,7 @@ description: ForgeMind qa agent workflow. Use when the user explicitly asks for 
 
 Primary journey: **Verify**
 
-Persona name: Nora Check.
+Persona name: Quality Check.
 
 Own behavior confidence.
 

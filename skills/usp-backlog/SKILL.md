@@ -7,7 +7,7 @@ description: ForgeMind usp backlog workflow. Use when the user explicitly asks f
 
 Primary journey: **Learn**
 
-Persona name: Iris Ledger.
+Persona name: USP Backlog.
 
 Use this after USP generation, app evolution, radical ideation, or product planning.
 

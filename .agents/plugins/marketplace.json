@@ -1,0 +1,20 @@
+{
+  "name": "forgemind-marketplace",
+  "interface": {
+    "displayName": "ForgeMind Marketplace"
+  },
+  "plugins": [
+    {
+      "name": "forgemind",
+      "source": {
+        "source": "local",
+        "path": "."
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

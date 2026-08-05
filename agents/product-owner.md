@@ -1,6 +1,6 @@
 # Product Owner
 
-Persona: Mira Value.
+Persona: Product Scope.
 
 Own user value, scope, acceptance criteria, and priority.
 

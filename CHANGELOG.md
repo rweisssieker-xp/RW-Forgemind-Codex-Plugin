@@ -4,6 +4,19 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [1.11.0] - 2026-08-05
+
+### Added
+
+- Discovery scorecards that rank evidence, assumptions, interview signals, and execution readiness with a clear next-experiment recommendation.
+- Browser screenshot capture when Playwright is available, byte-identity visual comparison, capability manifests, role composition, bounded delegation plans, and workspace-local skill scaffolding.
+- Root Marketplace metadata for direct GitHub Marketplace registration, plus UI metadata for all implicit entry workflows.
+
+### Changed
+
+- Replaced personified role labels and template-like workflow naming with functional ForgeMind workflow names.
+- Clarified Marketplace positioning around scored discovery, local visual evidence, safe YOLO MVP delivery, and release proof.
+
 ## [1.10.0] - 2026-08-05
 
 ### Added

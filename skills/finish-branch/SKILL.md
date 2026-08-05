@@ -7,7 +7,7 @@ description: ForgeMind finish branch workflow. Use when the user explicitly asks
 
 Primary journey: **Release**
 
-Persona name: Rhea Ship.
+Persona name: Release Delivery.
 
 Prepare work for handoff.
 

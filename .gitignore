@@ -3,3 +3,6 @@ node_modules/
 dist/
 .forgemind.local.json
 .codex-orchestrator/memory/personal/
+.codex-orchestrator/composition/
+.codex-orchestrator/delegation/
+.codex-orchestrator/reports/

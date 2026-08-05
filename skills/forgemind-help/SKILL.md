@@ -49,7 +49,7 @@ For cross-agent or cross-team work, begin with `agent-trust-protocol`. For an un
 - `Skill Router`: recommend the next ForgeMind skill with confidence and risk.
 - `Workflow Graph`: show the end-to-end ForgeMind flow.
 - `Risk Radar`: scan for security, dependency, migration, generated-file, and handoff risk.
-- `Agent Menu`: choose a specialist role.
+- `Workflow Menu`: choose a specialist role.
 - `ForgeMind Autopilot`: autonomous inspect -> route -> act -> verify -> learn.
 - `Innovation First Autopilot`: read app structure first, then max AI/KI USPs and radical ideas.
 - `YOLO feature`: end-to-end build with guardrails.
@@ -60,27 +60,27 @@ For cross-agent or cross-team work, begin with `agent-trust-protocol`. For an un
 
 ## Personas
 
-- Orion Forge: MasterOrchestrator
-- Mira Value: Product Owner
-- Atlas Forge: Architect
-- Kai Builder: Senior Developer
-- Nora Check: QA Engineer
-- Sam Flow: Scrum Master
-- Vera Shield: Security Engineer
-- Iris Signal: USP AI Strategist
-- Astra Moat: Innovation First Autopilot
-- Nova Spark: Radical Vibe Builder
-- Rhea Ship: Release Manager
-- Gale Audit: Gap Scanner
-- Rhea Score: Release Readiness Score
-- Tessa Trace: Traceability Mapper
-- Cora Center: Command Center
-- Vera Radar: Risk Radar
-- Rhea Rollback: Rollback Planner
-- Nora Registry: Verification Registry
-- Atlas Record: Decision Log
-- Rhea Brief: PR Summary Builder
-- Iris Matrix: Differentiation Matrix
+- Orchestration Flow: Delivery Orchestrator
+- Product Scope: Product Owner
+- Architecture Review: Architect
+- Delivery Build: Senior Developer
+- Quality Check: QA Engineer
+- Work Planning: Scrum Master
+- Security Review: Security Engineer
+- Value Signals: USP AI Strategist
+- Innovation Design: Innovation First Autopilot
+- Radical Design: Radical Vibe Builder
+- Release Delivery: Release Manager
+- Gap Review: Gap Scanner
+- Release Score: Release Readiness Score
+- Traceability: Traceability Mapper
+- Command Center: Command Center
+- Risk Radar: Risk Radar
+- Rollback Plan: Rollback Planner
+- Verification Registry: Verification Registry
+- Decision Record: Decision Log
+- Delivery Brief: PR Summary Builder
+- Differentiation Matrix: Differentiation Matrix
 
 ## Artifacts
 
@@ -145,7 +145,7 @@ Workflow Graph: show the ForgeMind workflow graph and next gate.
 ```
 
 ```text
-Agent Menu: recommend the best ForgeMind specialist for this task.
+Workflow Menu: recommend the best ForgeMind specialist for this task.
 ```
 
 ```text
@@ -276,7 +276,7 @@ Apply Self-Update: review ForgeMind proposals and apply approved improvements.
 - Want plugin install confidence: `Runtime Discovery Test`
 - Want one dashboard: `Command Center`
 - Want setup: `Workflow Init`
-- Want a role: `Agent Menu`
+- Want a role: `Workflow Menu`
 - Want test-first: `TDD Builder`
 - Want handoff: `Finish Branch`
 - Want PRD: `PRD Builder`

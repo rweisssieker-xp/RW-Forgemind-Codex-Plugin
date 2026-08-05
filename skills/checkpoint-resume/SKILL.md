@@ -11,6 +11,7 @@ Save a checkpoint before handoff, context loss, or a risky transition:
 
 ```text
 forgemind checkpoint save --summary "what changed and why" --next "one concrete next action"
+forgemind checkpoint resume --id <checkpoint-id>
 forgemind checkpoint list
 ```
 

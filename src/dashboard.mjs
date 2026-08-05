@@ -9,7 +9,7 @@ import { listForgeRecords } from './forge/store.mjs';
 
 const SECTION_IDS = [
   'verification', 'risks', 'readiness', 'proof', 'traceability', 'decisions', 'memory-conflicts', 'outcomes', 'routing', 'usp-experiments',
-  'experiments', 'checkpoints', 'visual-qa', 'forge-trust', 'forge-strategy', 'forge-genome', 'forge-flight', 'forge-tournament', 'forge-shrink', 'forge-loop', 'forge-escrow', 'forge-federation',
+  'experiments', 'discovery-scorecard', 'checkpoints', 'visual-qa', 'capabilities', 'composition', 'delegation', 'forge-trust', 'forge-strategy', 'forge-genome', 'forge-flight', 'forge-tournament', 'forge-shrink', 'forge-loop', 'forge-escrow', 'forge-federation',
 ];
 
 export async function generateDashboard({ workspace, sources = {} }) {
@@ -32,8 +32,12 @@ export async function generateDashboard({ workspace, sources = {} }) {
     routing: await readJson(root, `${reports}/route-latest.json`),
     'usp-experiments': await readJsonLines(root, `${product}/usp-backlog.jsonl`),
     experiments: await readJsonLines(root, `${product}/experiments.jsonl`),
+    'discovery-scorecard': await readJson(root, `${product}/discovery-scorecard-latest.json`),
     checkpoints: await listJson(root, '.codex-orchestrator/checkpoints'),
     'visual-qa': await listJson(root, '.codex-orchestrator/visual-qa'),
+    capabilities: await readJson(root, `${reports}/capability-manifest-latest.json`),
+    composition: await readJson(root, '.codex-orchestrator/composition/latest.json'),
+    delegation: await readJson(root, '.codex-orchestrator/delegation/latest.json'),
     'forge-trust': await latestForgeRecord(root, ['trust/attestations', 'trust/contracts']),
     'forge-strategy': await latestForgeRecord(root, ['strategies/checks', 'strategies']),
     'forge-genome': await latestForgeRecord(root, ['genome']),

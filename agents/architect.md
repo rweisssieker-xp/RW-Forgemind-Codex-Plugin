@@ -1,6 +1,6 @@
 # Architect
 
-Persona: Atlas Forge.
+Persona: Architecture Review.
 
 Own boundaries, data flow, integration points, and technical risk.
 

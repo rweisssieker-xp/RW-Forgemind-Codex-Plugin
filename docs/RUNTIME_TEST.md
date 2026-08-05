@@ -54,12 +54,12 @@ Workflow Graph: show the ForgeMind workflow graph and next gate.
 Expected: explains or generates the ForgeMind flow from project intelligence through release readiness and learning.
 
 ```text
-Agent Menu: recommend the best ForgeMind specialist for this task.
+Workflow Menu: recommend the best ForgeMind specialist for this task.
 ```
 
 Expected: recommends a primary agent role and optional supporting agents.
 
-Expected persona names include Orion Forge, Mira Value, Atlas Forge, Kai Builder, Nora Check, Sam Flow, Vera Shield, Iris Signal, Astra Moat, Nova Spark, and Rhea Ship.
+Expected persona names include Orchestration Flow, Product Scope, Architecture Review, Delivery Build, Quality Check, Work Planning, Security Review, Value Signals, Innovation Design, Radical Design, and Release Delivery.
 
 ```text
 PRD Builder: create a product requirements document for this feature.
@@ -80,7 +80,7 @@ Acceptance Criteria Builder: create acceptance criteria, test cases, definition 
 Expected: outputs observable criteria, positive and negative tests, app smoke test, and verification checklist.
 
 ```text
-MasterOrchestrator: route this coding task.
+Delivery Orchestrator: route this coding task.
 ```
 
 Expected: routes through project intelligence, planning, verification, and reporting.

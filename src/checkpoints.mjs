@@ -23,3 +23,10 @@ export async function listCheckpoints({ workspace }) {
   try { return (await Promise.all((await readdir(directory)).filter((name) => name.endsWith('.json')).map(async (name) => JSON.parse(await readFile(path.join(directory, name), 'utf8'))))).sort((a, b) => b.createdAt.localeCompare(a.createdAt)); }
   catch (error) { if (error.code === 'ENOENT') return []; throw error; }
 }
+
+export async function resumeCheckpoint({ workspace, id }) {
+  const checkpoints = await listCheckpoints({ workspace });
+  const checkpoint = checkpoints.find((item) => item.id === id);
+  if (!checkpoint) throw new ForgeMindError('FM_CHECKPOINT_NOT_FOUND', `Checkpoint not found: ${id}`);
+  return { schemaVersion: 1, status: 'resumed', briefing: { summary: checkpoint.summary, next: checkpoint.next, git: checkpoint.git, createdAt: checkpoint.createdAt }, checkpoint, errors: [] };
+}

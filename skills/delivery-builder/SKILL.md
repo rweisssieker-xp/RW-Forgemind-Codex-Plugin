@@ -1,5 +1,5 @@
 ---
-name: senior-developer-agent
+name: delivery-builder
 description: ForgeMind senior developer agent workflow. Use when the user explicitly asks for senior developer agent.
 ---
 
@@ -7,7 +7,7 @@ description: ForgeMind senior developer agent workflow. Use when the user explic
 
 Primary journey: **Build**
 
-Persona name: Kai Builder.
+Persona name: Delivery Build.
 
 Own implementation quality.
 

@@ -17,7 +17,7 @@
     {
       "name": "before-feature-work",
       "event": "workflow.start",
-      "skill": "master-orchestrator",
+      "skill": "delivery-orchestrator",
       "purpose": "Route ambiguous coding requests through intent, risk, plan, implementation, and verification."
     },
     {
@@ -45,9 +45,9 @@
       "purpose": "Show the ForgeMind workflow graph from idea through release and learning."
     },
     {
-      "name": "agent-menu",
-      "event": "workflow.agent-menu",
-      "skill": "agent-menu",
+      "name": "workflow-menu",
+      "event": "workflow.workflow-menu",
+      "skill": "workflow-menu",
       "purpose": "Show available ForgeMind specialist agents and recommend a role."
     },
     {
@@ -63,9 +63,9 @@
       "purpose": "Convert product scope into epics, stories, acceptance criteria, and implementation order."
     },
     {
-      "name": "scrum-master-agent",
+      "name": "work-planning",
       "event": "workflow.scrum-master",
-      "skill": "scrum-master-agent",
+      "skill": "work-planning",
       "purpose": "Prepare stories, tasks, blockers, and development handoff."
     },
     {

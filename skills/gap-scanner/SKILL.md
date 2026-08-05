@@ -7,7 +7,7 @@ description: ForgeMind gap scanner workflow. Use when the user explicitly asks f
 
 Primary journey: **Verify**
 
-Persona name: Gale Audit.
+Persona name: Gap Review.
 
 Use this when the user asks what is missing, what remains before release, or how complete a plugin, app, branch, story, or feature is.
 

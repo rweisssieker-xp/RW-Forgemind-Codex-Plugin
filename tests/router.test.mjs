@@ -30,7 +30,7 @@ test('repeated successful outcomes change the recommended route with evidence', 
 test('unknown tasks use a low-confidence orchestrator fallback', () => {
   const result = recommendRoute({ profile: { stacks: [] }, task: { category: 'unknown' }, outcomes: [], policy: DEFAULT_POLICY });
 
-  assert.equal(result.primaryRoute, 'master-orchestrator');
+  assert.equal(result.primaryRoute, 'delivery-orchestrator');
   assert.ok(result.confidence <= 0.4);
   assert.ok(result.missingEvidence.includes('known-task-category'));
 });
@@ -45,7 +45,7 @@ test('learned preferences cannot bypass a denied safety action', () => {
   });
 
   assert.equal(result.escalation.decision, 'deny');
-  assert.equal(result.primaryRoute, 'master-orchestrator');
+  assert.equal(result.primaryRoute, 'delivery-orchestrator');
   assert.match(result.escalation.rationale, /denies destructive/);
 });
 

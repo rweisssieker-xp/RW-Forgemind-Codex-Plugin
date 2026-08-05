@@ -7,7 +7,7 @@ description: ForgeMind outcome memory workflow. Use when the user explicitly ask
 
 Primary journey: **Learn**
 
-Persona name: Mira Outcome.
+Persona name: Outcome Learning.
 
 Use this after completed work, failed checks, release decisions, USP experiments, or review findings.
 

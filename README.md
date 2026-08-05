@@ -52,9 +52,9 @@ Installation, upgrade, downgrade, rollback, and uninstall are documented in [doc
 
 ## What It Adds
 
-- MasterOrchestrator for routing coding work.
+- Delivery Orchestrator for routing coding work.
 - Workflow Init and Workflow Status for governed phase control.
-- Agent Menu and specialist role skills for Product Owner, Architect, Senior Developer, and QA.
+- Workflow Menu and specialist role skills for Product Owner, Architect, Senior Developer, and QA.
 - PRD, Epic/Story, Scrum Master, Story Status, and Acceptance Criteria builders.
 - ForgeMind product artifacts for `docs/forgemind/prd.md`, `docs/forgemind/epics.md`, `docs/forgemind/stories/`, `docs/forgemind/acceptance/`, and `.codex-orchestrator/workflow-status.md`.
 - Autonomous Orchestrator for inspect -> decide -> act -> verify -> learn autopilot execution.
@@ -88,15 +88,15 @@ Installation, upgrade, downgrade, rollback, and uninstall are documented in [doc
 
 ## Skills
 
-- `master-orchestrator`: routes work through discovery, planning, implementation, QA, and delivery.
+- `delivery-orchestrator`: routes work through discovery, planning, implementation, QA, and delivery.
 - `workflow-init`: initializes project profile, memory, verification baseline, and next action.
 - `workflow-status`: reports current phase, mode, blockers, verification, and next action.
 - `skill-router`: recommends the next ForgeMind skill with confidence and alternatives.
 - `workflow-graph`: generates or explains the full ForgeMind workflow graph.
-- `agent-menu`: recommends specialist roles.
+- `workflow-menu`: recommends specialist roles.
 - `prd-builder`: creates product requirements documents.
 - `epic-story-builder`: converts scope into epics, stories, tasks, and order.
-- `scrum-master-agent`: prepares stories for implementation.
+- `work-planning`: prepares stories for implementation.
 - `story-status`: reports story, epic, backlog, or feature status.
 - `acceptance-criteria-builder`: creates acceptance criteria, tests, and definition of done.
 - `tdd-builder`: red-green-refactor workflow where practical.
@@ -148,17 +148,17 @@ Installation, upgrade, downgrade, rollback, and uninstall are documented in [doc
 
 Profiles live in `agents/`:
 
-- Orion Forge: MasterOrchestrator
-- Mira Value: `product-owner.md`
-- Atlas Forge: `architect.md`
-- Kai Builder: `senior-developer.md`
-- Nora Check: `qa-engineer.md`
-- Sam Flow: Scrum Master
-- Vera Shield: `security-engineer.md`
-- Iris Signal: `usp-ai-strategist.md`
-- Astra Moat: Innovation First Autopilot
-- Nova Spark: Radical Vibe Builder
-- Rhea Ship: `release-manager.md`
+- Orchestration Flow: Delivery Orchestrator
+- Product Scope: `product-owner.md`
+- Architecture Review: `architect.md`
+- Delivery Build: `senior-developer.md`
+- Quality Check: `qa-engineer.md`
+- Work Planning: Scrum Master
+- Security Review: `security-engineer.md`
+- Value Signals: `usp-ai-strategist.md`
+- Innovation Design: Innovation First Autopilot
+- Radical Design: Radical Vibe Builder
+- Release Delivery: `release-manager.md`
 
 ## Useful Prompts
 
@@ -168,11 +168,11 @@ Workflow Init: initialize ForgeMind for this project.
 Workflow Status: show current phase, mode, blockers, verification, and next action.
 Skill Router: recommend the best ForgeMind skill with confidence, alternatives, risk, and next action.
 Workflow Graph: show the ForgeMind workflow graph and next gate.
-Agent Menu: recommend the best ForgeMind specialist for this task.
+Workflow Menu: recommend the best ForgeMind specialist for this task.
 PRD Builder: create a product requirements document for this feature.
 Epic Story Builder: convert this PRD or feature into epics, user stories, tasks, and implementation order.
 Acceptance Criteria Builder: create acceptance criteria, test cases, definition of done, and verification checklist.
-MasterOrchestrator: route this coding task.
+Delivery Orchestrator: route this coding task.
 ForgeMind Autopilot: inspect, route, decide, act, verify, learn, and report.
 Innovation First Autopilot: read the current app structure first, then generate maximum AI/KI USPs and radical ideas before choosing the best MVP.
 Delivery Acceleration mode: inspect this repo, plan, implement, verify, and review.
@@ -266,7 +266,7 @@ Templates live in `templates/usp/`:
 
 ## Installation
 
-The marketplace entry is in `.agents/plugins/marketplace.json` and points to `./plugins/forgemind`.
+Install directly from GitHub with `codex plugin marketplace add rweisssieker-xp/RW-Forgemind-Codex-Plugin`, then `codex plugin install forgemind@forgemind-marketplace`. The repository Marketplace entry resolves the root plugin; `npm run build` still creates checksum-protected offline packages.
 
 See `docs/INSTALL.md` for reload checks and `docs/WORKFLOWS.md` for operating workflows.
 

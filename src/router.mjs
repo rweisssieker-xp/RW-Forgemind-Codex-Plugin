@@ -9,7 +9,7 @@ const BASE_ROUTES = {
 };
 
 const ROUTE_TOKEN_COST = {
-  'master-orchestrator': 850,
+  'delivery-orchestrator': 850,
   'structured-feature': 500,
   'systematic-debugging': 450,
   'innovation-first-autopilot': 700,
@@ -19,7 +19,7 @@ const ROUTE_TOKEN_COST = {
 };
 
 export function recommendRoute({ profile, task, outcomes = [], policy, routing = {} }) {
-  const base = BASE_ROUTES[task.category] ?? 'master-orchestrator';
+  const base = BASE_ROUTES[task.category] ?? 'delivery-orchestrator';
   const matching = outcomes.filter((outcome) =>
     outcome.taskCategory === task.category && stackMatch(profile.stacks ?? [], outcome.project?.stacks ?? []),
   );
@@ -27,7 +27,7 @@ export function recommendRoute({ profile, task, outcomes = [], policy, routing =
   for (const outcome of matching) scores.set(outcome.route, (scores.get(outcome.route) ?? 0) + outcome.effectiveness);
   const ranked = [...scores.entries()].sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0]));
   let primaryRoute = ranked[0][0];
-  let alternative = ranked.find(([route]) => route !== primaryRoute)?.[0] ?? (primaryRoute === base ? 'master-orchestrator' : base);
+  let alternative = ranked.find(([route]) => route !== primaryRoute)?.[0] ?? (primaryRoute === base ? 'delivery-orchestrator' : base);
   const missingEvidence = [];
   if (!matching.length) missingEvidence.push('matching-outcomes');
   if (!BASE_ROUTES[task.category]) missingEvidence.push('known-task-category');
@@ -39,7 +39,7 @@ export function recommendRoute({ profile, task, outcomes = [], policy, routing =
     escalation = evaluateAction(policy, { kind: task.risk, path: task.path });
     if (escalation.decision === 'deny') {
       alternative = primaryRoute;
-      primaryRoute = 'master-orchestrator';
+      primaryRoute = 'delivery-orchestrator';
       confidence = 1;
     }
   }

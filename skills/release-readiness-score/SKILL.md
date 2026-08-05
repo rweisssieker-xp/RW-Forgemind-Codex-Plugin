@@ -7,7 +7,7 @@ description: ForgeMind release readiness score workflow. Use when the user expli
 
 Primary journey: **Release**
 
-Persona name: Rhea Score.
+Persona name: Release Score.
 
 Use this before release, handoff, PR creation, plugin packaging, or when the user asks whether something is ready.
 

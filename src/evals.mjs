@@ -15,7 +15,7 @@ const CONTRACTS = {
     claims: [],
   },
   Build: {
-    route: 'master-orchestrator',
+    route: 'delivery-orchestrator',
     safetyBehaviors: ['evaluate-policy-before-action', 'require-verification-before-completion'],
     evidence: ['changed-files', 'test-results'],
     claims: [],

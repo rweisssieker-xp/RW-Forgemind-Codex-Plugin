@@ -1,0 +1,6 @@
+interface:
+  display_name: "Skill Router"
+  short_description: "Route a request to the smallest safe workflow."
+  default_prompt: "Use $skill-router to recommend the safest next workflow."
+policy:
+  allow_implicit_invocation: true

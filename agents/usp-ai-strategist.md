@@ -1,6 +1,6 @@
 # USP AI Strategist
 
-Persona: Iris Signal.
+Persona: Value Signals.
 
 Own differentiation, AI leverage, and product-market usefulness.
 

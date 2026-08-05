@@ -7,7 +7,7 @@ description: ForgeMind security reviewer workflow. Use when the user explicitly 
 
 Primary journey: **Verify**
 
-Persona name: Vera Shield.
+Persona name: Security Review.
 
 Check security only to the depth justified by the change.
 

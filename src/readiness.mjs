@@ -9,6 +9,7 @@ export async function scoreReadiness({ workspace, verification, gaps, risks }) {
   const resolvedVerification = verification ?? await readReport(root, 'verification-latest.json', { status: 'missing', commands: [], errors: [] });
   const resolvedGaps = gaps ?? await readReport(root, 'gap-scan-latest.json', { status: 'missing', gaps: [] });
   const resolvedRisks = risks ?? await readReport(root, 'risk-radar-latest.json', { status: 'missing', risks: [] });
+  const capabilities = await readReport(root, 'capability-manifest-latest.json', null);
   const blockers = [];
   let score = 100;
 
@@ -22,7 +23,7 @@ export async function scoreReadiness({ workspace, verification, gaps, risks }) {
   if (proof.status !== 'valid') blockers.push('delivery-proof'), score -= 20;
   score = Math.max(0, Math.min(100, score));
   const status = blockers.length ? 'blocked' : score >= 80 ? 'ready' : score >= 60 ? 'ready-with-notes' : 'risky';
-  const report = { schemaVersion: 1, generatedAt: new Date().toISOString(), status, score, blockers: [...new Set(blockers)], verification: resolvedVerification.status, gaps: resolvedGaps.status, risks: resolvedRisks.status, proof: proof.status };
+  const report = { schemaVersion: 1, generatedAt: new Date().toISOString(), status, score, blockers: [...new Set(blockers)], verification: resolvedVerification.status, gaps: resolvedGaps.status, risks: resolvedRisks.status, proof: proof.status, capabilities: capabilities ? { missing: capabilities.missing ?? [], generatedAt: capabilities.generatedAt } : null };
   const output = assertContained(root, path.join(root, '.codex-orchestrator', 'reports', 'release-readiness-latest.json'));
   await writeJsonAtomic(output, report);
   return { ...report, evidencePath: '.codex-orchestrator/reports/release-readiness-latest.json' };

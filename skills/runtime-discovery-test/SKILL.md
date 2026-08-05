@@ -7,7 +7,7 @@ description: ForgeMind runtime discovery test workflow. Use when the user explic
 
 Primary journey: **Release**
 
-Persona name: Nora Runtime.
+Persona name: Runtime Check.
 
 Use this after installing, packaging, renaming, or moving the plugin.
 

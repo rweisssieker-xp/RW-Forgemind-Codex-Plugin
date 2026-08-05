@@ -7,7 +7,7 @@ description: ForgeMind workflow graph workflow. Use when the user explicitly ask
 
 Primary journey: **Discover**
 
-Persona name: Vera Flow.
+Persona name: Workflow Graph.
 
 Use this when the user asks for the process, phases, next gate, orchestration flow, delivery flow, or how ForgeMind connects its skills.
 

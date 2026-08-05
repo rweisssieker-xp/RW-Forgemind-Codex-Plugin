@@ -7,7 +7,7 @@ description: ForgeMind pr summary builder workflow. Use when the user explicitly
 
 Primary journey: **Release**
 
-Persona name: Rhea Brief.
+Persona name: Delivery Brief.
 
 Use this before PR creation, branch handoff, release notes, or when the user asks for a summary of changes.
 

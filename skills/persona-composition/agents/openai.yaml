@@ -1,0 +1,6 @@
+interface:
+  display_name: "Persona Composition"
+  short_description: "Compose focused roles with explicit handoffs."
+  default_prompt: "Use $persona-composition to plan the smallest role sequence for this goal."
+policy:
+  allow_implicit_invocation: false

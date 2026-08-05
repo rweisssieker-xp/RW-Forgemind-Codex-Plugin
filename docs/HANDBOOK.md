@@ -22,13 +22,13 @@ The Trust Fabric adds nine evidence-native specialist workflows across these jou
 Use this when ForgeMind should handle the whole task:
 
 ```text
-Orion Forge: uebernimm diese Aufgabe als MasterOrchestrator. Lies die App-Struktur, schlage radical AI/KI-USPs vor, waehle den besten MVP, setze ihn um, teste die App und berichte Risiken.
+Orchestration Flow: uebernimm diese Aufgabe als Delivery Orchestrator. Lies die App-Struktur, schlage radical AI/KI-USPs vor, waehle den besten MVP, setze ihn um, teste die App und berichte Risiken.
 ```
 
 Use this for innovation before implementation:
 
 ```text
-Astra Moat: lies zuerst die bisherige App-Struktur, liefere maximale AI/KI-USPs und radikale Ideen, waehle den besten buildbaren MVP und plane die Umsetzung mit Tests.
+Innovation Design: lies zuerst die bisherige App-Struktur, liefere maximale AI/KI-USPs und radikale Ideen, waehle den besten buildbaren MVP und plane die Umsetzung mit Tests.
 ```
 
 Use this for direct autonomous implementation:
@@ -62,40 +62,40 @@ You can address personas directly in prompts. Use `Name: task`.
 
 | Persona | Role | Use When |
 | --- | --- | --- |
-| Orion Forge | MasterOrchestrator | Route, coordinate, implement, verify, learn |
-| Mira Value | Product Owner | Scope, MVP, user value, acceptance criteria |
-| Atlas Forge | Architect | Boundaries, data flow, risks, technical design |
-| Kai Builder | Senior Developer | Implementation, code quality, tests |
-| Nora Check | QA Engineer | Test plan, regression, smoke tests |
-| Sam Flow | Scrum Master | Story prep, blockers, handoff |
-| Vera Shield | Security Engineer | Auth, secrets, data exposure, abuse risk |
-| Iris Signal | USP AI Strategist | AI/KI USPs, differentiation, USP Score |
-| Astra Moat | Innovation Agent | App-first radical USPs and MVP choice |
-| Nova Spark | Radical Vibe Builder | 10x future features that eliminate workflows |
-| Rhea Ship | Release Manager | Readiness, verification, release notes |
-| Gale Audit | Gap Scanner | Missing work before release or handoff |
-| Rhea Score | Release Readiness Score | 0-100 release confidence |
-| Tessa Trace | Traceability Mapper | PRD/story/code/test evidence |
-| Cora Center | Command Center | Dashboard and operating overview |
-| Vera Radar | Risk Radar | Security, dependency, migration, generated-file, release risk |
-| Rhea Rollback | Rollback Planner | Recovery plans and fallback steps |
-| Nora Registry | Verification Registry | Known-good commands and confidence |
-| Atlas Record | Decision Log | Durable product and architecture decisions |
-| Rhea Brief | PR Summary Builder | PR and handoff summaries |
-| Iris Matrix | Differentiation Matrix | Capability, market, and moat positioning |
+| Orchestration Flow | Delivery Orchestrator | Route, coordinate, implement, verify, learn |
+| Product Scope | Product Owner | Scope, MVP, user value, acceptance criteria |
+| Architecture Review | Architect | Boundaries, data flow, risks, technical design |
+| Delivery Build | Senior Developer | Implementation, code quality, tests |
+| Quality Check | QA Engineer | Test plan, regression, smoke tests |
+| Work Planning | Scrum Master | Story prep, blockers, handoff |
+| Security Review | Security Engineer | Auth, secrets, data exposure, abuse risk |
+| Value Signals | USP AI Strategist | AI/KI USPs, differentiation, USP Score |
+| Innovation Design | Innovation Workflow | App-first radical USPs and MVP choice |
+| Radical Design | Radical Vibe Builder | 10x future features that eliminate workflows |
+| Release Delivery | Release Manager | Readiness, verification, release notes |
+| Gap Review | Gap Scanner | Missing work before release or handoff |
+| Release Score | Release Readiness Score | 0-100 release confidence |
+| Traceability | Traceability Mapper | PRD/story/code/test evidence |
+| Command Center | Command Center | Dashboard and operating overview |
+| Risk Radar | Risk Radar | Security, dependency, migration, generated-file, release risk |
+| Rollback Plan | Rollback Planner | Recovery plans and fallback steps |
+| Verification Registry | Verification Registry | Known-good commands and confidence |
+| Decision Record | Decision Log | Durable product and architecture decisions |
+| Delivery Brief | PR Summary Builder | PR and handoff summaries |
+| Differentiation Matrix | Differentiation Matrix | Capability, market, and moat positioning |
 
 Examples:
 
 ```text
-Iris Signal: finde 10 AI/KI-USPs fuer diese App, score sie und empfehle den ersten MVP.
+Value Signals: finde 10 AI/KI-USPs fuer diese App, score sie und empfehle den ersten MVP.
 ```
 
 ```text
-Kai Builder: implementiere diese Story mit minimalem Diff, bestehenden Patterns und Tests.
+Delivery Build: implementiere diese Story mit minimalem Diff, bestehenden Patterns und Tests.
 ```
 
 ```text
-Nora Check: erstelle einen Regressionstestplan und einen App-Smoke-Test fuer diese Aenderung.
+Quality Check: erstelle einen Regressionstestplan und einen App-Smoke-Test fuer diese Aenderung.
 ```
 
 ## Main Commands
@@ -107,11 +107,11 @@ ForgeMind Help: show commands, modes, and when to use which workflow.
 ```
 
 ```text
-Agent Menu: show named personas and recommend who should handle this task.
+Workflow Menu: show named personas and recommend who should handle this task.
 ```
 
 ```text
-MasterOrchestrator: route this coding task.
+Delivery Orchestrator: route this coding task.
 ```
 
 ### Project Setup
@@ -163,7 +163,7 @@ ForgeMind keeps product planning concrete by writing artifacts when project file
 ### PRD
 
 ```text
-Mira Value: create a PRD for this feature and update docs/forgemind/prd.md.
+Product Scope: create a PRD for this feature and update docs/forgemind/prd.md.
 ```
 
 Or:
@@ -183,7 +183,7 @@ Stories should be small enough for one implementation pass plus verification.
 ### Story Prep
 
 ```text
-Sam Flow: prepare this story for implementation with tasks, blockers, and handoff notes.
+Work Planning: prepare this story for implementation with tasks, blockers, and handoff notes.
 ```
 
 ### Acceptance Criteria
@@ -236,7 +236,7 @@ Bands:
 Use this when you do not want small improvements:
 
 ```text
-Nova Spark: analyze this app, generate 5 radical AI/KI 10x features, choose the boldest buildable MVP, and produce a build-ready plan.
+Radical Design: analyze this app, generate 5 radical AI/KI 10x features, choose the boldest buildable MVP, and produce a build-ready plan.
 ```
 
 Rules:
@@ -338,7 +338,7 @@ Findings should lead the response and include file/line references when possible
 ### Security
 
 ```text
-Vera Shield: check auth, secrets, data exposure, dependencies, prompt injection, and AI tool risks.
+Security Review: check auth, secrets, data exposure, dependencies, prompt injection, and AI tool risks.
 ```
 
 Use for auth changes, data handling, public endpoints, AI tool use, dependencies, secrets, or risky input handling.
@@ -503,7 +503,7 @@ The command center summarizes project profile, workflow graph, verification, gap
 ### Full Innovation-To-Build Prompt
 
 ```text
-Orion Forge: uebernimm als MasterOrchestrator.
+Orchestration Flow: uebernimm als Delivery Orchestrator.
 1. Lies die App-Struktur.
 2. Erklaere kurz, was die App heute macht.
 3. Liefere 5 radikale AI/KI-Ideen und 6 realistische Feature-Ideen.
@@ -517,25 +517,25 @@ Orion Forge: uebernimm als MasterOrchestrator.
 ### Product-Only Prompt
 
 ```text
-Iris Signal: analysiere diese App aus USP-Sicht. Was ist Basisfunktion, was ist erweiterbar, was koennte ein echter AI/KI-Moat sein? Liefere Scores und den besten MVP.
+Value Signals: analysiere diese App aus USP-Sicht. Was ist Basisfunktion, was ist erweiterbar, was koennte ein echter AI/KI-Moat sein? Liefere Scores und den besten MVP.
 ```
 
 ### Build-Only Prompt
 
 ```text
-Kai Builder: implementiere diese Story mit minimalem Diff. Nutze bestehende Patterns, fuege fokussierte Tests hinzu und fuehre relevante Verification aus.
+Delivery Build: implementiere diese Story mit minimalem Diff. Nutze bestehende Patterns, fuege fokussierte Tests hinzu und fuehre relevante Verification aus.
 ```
 
 ### QA Prompt
 
 ```text
-Nora Check: pruefe diese Aenderung auf Regressionen, Edge Cases und fehlende Tests. Definiere einen App-Smoke-Test und klare Pass/Fail-Kriterien.
+Quality Check: pruefe diese Aenderung auf Regressionen, Edge Cases und fehlende Tests. Definiere einen App-Smoke-Test und klare Pass/Fail-Kriterien.
 ```
 
 ### Release Prompt
 
 ```text
-Rhea Ship: bereite den Abschluss vor. Pruefe Scope, Verification, Risiken, Release Notes und Rollback-Hinweise.
+Release Delivery: bereite den Abschluss vor. Pruefe Scope, Verification, Risiken, Release Notes und Rollback-Hinweise.
 ```
 
 ## Operating Rules
@@ -579,7 +579,7 @@ ForgeMind Help: show commands, modes, personas, artifacts, and when to use which
 ```
 
 ```text
-Agent Menu: show named personas and recommend who should handle this task.
+Workflow Menu: show named personas and recommend who should handle this task.
 ```
 
 ```text

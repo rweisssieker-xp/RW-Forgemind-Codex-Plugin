@@ -7,7 +7,7 @@ description: ForgeMind rollback planner workflow. Use when the user explicitly a
 
 Primary journey: **Release**
 
-Persona name: Rhea Rollback.
+Persona name: Rollback Plan.
 
 Use this before releases, risky merges, migrations, installer updates, dependency bumps, or production-facing work.
 

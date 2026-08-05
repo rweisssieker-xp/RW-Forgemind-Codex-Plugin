@@ -1,0 +1,6 @@
+interface:
+  display_name: "Skill Factory"
+  short_description: "Generate a project-local skill scaffold."
+  default_prompt: "Use $skill-factory to create a focused project workflow skill."
+policy:
+  allow_implicit_invocation: false

@@ -7,7 +7,7 @@ description: ForgeMind differentiation matrix workflow. Use when the user explic
 
 Primary journey: **Design**
 
-Persona name: Iris Matrix.
+Persona name: Differentiation Matrix.
 
 Use this when positioning ForgeMind, planning USPs, benchmarking alternative operating models, or deciding the next product moat.
 

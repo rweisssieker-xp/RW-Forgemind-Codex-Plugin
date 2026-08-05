@@ -7,7 +7,7 @@ description: Routes ambiguous ForgeMind requests to the safest next workflow. Us
 
 Primary journey: **Discover**
 
-Persona name: Orion Signal.
+Persona name: Workflow Routing.
 
 Use this before ambiguous coding, product, review, release, debugging, or workflow requests.
 

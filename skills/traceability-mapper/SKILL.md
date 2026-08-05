@@ -7,7 +7,7 @@ description: ForgeMind traceability mapper workflow. Use when the user explicitl
 
 Primary journey: **Verify**
 
-Persona name: Tessa Trace.
+Persona name: Traceability.
 
 Use this when work needs ForgeMind-native evidence that implementation matches product intent.
 

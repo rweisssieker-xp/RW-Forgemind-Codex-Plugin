@@ -11,6 +11,8 @@ Capture screenshots with the available browser or test environment, review them 
 
 ```text
 forgemind visual --input <screenshot-file> --label <screen-or-state> --viewport <width>x<height>
+forgemind visual capture --url <local-url> --output evidence/screen.png --label <screen> --viewport 1280x720
+forgemind visual compare --baseline <before.png> --candidate <after.png> --label <screen>
 ```
 
-Record normal, empty, error, and narrow-viewport states where relevant. The CLI stores file name, size, viewport, and SHA-256 locally; it does not upload screenshots or claim pixel comparison it did not perform.
+Record normal, empty, error, and narrow-viewport states where relevant. Browser capture uses Playwright only when it is installed locally. Comparison is deliberately byte-identity, not a pixel-diff claim. The CLI never uploads screenshots.

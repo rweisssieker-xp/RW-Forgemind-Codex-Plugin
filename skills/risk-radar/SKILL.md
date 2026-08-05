@@ -7,7 +7,7 @@ description: ForgeMind risk radar workflow. Use when the user explicitly asks fo
 
 Primary journey: **Verify**
 
-Persona name: Vera Radar.
+Persona name: Risk Radar.
 
 Use this before high-impact edits, release, PR handoff, installer distribution, or when the user asks what could go wrong.
 
