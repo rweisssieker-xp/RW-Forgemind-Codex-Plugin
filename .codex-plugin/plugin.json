@@ -1,7 +1,7 @@
 {
   "name": "forgemind",
-  "version": "1.9.0",
-  "description": "Evidence-first autonomous delivery for Codex: verifiable proof, safe escalation, and release-ready decisions for people and governed teams.",
+  "version": "1.10.0",
+  "description": "Evidence-first product discovery and autonomous delivery for Codex: experiments, verifiable proof, safe escalation, and release-ready decisions.",
   "author": {
     "name": "rweisssieker-xp",
     "url": "https://github.com/rweisssieker-xp"

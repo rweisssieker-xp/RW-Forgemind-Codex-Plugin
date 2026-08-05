@@ -18,6 +18,9 @@ const PRIMARY_COMMANDS = [
   'outcome',
   'route',
   'signals',
+  'discovery',
+  'checkpoint',
+  'visual',
   'memory',
   'dashboard',
   'forge',
@@ -183,6 +186,22 @@ export async function runCli(argv, context = {}) {
           ? await saveUspRecords({ workspace, records: createUspRecords(clusters) })
           : { schemaVersion: 1, status: 'passed', clusters, errors: [] };
       }
+    } else if (command === 'discovery') {
+      const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
+      const action = positionals[0] ?? 'list';
+      const { createExperiment, decideExperiment, listExperiments } = await import('./discovery.mjs');
+      if (action === 'create') data = await createExperiment({ workspace, experiment: { title: options.title, hypothesis: options.hypothesis, metric: options.metric, audience: options.audience, evidence: options.evidence } });
+      else if (action === 'decide') data = await decideExperiment({ workspace, id: options.id, decision: options.decision, evidence: options.evidence });
+      else data = { schemaVersion: 1, status: 'passed', experiments: await listExperiments({ workspace }), errors: [] };
+    } else if (command === 'checkpoint') {
+      const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
+      const { listCheckpoints, saveCheckpoint } = await import('./checkpoints.mjs');
+      data = positionals[0] === 'save'
+        ? await saveCheckpoint({ workspace, summary: options.summary, next: options.next })
+        : { schemaVersion: 1, status: 'passed', checkpoints: await listCheckpoints({ workspace }), errors: [] };
+    } else if (command === 'visual') {
+      const { recordVisualEvidence } = await import('./visual-qa.mjs');
+      data = await recordVisualEvidence({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), input: options.input, label: options.label, viewport: options.viewport });
     } else if (command === 'dashboard') {
       const { generateDashboard } = await import('./dashboard.mjs');
       data = await generateDashboard({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()) });

@@ -9,7 +9,7 @@ import { listForgeRecords } from './forge/store.mjs';
 
 const SECTION_IDS = [
   'verification', 'risks', 'readiness', 'proof', 'traceability', 'decisions', 'memory-conflicts', 'outcomes', 'routing', 'usp-experiments',
-  'forge-trust', 'forge-strategy', 'forge-genome', 'forge-flight', 'forge-tournament', 'forge-shrink', 'forge-loop', 'forge-escrow', 'forge-federation',
+  'experiments', 'checkpoints', 'visual-qa', 'forge-trust', 'forge-strategy', 'forge-genome', 'forge-flight', 'forge-tournament', 'forge-shrink', 'forge-loop', 'forge-escrow', 'forge-federation',
 ];
 
 export async function generateDashboard({ workspace, sources = {} }) {
@@ -31,6 +31,9 @@ export async function generateDashboard({ workspace, sources = {} }) {
     outcomes: await readJsonLines(root, `${memory}/outcomes.jsonl`),
     routing: await readJson(root, `${reports}/route-latest.json`),
     'usp-experiments': await readJsonLines(root, `${product}/usp-backlog.jsonl`),
+    experiments: await readJsonLines(root, `${product}/experiments.jsonl`),
+    checkpoints: await listJson(root, '.codex-orchestrator/checkpoints'),
+    'visual-qa': await listJson(root, '.codex-orchestrator/visual-qa'),
     'forge-trust': await latestForgeRecord(root, ['trust/attestations', 'trust/contracts']),
     'forge-strategy': await latestForgeRecord(root, ['strategies/checks', 'strategies']),
     'forge-genome': await latestForgeRecord(root, ['genome']),
@@ -78,6 +81,12 @@ async function readJsonLines(root, relative) {
   const text = await readText(root, relative);
   if (text === null) return [];
   try { return text.split(/\r?\n/).filter(Boolean).map((line) => JSON.parse(line)); } catch { return [{ status: 'invalid', source: relative }]; }
+}
+
+async function listJson(root, relative) {
+  const { readdir } = await import('node:fs/promises');
+  try { return await Promise.all((await readdir(assertContained(root, path.join(root, relative)))).filter((name) => name.endsWith('.json')).map((name) => readJson(root, path.join(relative, name)))); }
+  catch (error) { if (error.code === 'ENOENT') return []; throw error; }
 }
 
 async function readText(root, relative) {

@@ -33,6 +33,7 @@ export async function buildPackages({ pluginRoot, outputRoot = path.join(pluginR
     }
   }
   await removeTrustFabricSkills(pluginPath);
+  await removeTrustFabricTemplates(pluginPath);
   await writeCoreManifest(pluginPath);
   await writeChecksums(pluginPath);
   const packageValidation = await verifyPackage(pluginPath);
@@ -59,6 +60,10 @@ async function removeTrustFabricSkills(pluginPath) {
   for (const skill of TRUST_FABRIC_SKILLS) await rm(path.join(pluginPath, 'skills', skill), { recursive: true, force: true });
 }
 
+async function removeTrustFabricTemplates(pluginPath) {
+  await rm(path.join(pluginPath, 'templates', 'forge'), { recursive: true, force: true });
+}
+
 async function hasTrustFabricSkills(root) {
   return (await Promise.all(TRUST_FABRIC_SKILLS.map((skill) => exists(path.join(root, 'skills', skill, 'SKILL.md'))))).every(Boolean);
 }
@@ -66,8 +71,8 @@ async function hasTrustFabricSkills(root) {
 async function writeCoreManifest(pluginPath) {
   const manifestPath = path.join(pluginPath, '.codex-plugin', 'plugin.json');
   const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
-  manifest.description = 'Evidence-first autonomous delivery for Codex: safe execution, verifiable proof, and release-ready decisions.';
-  manifest.interface.shortDescription = 'Evidence-first delivery, safe autonomy, and release-ready decisions.';
+  manifest.description = 'Evidence-first product discovery and autonomous delivery for Codex: safe execution, experiments, verifiable proof, and release-ready decisions.';
+  manifest.interface.shortDescription = 'Evidence-first discovery, delivery, and release-ready decisions.';
   manifest.interface.longDescription = 'ForgeMind Core turns discovery, creative exploration, and product intent into safe, cost-aware delivery with verifiable release evidence. Install the optional ForgeMind Trust Fabric add-on for cross-agent contracts, strategy, learning, and advanced evidence workflows.';
   await writeJsonAtomic(manifestPath, manifest);
 }
@@ -76,6 +81,7 @@ async function buildTrustFabricAddon({ root, output }) {
   await mkdir(path.join(output, '.codex-plugin'), { recursive: true });
   await mkdir(path.join(output, 'skills'), { recursive: true });
   for (const skill of TRUST_FABRIC_SKILLS) await cp(path.join(root, 'skills', skill), path.join(output, 'skills', skill), { recursive: true, force: true });
+  await cp(path.join(root, 'templates', 'forge'), path.join(output, 'templates', 'forge'), { recursive: true, force: true });
   const sourceManifest = JSON.parse(await readFile(path.join(root, '.codex-plugin', 'plugin.json'), 'utf8'));
   await writeJsonAtomic(path.join(output, '.codex-plugin', 'plugin.json'), {
     name: 'forgemind-trust-fabric', version: sourceManifest.version,

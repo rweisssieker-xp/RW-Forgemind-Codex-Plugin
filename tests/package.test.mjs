@@ -24,6 +24,8 @@ test('build creates reproducible standalone and marketplace packages', async (t)
   assert.equal((await verifyPackage(first.pluginPath)).status, 'passed');
   assert.equal((await verifyPackage(path.join(first.marketplacePath, 'plugins', 'forgemind'))).status, 'passed');
   assert.equal((await verifyPackage(path.join(first.marketplacePath, 'plugins', 'forgemind-trust-fabric'))).status, 'passed');
+  await assert.rejects(readFile(path.join(first.pluginPath, 'templates', 'forge', 'trust-contract.example.json'), 'utf8'));
+  assert.equal(JSON.parse(await readFile(path.join(first.marketplacePath, 'plugins', 'forgemind-trust-fabric', 'templates', 'forge', 'trust-contract.example.json'), 'utf8')).title, 'Portable agent delivery contract');
 });
 
 test('package verification rejects files outside the checksum allowlist', async (t) => {

@@ -17,6 +17,8 @@ ForgeMind is the evidence-first delivery system for Codex: autonomous execution 
 - **Reproducible collaboration:** sealed records, flight replay, versioned artifacts, and outcome memory make work inspectable and repeatable.
 - **Strategy stays connected to delivery:** USP experiments, acceptance criteria, implementation, and verification remain traceable through the same workflow.
 - **Creativity becomes delivery:** structured ideation, human-centered discovery, lateral solutions, opportunity design, narrative, and presentation flow into measurable MVP contracts.
+- **Discovery compounds:** hypotheses become local experiments with evidence-backed pivot, patch, persevere, or stop decisions.
+- **Work resumes cleanly:** checkpoints preserve the local Git state, decisions, and next action; visual QA seals screenshot evidence locally.
 
 ## Start Here
 
@@ -82,6 +84,7 @@ Installation, upgrade, downgrade, rollback, and uninstall are documented in [doc
 - Nine-capability Trust Fabric for portable agent contracts, executable strategy, learned routing, tamper-evident history, future selection, reversible simplification, measured product autonomy, evidence-gated acceptance, and aggregate cross-team learning.
 - Creative Intelligence for structured ideation, human-centered design, systems diagnosis, lateral solutions, opportunity design, product narrative, and presentation architecture.
 - Innovation Delivery Lab for outcome contracts, counterfactual route selection, change budgets, proof-carrying PRs, expiring knowledge, and privacy-preserving team learning.
+- Discovery Operations, Checkpoint Resume, and Visual QA for experiment evidence, resumable handoffs, and screenshot-based release proof.
 
 ## Skills
 

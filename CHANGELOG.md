@@ -4,6 +4,14 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [1.10.0] - 2026-08-05
+
+### Added
+
+- Discovery Operations with persistent, evidence-linked hypotheses and explicit pivot, patch, persevere, or stop decisions.
+- Checkpoint Resume for safe handoffs with local Git-state context and an explicit next action.
+- Visual QA evidence records that seal local screenshot metadata and SHA-256 digests without uploads or unverified pixel-diff claims.
+
 ## [1.9.0] - 2026-08-05
 
 ### Added
