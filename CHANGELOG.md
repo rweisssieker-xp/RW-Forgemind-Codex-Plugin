@@ -4,6 +4,12 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [1.17.3] - 2026-08-05
+
+### Fixed
+
+- Restored repository context in the release publishing job so GitHub can create the tagged release after verified artifacts download.
+
 ## [1.17.2] - 2026-08-05
 
 ### Fixed
