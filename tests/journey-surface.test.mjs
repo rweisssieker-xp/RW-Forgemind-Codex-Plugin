@@ -1,0 +1,29 @@
+import assert from 'node:assert/strict';
+import { readFile, readdir } from 'node:fs/promises';
+import path from 'node:path';
+import test from 'node:test';
+
+const root = path.resolve(import.meta.dirname, '..');
+const JOURNEYS = ['forgemind-guide', 'forgemind-explore', 'forgemind-plan', 'forgemind-build', 'forgemind-verify', 'forgemind-learn'];
+
+test('Marketplace exposes exactly six hierarchical journeys while retaining internal modules', async () => {
+  const manifest = JSON.parse(await readFile(path.join(root, '.codex-plugin', 'plugin.json'), 'utf8'));
+  assert.equal(manifest.skills, './entry-skills/');
+  const entries = await readdir(path.join(root, 'entry-skills'), { withFileTypes: true });
+  assert.deepEqual(entries.filter((entry) => entry.isDirectory()).map((entry) => entry.name).sort(), [...JOURNEYS].sort());
+  for (const journey of JOURNEYS) {
+    const instructions = await readFile(path.join(root, 'entry-skills', journey, 'SKILL.md'), 'utf8');
+    const ui = await readFile(path.join(root, 'entry-skills', journey, 'agents', 'openai.yaml'), 'utf8');
+    assert.match(instructions, new RegExp(`name: ${journey}`));
+    assert.match(ui, new RegExp(`\\$${journey}`));
+  }
+  assert.match(await readFile(path.join(root, 'docs', 'HIERARCHY.md'), 'utf8'), /Guide[\s\S]*Explore[\s\S]*Plan[\s\S]*Build[\s\S]*Verify[\s\S]*Learn/);
+});
+
+test('only the three low-friction journeys are implicit', async () => {
+  for (const journey of JOURNEYS) {
+    const ui = await readFile(path.join(root, 'entry-skills', journey, 'agents', 'openai.yaml'), 'utf8');
+    const expected = ['forgemind-guide', 'forgemind-explore', 'forgemind-build'].includes(journey);
+    assert.match(ui, new RegExp(`allow_implicit_invocation: ${expected}`));
+  }
+});

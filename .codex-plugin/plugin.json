@@ -1,6 +1,6 @@
 {
   "name": "forgemind",
-  "version": "1.15.0",
+  "version": "1.16.0",
   "description": "Evidence-first discovery and delivery for Codex: market-tested MVPs, safe execution, and release-ready proof.",
   "author": {
     "name": "rweisssieker-xp",
@@ -47,7 +47,7 @@
     "pr-summary",
     "decision-log"
   ],
-  "skills": "./skills/",
+  "skills": "./entry-skills/",
   "interface": {
     "displayName": "ForgeMind",
     "shortDescription": "Maximum-USP innovation portfolios and verifiable MVP delivery.",
@@ -80,7 +80,7 @@
     "termsOfServiceURL": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin/blob/main/TERMS.md",
     "defaultPrompt": [
       "Use $forgemind-explore to find the strongest MVP opportunity in this app.",
-      "Use $innovation-first-autopilot to create maximum USPs, moats, monetization options, and testable MVP bets for this app.",
+      "Use $forgemind-explore to create maximum USPs, moats, monetization options, and testable MVP bets for this app.",
       "Use $forgemind-build to implement and verify this outcome.",
       "Use $forgemind-guide to choose the best next step for this goal."
     ],

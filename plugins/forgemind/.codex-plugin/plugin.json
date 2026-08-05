@@ -32,7 +32,7 @@
     "composerIcon": "./assets/icon.svg",
     "defaultPrompt": [
       "Use $forgemind-explore to find the strongest MVP opportunity in this app.",
-      "Use $innovation-first-autopilot to create maximum USPs, moats, monetization options, and testable MVP bets for this app.",
+      "Use $forgemind-explore to create maximum USPs, moats, monetization options, and testable MVP bets for this app.",
       "Use $forgemind-build to implement and verify this outcome.",
       "Use $forgemind-guide to choose the best next step for this goal."
     ],
@@ -86,6 +86,6 @@
   "license": "MIT",
   "name": "forgemind",
   "repository": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin",
-  "skills": "./skills/",
-  "version": "1.15.0"
+  "skills": "./entry-skills/",
+  "version": "1.16.0"
 }

@@ -2,15 +2,18 @@
 
 ForgeMind is the evidence-first delivery system for Codex: autonomous execution with verifiable proof, safe escalation, and release-ready decisions. It combines local orchestration, executable strategy, cross-agent evidence, autonomous product loops, reusable project memory, and privacy-preserving team learning.
 
-## Start with one of three paths
+## Start with the journey hierarchy
 
 | Path | Use it for | What happens |
 | --- | --- | --- |
-| `$forgemind-explore` | Existing apps, market opportunities, disruptive ideas, MVP choice | Understand → research → brainstorm → rank → test plan → measurable MVP |
-| `$forgemind-build` | A clear feature, fix, or delivery outcome | Scope → implement → verify → review → report |
-| `$forgemind-guide` | An unclear goal or uncertainty about the right path | Clarify once if needed → select a safe first action |
+| `$forgemind-guide` | An unclear goal or uncertainty about the right path | Select the smallest sufficient journey |
+| `$forgemind-explore` | Existing apps, market opportunities, disruptive ideas, MVP choice | Understand → research → portfolio → test plan → measurable MVP |
+| `$forgemind-plan` | A selected product bet or feature | Scope → architecture → acceptance → experiment → delivery sequence |
+| `$forgemind-build` | A clear feature, fix, or delivery outcome | Implement → test → review → report; YOLO remains available for a bounded MVP |
+| `$forgemind-verify` | Quality, tester evidence, security, or release readiness | Verify → assess risks → prove → Go/No-Go |
+| `$forgemind-learn` | Outcomes, feedback, and experiments | Retain evidence → improve future routing and product bets |
 
-The Delivery Engine, routing, and specialists work underneath these paths. Explicit `$yolo-feature` remains available for the fastest bounded MVP.
+The Delivery Engine, routing, and more than sixty specialist modules work underneath these six journeys. They are not Marketplace entry points. See [the journey hierarchy](docs/HIERARCHY.md). A fast MVP request activates the bounded YOLO path inside Build.
 
 For one continuous idea-to-release session, use explicit `$launch-mvp`: it creates the market/MVP brief and tester plan, then drives scoped delivery, verification, and the release decision through stop gates.
 
@@ -108,7 +111,9 @@ Installation, upgrade, downgrade, rollback, and uninstall are documented in [doc
 - Discovery Operations, Checkpoint Resume, and Visual QA for experiment evidence, resumable handoffs, and screenshot-based release proof.
 - MVP Test Lab for decisive target-user, functional, accessibility, and adversarial testing with scale, iterate, or stop rules.
 
-## Skills
+## Internal Modules
+
+The Marketplace intentionally exposes only the six journeys above. The following internal modules remain bundled for progressive disclosure and are loaded only by their owning journey; they are not separate starting points.
 
 - `delivery-orchestrator`: routes work through discovery, planning, implementation, QA, and delivery.
 - `workflow-init`: initializes project profile, memory, verification baseline, and next action.

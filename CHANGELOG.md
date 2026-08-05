@@ -4,6 +4,13 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [1.16.0] - 2026-08-05
+
+### Changed
+
+- Consolidated the Marketplace skill surface into six hierarchical journeys: Guide, Explore, Plan, Build, Verify, and Learn.
+- Preserved the existing specialist workflows as progressively loaded internal modules, so capability depth remains available without an overwhelming skill list.
+
 ## [1.15.0] - 2026-08-05
 
 ### Added

@@ -6,6 +6,8 @@ Its distinguishing promises are concrete: proof before completion claims; autono
 
 ## Choose One Of Six Journeys
 
+ForgeMind presents these journeys as a hierarchy: **Guide** routes into **Explore**, **Plan**, **Build**, **Verify**, or **Learn**. Detailed workflow files are internal modules, not additional entry points. See [HIERARCHY.md](HIERARCHY.md) for the full map.
+
 - **Discover** when the repository, current state, risks, or best route are unclear.
 - **Design** when product value, USP, requirements, architecture, stories, or acceptance criteria need definition.
 - **Build** when ForgeMind should implement or debug through the common governed orchestration path.
