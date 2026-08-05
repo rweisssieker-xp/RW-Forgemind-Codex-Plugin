@@ -22,13 +22,13 @@ The Trust Fabric adds nine evidence-native specialist workflows across these jou
 Use this when ForgeMind should handle the whole task:
 
 ```text
-Orchestration Flow: uebernimm diese Aufgabe als Delivery Orchestrator. Lies die App-Struktur, schlage radical AI/KI-USPs vor, waehle den besten MVP, setze ihn um, teste die App und berichte Risiken.
+Orchestration Flow: take ownership of this task as Delivery Orchestrator. Inspect the app structure, propose radical AI product advantages, select the strongest MVP, implement it, test the app, and report risks.
 ```
 
 Use this for innovation before implementation:
 
 ```text
-Innovation Design: lies zuerst die bisherige App-Struktur, liefere maximale AI/KI-USPs und radikale Ideen, waehle den besten buildbaren MVP und plane die Umsetzung mit Tests.
+Innovation Design: inspect the current app structure first, generate high-leverage AI product advantages and radical ideas, select the strongest buildable MVP, and plan implementation with tests.
 ```
 
 Use this for direct autonomous implementation:
@@ -87,18 +87,51 @@ You can address personas directly in prompts. Use `Name: task`.
 Examples:
 
 ```text
-Value Signals: finde 10 AI/KI-USPs fuer diese App, score sie und empfehle den ersten MVP.
+Value Signals: find 10 AI product advantages for this app, score them, and recommend the first MVP.
 ```
 
 ```text
-Delivery Build: implementiere diese Story mit minimalem Diff, bestehenden Patterns und Tests.
+Delivery Build: implement this story with a minimal diff, existing patterns, and tests.
 ```
 
 ```text
-Quality Check: erstelle einen Regressionstestplan und einen App-Smoke-Test fuer diese Aenderung.
+Quality Check: create a regression test plan and an application smoke test for this change.
 ```
 
 ## Main Commands
+
+### Launch An MVP End To End
+
+Use `$launch-mvp` for one resumable path from an idea or existing-app opportunity to a release decision. It persists the MVP brief, tester plan, current stage, and completed-stage evidence in `.codex-orchestrator/product/`.
+
+```text
+node bin/forgemind.mjs launch-mvp --goal "Shorten invoice approvals" --audience "Finance teams" --json
+node bin/forgemind.mjs launch-mvp status --json
+```
+
+The required order is `discover`, `test`, `build`, `verify`, then `release`. Advance a stage only after its evidence exists:
+
+```text
+node bin/forgemind.mjs launch-mvp advance --stage discover --json
+node bin/forgemind.mjs launch-mvp advance --stage test --json
+node bin/forgemind.mjs launch-mvp advance --stage build --evidence "acceptance" --json
+node bin/forgemind.mjs launch-mvp advance --stage verify --evidence "passed" --json
+node bin/forgemind.mjs launch-mvp advance --stage release --evidence "delivery-proof|rollback" --json
+```
+
+Do not advance a stopped launch. Kill conditions, critical or blocked tester findings, failed verification, and approval requirements stop it.
+
+### Record And Evaluate MVP Tests
+
+Use `$mvp-test-lab` to prepare target-user, functional, accessibility, and adversarial testing. Create a plan, record privacy-safe results, then read the decision:
+
+```text
+node bin/forgemind.mjs testing plan --goal "Shorten invoice approvals" --audience "Finance teams" --json
+node bin/forgemind.mjs testing record --panel target-user --outcome passed --completed true --evidence "session-1" --json
+node bin/forgemind.mjs testing evaluate --json
+```
+
+Supported panels are `target-user`, `functional`, `accessibility`, and `adversarial`. Use `--critical` for a release-blocking finding and `--simulated` for non-user evidence. Never store names, contact data, recordings, credentials, or raw prompts. Decisions are `collecting`, `scale`, `iterate`, or `stop`.
 
 ### Help And Routing
 
@@ -279,7 +312,7 @@ ForgeMind uses risk-based autonomy:
 Default:
 
 - Use `normal` unless the user asks for more autonomy.
-- Use `autonomous` for "mach das", "leg los", "handle end to end".
+- Use `autonomous` for “take care of it,” “get started,” or “handle end to end.”
 - Use `yolo` only when explicitly requested.
 - Escalate to `surgery` for high-risk work.
 
@@ -503,39 +536,39 @@ The command center summarizes project profile, workflow graph, verification, gap
 ### Full Innovation-To-Build Prompt
 
 ```text
-Orchestration Flow: uebernimm als Delivery Orchestrator.
-1. Lies die App-Struktur.
-2. Erklaere kurz, was die App heute macht.
-3. Liefere 5 radikale AI/KI-Ideen und 6 realistische Feature-Ideen.
-4. Bewerte die besten USPs mit USP Score.
-5. Waehle den besten buildbaren MVP.
-6. Erstelle/aktualisiere PRD, Epics, Story und Acceptance Criteria.
-7. Implementiere den MVP.
-8. Teste die App und fasse Verification, Risiken und naechste Schritte zusammen.
+Orchestration Flow: take ownership as Delivery Orchestrator.
+1. Inspect the app structure.
+2. Explain briefly what the app does today.
+3. Generate 5 radical AI ideas and 6 realistic feature ideas.
+4. Score the strongest product advantages.
+5. Select the best buildable MVP.
+6. Create or update the PRD, epics, story, and acceptance criteria.
+7. Implement the MVP.
+8. Test the app and summarize verification, risks, and next steps.
 ```
 
 ### Product-Only Prompt
 
 ```text
-Value Signals: analysiere diese App aus USP-Sicht. Was ist Basisfunktion, was ist erweiterbar, was koennte ein echter AI/KI-Moat sein? Liefere Scores und den besten MVP.
+Value Signals: analyze this app for product advantages. What is baseline functionality, what can be extended, and what could become a meaningful AI moat? Provide scores and the strongest MVP.
 ```
 
 ### Build-Only Prompt
 
 ```text
-Delivery Build: implementiere diese Story mit minimalem Diff. Nutze bestehende Patterns, fuege fokussierte Tests hinzu und fuehre relevante Verification aus.
+Delivery Build: implement this story with a minimal diff. Use existing patterns, add focused tests, and run relevant verification.
 ```
 
 ### QA Prompt
 
 ```text
-Quality Check: pruefe diese Aenderung auf Regressionen, Edge Cases und fehlende Tests. Definiere einen App-Smoke-Test und klare Pass/Fail-Kriterien.
+Quality Check: review this change for regressions, edge cases, and missing tests. Define an application smoke test and clear pass/fail criteria.
 ```
 
 ### Release Prompt
 
 ```text
-Release Delivery: bereite den Abschluss vor. Pruefe Scope, Verification, Risiken, Release Notes und Rollback-Hinweise.
+Release Delivery: prepare completion. Review scope, verification, risks, release notes, and rollback guidance.
 ```
 
 ## Operating Rules

@@ -39,6 +39,45 @@ Use when Codex should behave like a senior product engineer.
 9. Risk radar, rollback plan, gap scan, and release readiness score
 10. PR summary, outcome memory, and learning update
 
+## One-Session MVP Launch
+
+Use `$launch-mvp` when an idea or existing-app opportunity should progress through discovery, testing, implementation, verification, and a release decision without manually selecting each workflow.
+
+```text
+node bin/forgemind.mjs launch-mvp --goal "Shorten invoice approvals" --audience "Finance teams" --json
+node bin/forgemind.mjs launch-mvp status --json
+```
+
+The persisted stages are `discover`, `test`, `build`, `verify`, and `release`. Complete the active stage only with its required evidence:
+
+```text
+node bin/forgemind.mjs launch-mvp advance --stage discover --json
+node bin/forgemind.mjs launch-mvp advance --stage test --json
+node bin/forgemind.mjs launch-mvp advance --stage build --evidence "acceptance" --json
+node bin/forgemind.mjs launch-mvp advance --stage verify --evidence "passed" --json
+node bin/forgemind.mjs launch-mvp advance --stage release --evidence "delivery-proof|rollback" --json
+```
+
+The launch stops when its kill condition is met, a tester result is critical or blocked, verification fails, or a safety gate requires approval. A stopped launch must be rescaled or restarted; it must not be presented as release-ready.
+
+## MVP Tester Evidence
+
+Create a plan before collecting results:
+
+```text
+node bin/forgemind.mjs testing plan --goal "Shorten invoice approvals" --audience "Finance teams" --json
+```
+
+Record one result at a time. `target-user`, `functional`, `accessibility`, and `adversarial` are the supported panels. Mark simulated evidence explicitly and never store participant names, contact details, recordings, or credentials.
+
+```text
+node bin/forgemind.mjs testing record --panel target-user --outcome passed --completed true --evidence "session-1" --json
+node bin/forgemind.mjs testing record --panel functional --outcome blocked --critical --evidence "critical-defect" --json
+node bin/forgemind.mjs testing evaluate --json
+```
+
+The decision is `collecting` until enough evidence exists, `scale` when all panels pass and at least four of five target-user sessions complete independently, `iterate` for mixed evidence, and `stop` for critical findings or fewer than two independent completions after five target-user sessions.
+
 ## YOLO Feature
 
 Use when the user wants autonomous end-to-end delivery.

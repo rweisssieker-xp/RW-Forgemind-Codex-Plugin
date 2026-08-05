@@ -27,6 +27,10 @@ node bin/forgemind.mjs package
 
 Verify both `dist/plugin` and `dist/marketplace/plugins/forgemind` from their checksums. A ready claim requires current verification, no blocker risk, clean Git evidence, and a valid delivery proof.
 
+## MVP launch evidence
+
+When a release candidate originated from `$launch-mvp`, retain `.codex-orchestrator/product/mvp-launch-latest.json`, the related MVP brief, tester decision, verification report, delivery proof, and rollback evidence. A tester decision of `stop` blocks the release; `iterate` requires a documented follow-up scope before a new release decision.
+
 ## Lifecycle smoke test
 
 Use isolated temporary home and workspace directories. Test fresh install, upgrade, valid downgrade, failed-install rollback, uninstall without purge, and explicitly approved purge. Never aim lifecycle tests at a real user home or broad directory.

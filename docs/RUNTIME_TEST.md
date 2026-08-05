@@ -122,6 +122,18 @@ YOLO feature: implement this end to end with ForgeMind guardrails.
 Expected: announces YOLO mode, checks risk mode, uses project profile, verifies, and reports residual risks.
 
 ```text
+Use $launch-mvp to turn this existing app opportunity into a verified MVP release decision.
+```
+
+Expected: creates a persisted MVP brief, tester plan, and launch record; follows discover, test, build, verify, and release gates; stops on a kill condition, critical tester finding, failed verification, or approval boundary.
+
+```text
+Use $mvp-test-lab to prepare and evaluate MVP testing for this feature.
+```
+
+Expected: plans target-user, functional, accessibility, and adversarial evidence. It clearly labels simulated input and returns collecting, scale, iterate, or stop based on recorded results.
+
+```text
 Learning Loop: record what worked and what should change next time.
 ```
 
@@ -195,6 +207,19 @@ Expected: outputs capability matrix, gaps, and next feature recommendations.
 .\plugins\forgemind\scripts\generate-workflow-graph.ps1
 .\plugins\forgemind\scripts\runtime-discovery-test.ps1
 ```
+
+## MVP Command Tests
+
+Run these in a disposable workspace:
+
+```text
+node bin/forgemind.mjs launch-mvp --goal "Shorten invoice approvals" --audience "Finance teams" --json
+node bin/forgemind.mjs launch-mvp status --json
+node bin/forgemind.mjs testing record --panel target-user --outcome passed --completed true --evidence "session-1" --json
+node bin/forgemind.mjs testing evaluate --json
+```
+
+Expected: project-local artifacts are created under `.codex-orchestrator/product/`; no participant identity, recording, secret, or external telemetry is created.
 
 ## Pass Criteria
 

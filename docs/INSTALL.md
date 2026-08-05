@@ -39,6 +39,8 @@ codex plugin add forgemind@forgemind-marketplace
 
 Install the optional advanced workflows with `codex plugin add forgemind-trust-fabric@forgemind-marketplace`. Reload Codex after installation. To update, run `codex plugin marketplace upgrade forgemind-marketplace` and then reinstall the selected plugin. The built `dist/marketplace` bundle remains the reproducible option for governed or offline distribution.
 
+The GitHub Marketplace snapshot is intentionally a lean runtime payload. It contains all end-user skills and runtime commands, including MVP launch and tester evidence. Build, package, install, and uninstall lifecycle tooling remains in the checksum-protected source and release artifacts; use a source checkout or `dist/plugin` for those maintainer operations.
+
 ## Upgrade and downgrade
 
 Build or obtain the exact desired version, verify its package, and run the same install command. Installing a newer version is an upgrade; installing an older valid version is a downgrade. ForgeMind reports the lifecycle transition and retains a recoverable backup during the operation.

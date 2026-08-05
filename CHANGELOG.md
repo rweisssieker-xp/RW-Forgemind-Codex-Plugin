@@ -4,6 +4,12 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [1.14.3] - 2026-08-05
+
+### Changed
+
+- Completed US English documentation for the resumable MVP launch, tester evidence loop, lean GitHub runtime snapshot, runtime checks, and release evidence.
+
 ## [1.14.2] - 2026-08-05
 
 ### Added
