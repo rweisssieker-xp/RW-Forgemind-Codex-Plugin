@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { access, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
 
-import { verifyPackage } from '../src/package.mjs';
+import { validatePlugin } from '../src/validate.mjs';
 
 test('repository root exposes a direct GitHub Marketplace entry for ForgeMind', async () => {
   const root = path.resolve(import.meta.dirname, '..');
@@ -15,6 +15,8 @@ test('repository root exposes a direct GitHub Marketplace entry for ForgeMind', 
   assert.equal(entry.source.path, './plugins/forgemind');
   assert.equal(catalog.plugins.find((plugin) => plugin.name === 'forgemind-trust-fabric').source.path, './plugins/forgemind-trust-fabric');
   assert.equal(manifest.version, sourceManifest.version);
-  assert.equal((await verifyPackage(path.join(root, 'plugins', 'forgemind'))).status, 'passed');
-  assert.equal((await verifyPackage(path.join(root, 'plugins', 'forgemind-trust-fabric'))).status, 'passed');
+  assert.equal((await validatePlugin(path.join(root, 'plugins', 'forgemind'))).status, 'passed');
+  assert.equal((await validatePlugin(path.join(root, 'plugins', 'forgemind-trust-fabric'))).status, 'passed');
+  await assert.rejects(access(path.join(root, 'plugins', 'forgemind', 'checksums.json')));
+  await assert.rejects(access(path.join(root, 'plugins', 'forgemind-trust-fabric', 'checksums.json')));
 });

@@ -4,6 +4,13 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [1.12.2] - 2026-08-05
+
+### Changed
+
+- Reduced the automatically loaded Marketplace entry text while retaining the three task-oriented front doors.
+- Made the GitHub Marketplace snapshots leaner by excluding redundant checksum inventories; generated release archives remain integrity-checked.
+
 ## [1.12.1] - 2026-08-05
 
 ### Fixed

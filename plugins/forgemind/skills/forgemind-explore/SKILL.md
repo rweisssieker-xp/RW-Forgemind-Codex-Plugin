@@ -1,6 +1,6 @@
 ---
 name: forgemind-explore
-description: Find and validate the strongest product opportunity in an existing app or new concept. Use when the user wants market opportunities, disruptive ideas, product evolution, idea ranking, or a measurable MVP before implementation.
+description: Find a strong MVP opportunity. Use when assessing market gaps, disruptive ideas, app evolution, or MVP choices.
 ---
 
 # Explore

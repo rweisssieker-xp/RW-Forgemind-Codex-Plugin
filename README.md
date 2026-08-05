@@ -276,7 +276,7 @@ Templates live in `templates/usp/`:
 
 ## Installation
 
-Install directly from GitHub with `codex plugin marketplace add rweisssieker-xp/RW-Forgemind-Codex-Plugin`, then `codex plugin add forgemind@forgemind-marketplace`. The repository ships the checksum-protected Core payload at `plugins/forgemind`; add `forgemind-trust-fabric@forgemind-marketplace` for the optional advanced workflows.
+Install directly from GitHub with `codex plugin marketplace add rweisssieker-xp/RW-Forgemind-Codex-Plugin`, then `codex plugin add forgemind@forgemind-marketplace`. The repository ships a lean Core snapshot at `plugins/forgemind`; add `forgemind-trust-fabric@forgemind-marketplace` for the optional advanced workflows. Generated release archives remain checksum-protected.
 
 See `docs/INSTALL.md` for reload checks and `docs/WORKFLOWS.md` for operating workflows.
 

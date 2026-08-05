@@ -1,6 +1,6 @@
 ---
 name: forgemind-build
-description: Deliver a clear product, feature, or engineering outcome with focused implementation and verification. Use when the user has a concrete goal and wants ForgeMind to build, test, review, and report it.
+description: Build and verify a clear outcome. Use when delivering a scoped feature, fix, or task.
 ---
 
 # Build

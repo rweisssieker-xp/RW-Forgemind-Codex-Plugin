@@ -1,6 +1,6 @@
 ---
 name: forgemind-guide
-description: Turn an unclear product, engineering, or release goal into one safe next step. Use when the user is unsure where to start, asks for help choosing a path, or wants ForgeMind to clarify and route the request.
+description: Choose a safe next step. Use when the goal or best path is unclear.
 ---
 
 # Guide me
