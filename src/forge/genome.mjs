@@ -38,7 +38,7 @@ export async function recommendFromGenome({ genome, task }) {
     return {
       schemaVersion: 1,
       status: 'insufficient-evidence',
-      route: 'delivery-orchestrator',
+      route: 'forgemind-guide',
       confidence: 'low',
       sampleSize: matching.reduce((sum, cohort) => sum + cohort.sampleSize, 0),
       evidence: matching.flatMap((cohort) => cohort.outcomeIds).sort(),
@@ -55,7 +55,7 @@ export async function recommendFromGenome({ genome, task }) {
     confidence: winner.confidence,
     sampleSize: winner.sampleSize,
     evidence: winner.outcomeIds,
-    alternative: ranked[1]?.route ?? 'delivery-orchestrator',
+    alternative: ranked[1]?.route ?? 'forgemind-guide',
     missingEvidence: [],
     rationale: `${winner.route} has the strongest measured success rate (${winner.successRate}%) and effectiveness score (${winner.effectivenessScore}).`,
   };

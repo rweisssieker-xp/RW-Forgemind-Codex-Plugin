@@ -3,27 +3,21 @@ import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
 
-import { resolvePluginRoot } from '../src/paths.mjs';
+const root = path.resolve(import.meta.dirname, '..');
+const JOURNEYS = ['forgemind-guide', 'forgemind-explore', 'forgemind-plan', 'forgemind-build', 'forgemind-verify', 'forgemind-learn'];
 
-const JOURNEYS = ['Discover', 'Design', 'Build', 'Verify', 'Release', 'Learn'];
-
-test('every ForgeMind skill declares exactly one primary journey', async () => {
-  const root = await resolvePluginRoot();
-  const skillDirectories = await readdir(path.join(root, 'skills'), { withFileTypes: true });
-  for (const directory of skillDirectories.filter((entry) => entry.isDirectory())) {
-    const file = path.join(root, 'skills', directory.name, 'SKILL.md');
-    const content = await readFile(file, 'utf8');
-    const matches = [...content.matchAll(/^Primary journey: \*\*(Discover|Design|Build|Verify|Release|Learn)\*\*$/gm)].map((match) => match[1]);
-    assert.equal(matches.length, 1, `${directory.name} must declare one primary journey`);
-    assert.ok(JOURNEYS.includes(matches[0]));
-  }
+test('six journeys are the complete skill hierarchy', async () => {
+  const directories = (await readdir(path.join(root, 'entry-skills'), { withFileTypes: true })).filter((entry) => entry.isDirectory()).map((entry) => entry.name).sort();
+  assert.deepEqual(directories, [...JOURNEYS].sort());
+  const guide = await readFile(path.join(root, 'entry-skills', 'forgemind-guide', 'SKILL.md'), 'utf8');
+  for (const journey of JOURNEYS.filter((name) => name !== 'forgemind-guide')) assert.match(guide, new RegExp(`\\$${journey}`));
 });
 
-test('overlapping autonomous workflows declare Build and common routing precedence', async () => {
-  const root = await resolvePluginRoot();
-  for (const name of ['autonomous-orchestrator', 'innovation-first-autopilot', 'delivery-acceleration-mode', 'yolo-feature', 'structured-feature', 'app-evolution-builder']) {
-    const content = await readFile(path.join(root, 'skills', name, 'SKILL.md'), 'utf8');
-    assert.match(content, /Primary journey: \*\*Build\*\*/);
-    assert.match(content, /Shared orchestration precedence:/);
+test('journeys load compact playbooks instead of a specialist-skill library', async () => {
+  for (const journey of JOURNEYS) {
+    const content = await readFile(path.join(root, 'entry-skills', journey, 'SKILL.md'), 'utf8');
+    assert.doesNotMatch(content, /skills\//);
   }
+  const playbooks = (await readdir(path.join(root, 'playbooks'))).filter((file) => file.endsWith('.md'));
+  assert.equal(playbooks.length, 12);
 });

@@ -1,6 +1,0 @@
-interface:
-  display_name: "Build"
-  short_description: "Deliver a clear outcome with verification."
-  default_prompt: "Use $forgemind-build to implement and verify this outcome."
-policy:
-  allow_implicit_invocation: true

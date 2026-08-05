@@ -9,6 +9,6 @@ Inspect the repository and the selected plan first. State the acceptance criteri
 
 YOLO is always available when the user asks for a fast MVP: choose the narrowest reversible scope, implement without unnecessary planning loops, then still run relevant tests, inspect risk, capture a rollback path, and report what remains unproven. Stop for secrets, production access, destructive actions, external spend, irreversible migrations, or high-stakes decisions.
 
-Use test-driven development when practical, reproduce defects before fixing them, and avoid unrelated cleanup. Load internal modules only when needed: `skills/delivery-orchestrator`, `skills/yolo-feature`, `skills/structured-feature`, `skills/autonomous-orchestrator`, `skills/tdd-builder`, `skills/systematic-debugging`, `skills/refactorer`, and `skills/app-evolution-builder`.
+Use test-driven development when practical, reproduce defects before fixing them, and avoid unrelated cleanup. Load `playbooks/delivery-yolo.md`, `playbooks/debugging-refactoring.md`, and `playbooks/project-intelligence.md` when deeper guidance is needed.
 
 Finish with changed files, acceptance evidence, commands actually run, residual risk, and the next decision.

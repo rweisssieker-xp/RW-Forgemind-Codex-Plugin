@@ -9,6 +9,6 @@ Start from the strongest available evidence: an innovation portfolio, user signa
 
 Produce an executable contract: MVP scope, assumptions, data and trust boundaries, architecture decision, dependencies, files or modules likely to change, ordered stories, acceptance criteria, test strategy, release evidence, and a smallest viable experiment. Keep a fast path available: when the user requests a rapid MVP, reduce scope but retain the metric, tests, risk check, and rollback plan.
 
-Use `forgemind launch-mvp --goal "<outcome>" --audience "<audience>" --json` for one resumable idea-to-release path. Load internal modules only when needed: `skills/prd-builder`, `skills/product-scope`, `skills/architecture-review`, `skills/epic-story-builder`, `skills/work-planning`, `skills/acceptance-criteria-builder`, `skills/discovery-operations`, `skills/risk-radar`, and `skills/rollback-planner`.
+Use `forgemind launch-mvp --goal "<outcome>" --audience "<audience>" --json` for one resumable idea-to-release path. Load `playbooks/product-planning.md`, `playbooks/project-intelligence.md`, and `playbooks/mvp-experiments.md` when deeper guidance is needed.
 
 Do not plan features without a measurable user outcome, implementation sequence, or stop condition.

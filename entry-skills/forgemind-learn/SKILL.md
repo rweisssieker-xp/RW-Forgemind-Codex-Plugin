@@ -9,4 +9,4 @@ Capture only durable, useful knowledge: observed outcome, evidence, confidence, 
 
 Update outcome memory, decisions, verification knowledge, product signals, USP experiments, patterns, and self-update proposals as appropriate. Keep data local, redact secrets and personal data, preserve uncertainty, and never treat a single anecdote as a general rule. Re-run an innovation portfolio when new evidence changes the ranking.
 
-Load internal modules only when needed: `skills/learning-loop`, `skills/outcome-memory`, `skills/user-feedback-capture`, `skills/project-memory`, `skills/pattern-library`, `skills/decision-log`, `skills/learning-to-skill-patch`, `skills/usp-backlog`, and `skills/federated-learning-network`.
+Load `playbooks/learning-memory.md`, `playbooks/discovery-innovation.md`, and `playbooks/trust-fabric.md` when deeper guidance is needed.

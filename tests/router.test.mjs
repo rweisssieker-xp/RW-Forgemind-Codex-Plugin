@@ -19,18 +19,18 @@ test('repeated successful outcomes change the recommended route with evidence', 
     policy: DEFAULT_POLICY,
   });
 
-  assert.equal(baseline.primaryRoute, 'structured-feature');
+  assert.equal(baseline.primaryRoute, 'forgemind-build');
   assert.ok(baseline.missingEvidence.includes('matching-outcomes'));
-  assert.equal(learned.primaryRoute, 'yolo-feature');
+  assert.equal(learned.primaryRoute, 'forgemind-build');
   assert.deepEqual(learned.evidence, ['o1', 'o2', 'o3']);
   assert.ok(learned.confidence > baseline.confidence);
-  assert.equal(learned.alternative, 'structured-feature');
+  assert.equal(learned.alternative, 'forgemind-guide');
 });
 
 test('unknown tasks use a low-confidence orchestrator fallback', () => {
   const result = recommendRoute({ profile: { stacks: [] }, task: { category: 'unknown' }, outcomes: [], policy: DEFAULT_POLICY });
 
-  assert.equal(result.primaryRoute, 'delivery-orchestrator');
+  assert.equal(result.primaryRoute, 'forgemind-guide');
   assert.ok(result.confidence <= 0.4);
   assert.ok(result.missingEvidence.includes('known-task-category'));
 });
@@ -45,7 +45,7 @@ test('learned preferences cannot bypass a denied safety action', () => {
   });
 
   assert.equal(result.escalation.decision, 'deny');
-  assert.equal(result.primaryRoute, 'delivery-orchestrator');
+  assert.equal(result.primaryRoute, 'forgemind-guide');
   assert.match(result.escalation.rationale, /denies destructive/);
 });
 
@@ -55,10 +55,10 @@ test('routing falls back to a smaller sufficient route when the context budget r
     task: { category: 'feature' },
     outcomes: [successful('o1', 'yolo-feature'), successful('o2', 'yolo-feature')],
     policy: DEFAULT_POLICY,
-    routing: { maxSkillTokens: 600 },
+    routing: { maxSkillTokens: 400 },
   });
 
-  assert.equal(result.primaryRoute, 'structured-feature');
+  assert.equal(result.primaryRoute, 'forgemind-guide');
   assert.equal(result.budget.decision, 'fallback');
-  assert.equal(result.budget.fallback, 'yolo-feature');
+  assert.equal(result.budget.fallback, 'forgemind-build');
 });

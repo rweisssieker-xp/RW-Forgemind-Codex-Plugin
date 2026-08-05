@@ -24,8 +24,8 @@ export async function launchMvp({ workspace, goal, audience }) {
       testPlan: '.codex-orchestrator/product/mvp-test-plan-latest.json',
     },
     stages: [
-      { id: 'discover', workflow: 'idea-to-mvp', gate: 'One evidence-labeled MVP hypothesis, metric, and kill condition.' },
-      { id: 'test', workflow: 'mvp-test-lab', gate: 'Tester plan exists; critical findings must be resolved before release.' },
+      { id: 'discover', workflow: 'forgemind-explore', gate: 'One evidence-labeled MVP hypothesis, metric, and kill condition.' },
+      { id: 'test', workflow: 'forgemind-verify', gate: 'Tester plan exists; critical findings must be resolved before release.' },
       { id: 'build', workflow: 'delivery-builder', gate: 'Scoped implementation meets acceptance criteria.' },
       { id: 'verify', workflow: 'quality-review', gate: 'Verification passes and residual risks are explicit.' },
       { id: 'release', workflow: 'release-readiness-score', gate: 'Delivery proof and rollback evidence support Go/No-Go.' },

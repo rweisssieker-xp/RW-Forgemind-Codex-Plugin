@@ -1,6 +1,0 @@
-interface:
-  display_name: "Idea to MVP"
-  short_description: "Find opportunities, shape an MVP, then deliver."
-  default_prompt: "Use $idea-to-mvp to turn this existing app into a tested MVP."
-policy:
-  allow_implicit_invocation: false

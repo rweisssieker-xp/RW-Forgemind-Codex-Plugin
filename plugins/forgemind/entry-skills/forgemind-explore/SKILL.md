@@ -11,6 +11,6 @@ Generate a portfolio rather than an idea dump. Cover workflow elimination, conte
 
 For every serious bet provide the target job, differentiator, moat, monetization hypothesis, smallest MVP, measurable metric, kill condition, trust boundary, and evidence basis. Select one build candidate only when evidence supports it; otherwise propose the smallest validation experiment. Create a tester plan before handoff using `forgemind testing plan --goal "<outcome>" --json`.
 
-Load internal modules only when needed: `skills/idea-to-mvp`, `skills/innovation-first-autopilot`, `skills/opportunity-design`, `skills/usp-ai-strategist`, `skills/radical-vibe-builder`, `skills/app-evolution-builder`, `skills/creative-ideation`, and `skills/human-centered-design`.
+Load `playbooks/discovery-innovation.md`, `playbooks/creative-methods.md`, and `playbooks/project-intelligence.md` when deeper guidance is needed.
 
 Never present assumptions as market facts, build a generic chatbot as a USP, or select an untestable idea.

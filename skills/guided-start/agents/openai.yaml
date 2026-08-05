@@ -1,6 +1,0 @@
-interface:
-  display_name: "Guided Start"
-  short_description: "Choose a focused first delivery path."
-  default_prompt: "Use $guided-start to select the right ForgeMind journey."
-policy:
-  allow_implicit_invocation: false

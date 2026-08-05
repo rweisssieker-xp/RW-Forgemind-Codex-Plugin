@@ -1,6 +1,0 @@
-interface:
-  display_name: "Autonomous Orchestrator"
-  short_description: "Run safe end-to-end delivery with evidence."
-  default_prompt: "Use $autonomous-orchestrator to deliver this outcome safely end to end."
-policy:
-  allow_implicit_invocation: false

@@ -31,17 +31,17 @@ function outcome(id, route, overrides = {}) {
 test('engineering genome aggregates transparent cohorts and recommends the empirically strongest route', async (t) => {
   const root = await workspace(t);
   const outcomes = [
-    outcome('o1', 'structured-feature'),
-    outcome('o2', 'structured-feature'),
-    outcome('o3', 'delivery-orchestrator', { correctionCount: 3, residualDefects: 1, userAccepted: false, durationMinutes: 90 }),
-    outcome('o4', 'delivery-orchestrator', { verificationStatus: 'failed', durationMinutes: 80 }),
+    outcome('o1', 'forgemind-build'),
+    outcome('o2', 'forgemind-build'),
+    outcome('o3', 'forgemind-guide', { correctionCount: 3, residualDefects: 1, userAccepted: false, durationMinutes: 90 }),
+    outcome('o4', 'forgemind-guide', { verificationStatus: 'failed', durationMinutes: 80 }),
   ];
   const genome = await analyzeGenome({ workspace: root, outcomes, minCohort: 2, now: new Date('2026-01-01T00:00:00Z') });
   assert.equal(genome.status, 'analyzed');
   assert.equal(genome.record.cohorts.length, 2);
   assert.ok(genome.record.cohorts.every((cohort) => cohort.outcomeIds.length === cohort.sampleSize));
   const recommendation = await recommendFromGenome({ genome: genome.record, task: { category: 'feature', stacks: ['node'] } });
-  assert.equal(recommendation.route, 'structured-feature');
+  assert.equal(recommendation.route, 'forgemind-build');
   assert.equal(recommendation.sampleSize, 2);
   assert.ok(recommendation.evidence.includes('o1'));
   assert.match(recommendation.rationale, /success rate/i);
@@ -49,10 +49,10 @@ test('engineering genome aggregates transparent cohorts and recommends the empir
 
 test('genome withholds recommendations below minimum cohort and reports missing evidence', async (t) => {
   const root = await workspace(t);
-  const genome = await analyzeGenome({ workspace: root, outcomes: [outcome('single', 'structured-feature')], minCohort: 3 });
+  const genome = await analyzeGenome({ workspace: root, outcomes: [outcome('single', 'forgemind-build')], minCohort: 3 });
   const recommendation = await recommendFromGenome({ genome: genome.record, task: { category: 'feature', stacks: ['node'] } });
   assert.equal(recommendation.status, 'insufficient-evidence');
-  assert.equal(recommendation.route, 'delivery-orchestrator');
+  assert.equal(recommendation.route, 'forgemind-guide');
   assert.match(recommendation.missingEvidence[0], /minimum cohort/i);
 });
 

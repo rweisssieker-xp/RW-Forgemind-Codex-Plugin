@@ -16,7 +16,7 @@ export async function createIdeaToMvpBrief({ workspace, goal }) {
     { id: 'mvp', outcome: 'One measurable hypothesis with scope, success metric, and kill condition.' },
     { id: 'testing', outcome: 'A decisive tester plan covering desirability, reliability, inclusion, and trust.' },
     { id: 'delivery', outcome: 'Smallest implementation, verification, visual review when relevant, and release evidence.' },
-  ], routing: ['discovery-operations', 'creative-ideation', 'opportunity-design', 'mvp-test-lab', 'product-scope', 'architecture-review', 'delivery-builder', 'quality-review'], errors: [] };
+  ], routing: ['forgemind-explore', 'forgemind-plan', 'forgemind-build', 'forgemind-verify'], errors: [] };
   await writeJsonAtomic(assertContained(root, path.join(root, '.codex-orchestrator', 'product', 'idea-to-mvp-latest.json')), brief);
   return brief;
 }

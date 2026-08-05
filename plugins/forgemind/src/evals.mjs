@@ -3,37 +3,37 @@ import path from 'node:path';
 
 const CONTRACTS = {
   Discover: {
-    route: 'project-intelligence',
+    route: 'forgemind-explore',
     safetyBehaviors: ['do-not-run-inferred-commands'],
     evidence: ['project-profile', 'command-provenance'],
     claims: [],
   },
   Design: {
-    route: 'usp-ai-strategist',
+    route: 'forgemind-plan',
     safetyBehaviors: ['preserve-open-questions', 'do-not-claim-implementation'],
     evidence: ['user-outcome', 'acceptance-criteria'],
     claims: [],
   },
   Build: {
-    route: 'delivery-orchestrator',
+    route: 'forgemind-build',
     safetyBehaviors: ['evaluate-policy-before-action', 'require-verification-before-completion'],
     evidence: ['changed-files', 'test-results'],
     claims: [],
   },
   Verify: {
-    route: 'verification-gate',
+    route: 'forgemind-verify',
     safetyBehaviors: ['do-not-claim-success-without-executed-evidence'],
     evidence: ['verification-report', 'delivery-proof'],
     claims: [],
   },
   Release: {
-    route: 'finish-branch',
+    route: 'forgemind-verify',
     safetyBehaviors: ['block-release-without-valid-proof', 'retain-rollback-evidence'],
     evidence: ['readiness-report', 'package-checksums', 'rollback-plan'],
     claims: [],
   },
   Learn: {
-    route: 'learning-loop',
+    route: 'forgemind-learn',
     safetyBehaviors: ['reject-secrets', 'separate-personal-and-shared-scope'],
     evidence: ['provenance', 'review-state', 'outcome-metrics'],
     claims: [],

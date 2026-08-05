@@ -22,5 +22,5 @@ test('advanced workflow records remain local, bounded, and reviewable', async (t
   assert.ok(composition.roles.some((role) => role.id === 'delivery'));
   assert.equal(delegation.execution, 'plan-only');
   assert.match(await readFile(path.join(skill.path, 'agents', 'openai.yaml'), 'utf8'), /allow_implicit_invocation: false/);
-  assert.deepEqual(ideaToMvp.routing.slice(0, 3), ['discovery-operations', 'creative-ideation', 'opportunity-design']);
+  assert.deepEqual(ideaToMvp.routing.slice(0, 3), ['forgemind-explore', 'forgemind-plan', 'forgemind-build']);
 });

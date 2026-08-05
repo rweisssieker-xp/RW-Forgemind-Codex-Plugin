@@ -4,6 +4,14 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [1.17.0] - 2026-08-05
+
+### Changed
+
+- Replaced 83 source and 74 Marketplace specialist-skill directories with six journey skills and twelve compact internal playbooks.
+- Consolidated product discovery, planning, delivery, YOLO, verification, learning, and Trust Fabric guidance without removing executable CLI capabilities.
+- Reduced the optional Trust Fabric add-on to one explicit entry skill backed by its executable capability surface.
+
 ## [1.16.0] - 2026-08-05
 
 ### Changed

@@ -3,69 +3,30 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
 
-import { resolvePluginRoot } from '../src/paths.mjs';
+const root = path.resolve(import.meta.dirname, '..');
 
-const CREATIVE_SKILLS = [
-  'creative-ideation', 'human-centered-design', 'systematic-problem-solving', 'lateral-solution-lab',
-  'opportunity-design', 'product-narrative', 'presentation-architecture', 'innovation-delivery-lab',
-];
-
-test('creative intelligence workflows are discoverable and explicit-only', async () => {
-  const root = await resolvePluginRoot();
-  for (const skill of CREATIVE_SKILLS) {
-    const directory = path.join(root, 'skills', skill);
-    const instructions = await readFile(path.join(directory, 'SKILL.md'), 'utf8');
-    const policy = await readFile(path.join(directory, 'agents', 'openai.yaml'), 'utf8');
-    assert.match(instructions, new RegExp(`name: ${skill}`));
-    assert.match(instructions, /^Primary journey: \*\*(Discover|Design|Build|Verify|Release|Learn)\*\*$/m);
-    assert.match(policy, /allow_implicit_invocation: false/);
-  }
+test('Explore consolidates creative intelligence and existing-app MVP discovery', async () => {
+  const explore = await readFile(path.join(root, 'entry-skills', 'forgemind-explore', 'SKILL.md'), 'utf8');
+  const methods = await readFile(path.join(root, 'playbooks', 'creative-methods.md'), 'utf8');
+  const innovation = await readFile(path.join(root, 'playbooks', 'discovery-innovation.md'), 'utf8');
+  assert.match(explore, /existing app/i);
+  assert.match(explore, /portfolio rather than an idea dump/i);
+  assert.match(methods, /human-centered|lateral alternatives/i);
+  assert.match(innovation, /kill condition/i);
 });
 
-test('explicit YOLO requests remain an automatic rapid-MVP path', async () => {
-  const root = await resolvePluginRoot();
-  const instructions = await readFile(path.join(root, 'skills', 'yolo-feature', 'SKILL.md'), 'utf8');
-  const policy = await readFile(path.join(root, 'skills', 'yolo-feature', 'agents', 'openai.yaml'), 'utf8');
-  assert.match(instructions, /fast MVP/i);
-  assert.match(instructions, /always selects this workflow/i);
-  assert.match(policy, /allow_implicit_invocation: true/);
+test('Build preserves the always-available bounded YOLO path', async () => {
+  const build = await readFile(path.join(root, 'entry-skills', 'forgemind-build', 'SKILL.md'), 'utf8');
+  const yolo = await readFile(path.join(root, 'playbooks', 'delivery-yolo.md'), 'utf8');
+  assert.match(build, /YOLO is always available/i);
+  assert.match(build, /rollback/i);
+  assert.match(yolo, /rapid MVP/i);
 });
 
-test('idea-to-MVP is the focused entry point for existing-app opportunity work', async () => {
-  const root = await resolvePluginRoot();
-  const instructions = await readFile(path.join(root, 'skills', 'idea-to-mvp', 'SKILL.md'), 'utf8');
-  const orchestrator = await readFile(path.join(root, 'skills', 'delivery-orchestrator', 'SKILL.md'), 'utf8');
-  assert.match(instructions, /existing app/i);
-  assert.match(instructions, /market alternatives/i);
-  assert.match(orchestrator, /start with `idea-to-mvp`/i);
-  assert.match(orchestrator, /mvp-test-lab/i);
-});
-
-test('MVP Test Lab is an explicit tester workflow', async () => {
-  const root = await resolvePluginRoot();
-  const instructions = await readFile(path.join(root, 'skills', 'mvp-test-lab', 'SKILL.md'), 'utf8');
-  const policy = await readFile(path.join(root, 'skills', 'mvp-test-lab', 'agents', 'openai.yaml'), 'utf8');
-  assert.match(instructions, /target-user desirability.*functional acceptance.*accessibility.*trust/i);
-  assert.match(policy, /allow_implicit_invocation: false/);
-});
-
-test('Launch MVP is an explicit one-session entry with hard stop gates', async () => {
-  const root = await resolvePluginRoot();
-  const instructions = await readFile(path.join(root, 'skills', 'launch-mvp', 'SKILL.md'), 'utf8');
-  const policy = await readFile(path.join(root, 'skills', 'launch-mvp', 'agents', 'openai.yaml'), 'utf8');
-  assert.match(instructions, /market thesis, MVP scope, tester plan, implementation, verification, and a release decision/i);
-  assert.match(instructions, /Stop on a kill condition/i);
-  assert.match(policy, /allow_implicit_invocation: false/);
-});
-
-test('three front doors are implicit while internal routing stays explicit', async () => {
-  const root = await resolvePluginRoot();
-  for (const skill of ['forgemind-explore', 'forgemind-build', 'forgemind-guide']) {
-    const policy = await readFile(path.join(root, 'skills', skill, 'agents', 'openai.yaml'), 'utf8');
-    assert.match(policy, /allow_implicit_invocation: true/);
-  }
-  for (const skill of ['autonomous-orchestrator', 'guided-start', 'skill-router']) {
-    const policy = await readFile(path.join(root, 'skills', skill, 'agents', 'openai.yaml'), 'utf8');
-    assert.match(policy, /allow_implicit_invocation: false/);
-  }
+test('Plan and Verify preserve launch and tester decision gates', async () => {
+  const plan = await readFile(path.join(root, 'entry-skills', 'forgemind-plan', 'SKILL.md'), 'utf8');
+  const verify = await readFile(path.join(root, 'entry-skills', 'forgemind-verify', 'SKILL.md'), 'utf8');
+  assert.match(plan, /forgemind launch-mvp/i);
+  assert.match(verify, /target-user, functional, accessibility, and adversarial/i);
+  assert.match(verify, /scale, iterate, or stop/i);
 });

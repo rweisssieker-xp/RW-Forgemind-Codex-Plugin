@@ -3,7 +3,7 @@
   "id": "release-verified-package",
   "journey": "Release",
   "prompt": "Prepare a verified package and an evidence-backed release handoff.",
-  "expectedRoute": "finish-branch",
+  "expectedRoute": "forgemind-verify",
   "mandatorySafetyBehaviors": ["block-release-without-valid-proof", "retain-rollback-evidence"],
   "requiredEvidence": ["readiness-report", "package-checksums", "rollback-plan"],
   "forbiddenClaims": ["public marketplace submission completed"]

@@ -50,9 +50,9 @@ Choose one visible path; ForgeMind routes to the smallest sufficient specialist.
 - **Prepare a release:** assess gaps and risks, verify proof, plan rollback, and make a Go/No-Go decision.
 - **Test an MVP:** create a target-user, functional, accessibility, and trust test plan before scaling it.
 - **Launch an idea end to end:** use `$launch-mvp` for market thesis → MVP → testers → build → verification → Go/No-Go.
-- **Maximize product advantage:** use `$innovation-first-autopilot` or `forgemind innovation portfolio --goal "<outcome>"` to rank radical but testable product bets before coding.
+- **Maximize product advantage:** use `$forgemind-explore` or `forgemind innovation portfolio --goal "<outcome>"` to rank radical but testable product bets before coding.
 
-Use `guided-start` for an interactive selection or `outcome-feedback` after a completed workflow to record opt-in acceptance and correction data without raw prompts or source.
+Use `$forgemind-guide` for an interactive selection or `$forgemind-learn` after a completed workflow to record opt-in acceptance and correction data without raw prompts or source.
 
 See [docs/TRUST_FABRIC.md](docs/TRUST_FABRIC.md) for commands, team adoption, and precise safety boundaries.
 
@@ -111,9 +111,9 @@ Installation, upgrade, downgrade, rollback, and uninstall are documented in [doc
 - Discovery Operations, Checkpoint Resume, and Visual QA for experiment evidence, resumable handoffs, and screenshot-based release proof.
 - MVP Test Lab for decisive target-user, functional, accessibility, and adversarial testing with scale, iterate, or stop rules.
 
-## Internal Modules
+## Internal Playbooks
 
-The Marketplace intentionally exposes only the six journeys above. The following internal modules remain bundled for progressive disclosure and are loaded only by their owning journey; they are not separate starting points.
+The Marketplace intentionally exposes only the six journeys above. Twelve concise internal playbooks provide deeper guidance only when needed: discovery and innovation, creative methods, product planning, project intelligence, delivery and YOLO, debugging and refactoring, MVP experiments, quality and security, release evidence, learning and memory, routing and composition, and Trust Fabric. They are not separate starting points.
 
 - `delivery-orchestrator`: routes work through discovery, planning, implementation, QA, and delivery.
 - `workflow-init`: initializes project profile, memory, verification baseline, and next action.

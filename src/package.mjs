@@ -1,16 +1,10 @@
 import { createHash } from 'node:crypto';
-import { access, cp, mkdir, readFile, readdir, rm } from 'node:fs/promises';
+import { access, cp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 import { ForgeMindError } from './errors.mjs';
 import { writeJsonAtomic } from './io.mjs';
 import { validatePlugin } from './validate.mjs';
-
-const TRUST_FABRIC_SKILLS = [
-  'agent-trust-protocol', 'strategy-to-code-compiler', 'engineering-genome', 'delivery-flight-recorder',
-  'parallel-future-tournament', 'self-shrinking-software', 'autonomous-product-loop', 'evidence-escrow',
-  'federated-learning-network',
-];
 
 export async function buildPackages({ pluginRoot, outputRoot = path.join(pluginRoot, 'dist') }) {
   const root = path.resolve(pluginRoot);
@@ -32,7 +26,6 @@ export async function buildPackages({ pluginRoot, outputRoot = path.join(pluginR
       await cp(source, path.join(pluginPath, file), { force: true });
     }
   }
-  await removeTrustFabricSkills(pluginPath);
   await removeTrustFabricTemplates(pluginPath);
   await writeCoreManifest(pluginPath);
   await writeChecksums(pluginPath);
@@ -43,7 +36,7 @@ export async function buildPackages({ pluginRoot, outputRoot = path.join(pluginR
   await mkdir(path.dirname(marketplacePlugin), { recursive: true });
   await cp(pluginPath, marketplacePlugin, { recursive: true, force: true });
   const trustFabricPath = path.join(marketplacePath, 'plugins', 'forgemind-trust-fabric');
-  const hasTrustFabric = await hasTrustFabricSkills(root);
+  const hasTrustFabric = await exists(path.join(root, 'templates', 'forge')) && await exists(path.join(root, 'playbooks', 'trust-fabric.md'));
   if (hasTrustFabric) await buildTrustFabricAddon({ root, output: trustFabricPath });
   await writeJsonAtomic(path.join(marketplacePath, '.agents', 'plugins', 'marketplace.json'), {
     name: 'rw-local-productivity',
@@ -56,16 +49,8 @@ export async function buildPackages({ pluginRoot, outputRoot = path.join(pluginR
   return { schemaVersion: 1, status: 'passed', pluginPath, trustFabricPath, marketplacePath };
 }
 
-async function removeTrustFabricSkills(pluginPath) {
-  for (const skill of TRUST_FABRIC_SKILLS) await rm(path.join(pluginPath, 'skills', skill), { recursive: true, force: true });
-}
-
 async function removeTrustFabricTemplates(pluginPath) {
   await rm(path.join(pluginPath, 'templates', 'forge'), { recursive: true, force: true });
-}
-
-async function hasTrustFabricSkills(root) {
-  return (await Promise.all(TRUST_FABRIC_SKILLS.map((skill) => exists(path.join(root, 'skills', skill, 'SKILL.md'))))).every(Boolean);
 }
 
 async function writeCoreManifest(pluginPath) {
@@ -79,15 +64,16 @@ async function writeCoreManifest(pluginPath) {
 
 async function buildTrustFabricAddon({ root, output }) {
   await mkdir(path.join(output, '.codex-plugin'), { recursive: true });
-  await mkdir(path.join(output, 'skills'), { recursive: true });
-  for (const skill of TRUST_FABRIC_SKILLS) await cp(path.join(root, 'skills', skill), path.join(output, 'skills', skill), { recursive: true, force: true });
+  await mkdir(path.join(output, 'entry-skills', 'forgemind-trust-fabric'), { recursive: true });
+  await mkdir(path.join(output, 'playbooks'), { recursive: true });
+  await cp(path.join(root, 'playbooks', 'trust-fabric.md'), path.join(output, 'playbooks', 'trust-fabric.md'), { recursive: true, force: true });
   await cp(path.join(root, 'templates', 'forge'), path.join(output, 'templates', 'forge'), { recursive: true, force: true });
   const sourceManifest = JSON.parse(await readFile(path.join(root, '.codex-plugin', 'plugin.json'), 'utf8'));
   await writeJsonAtomic(path.join(output, '.codex-plugin', 'plugin.json'), {
     name: 'forgemind-trust-fabric', version: sourceManifest.version,
     description: 'Optional advanced evidence workflows for ForgeMind Core. Use when cross-agent trust, strategy, governed learning, or sealed delivery proof is required.',
     author: sourceManifest.author, homepage: sourceManifest.homepage, repository: sourceManifest.repository, license: sourceManifest.license,
-    keywords: ['forgemind', 'trust-fabric', 'evidence', 'governance'], skills: './skills/',
+    keywords: ['forgemind', 'trust-fabric', 'evidence', 'governance'], skills: './entry-skills/',
     interface: {
       displayName: 'ForgeMind Trust Fabric', shortDescription: 'Optional advanced evidence workflows for ForgeMind Core.',
       longDescription: 'Adds nine evidence-native workflows for portable trust contracts, executable strategy, learning, replay, experiments, evidence escrow, and privacy-preserving federation. Requires ForgeMind Core.',
@@ -96,6 +82,8 @@ async function buildTrustFabricAddon({ root, output }) {
       defaultPrompt: ['Use ForgeMind Trust Fabric to verify this outcome with portable proof.'], brandColor: sourceManifest.interface.brandColor,
     },
   });
+  await writeText(path.join(output, 'entry-skills', 'forgemind-trust-fabric', 'SKILL.md'), `---\nname: forgemind-trust-fabric\ndescription: Use ForgeMind Trust Fabric for portable evidence, strategy checks, auditable delivery records, or privacy-preserving learning.\n---\n\n# Trust Fabric\n\nLoad \`playbooks/trust-fabric.md\`. Run \`forgemind forge help\` and select the capability required by the evidence need. Preserve held, rejected, and insufficient-evidence states.\n`);
+  await writeText(path.join(output, 'entry-skills', 'forgemind-trust-fabric', 'agents', 'openai.yaml'), `interface:\n  display_name: "Trust Fabric"\n  short_description: "Portable evidence and advanced trust workflows."\n  default_prompt: "Use $forgemind-trust-fabric to create portable evidence for this delivery."\npolicy:\n  allow_implicit_invocation: false\n`);
   await writeChecksums(output);
   const validation = await verifyPackage(output);
   if (validation.status !== 'passed') throw new ForgeMindError('FM_TRUST_FABRIC_PACKAGE_INVALID', 'Trust Fabric add-on did not validate.', { details: validation.errors });
@@ -127,6 +115,11 @@ async function writeChecksums(root) {
 }
 
 async function hashFile(file) { return createHash('sha256').update(await readFile(file)).digest('hex'); }
+
+async function writeText(file, content) {
+  await mkdir(path.dirname(file), { recursive: true });
+  await writeFile(file, content, 'utf8');
+}
 
 async function walk(root) {
   const output = [];

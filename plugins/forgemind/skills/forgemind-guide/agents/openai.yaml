@@ -1,6 +1,0 @@
-interface:
-  display_name: "Guide me"
-  short_description: "Turn an unclear goal into a safe first step."
-  default_prompt: "Use $forgemind-guide to choose the best next step for this goal."
-policy:
-  allow_implicit_invocation: true

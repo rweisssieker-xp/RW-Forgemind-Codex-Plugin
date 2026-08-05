@@ -133,7 +133,7 @@ Do not advance a stopped launch. Kill conditions, critical or blocked tester fin
 
 ### Record And Evaluate MVP Tests
 
-Use `$mvp-test-lab` to prepare target-user, functional, accessibility, and adversarial testing. Create a plan, record privacy-safe results, then read the decision:
+Use `$forgemind-verify` to prepare target-user, functional, accessibility, and adversarial testing. Create a plan, record privacy-safe results, then read the decision:
 
 ```text
 node bin/forgemind.mjs testing plan --goal "Shorten invoice approvals" --audience "Finance teams" --json
@@ -637,7 +637,8 @@ Innovation First Autopilot: read app structure first and generate max AI/KI USPs
 
 - `plugins/forgemind/.codex-plugin/plugin.json`: plugin manifest
 - `plugins/forgemind/hooks.json`: trigger hooks
-- `plugins/forgemind/skills/`: Codex skills
+- `plugins/forgemind/entry-skills/`: six Codex journeys
+- `plugins/forgemind/playbooks/`: compact internal guidance
 - `plugins/forgemind/agents/`: persona profiles
 - `plugins/forgemind/templates/artifacts/`: PRD, epic, story, acceptance, workflow templates
 - `plugins/forgemind/templates/memory/`: project memory templates

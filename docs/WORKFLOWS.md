@@ -4,7 +4,7 @@ For the complete command and persona manual, see `HANDBOOK.md`.
 
 ## Primary Journey Map
 
-Every ForgeMind skill has exactly one primary journey: **Discover**, **Design**, **Build**, **Verify**, **Release**, or **Learn**. Users choose the desired outcome; the router selects the specialist skill. Autonomous workflows share this precedence: safety -> debugging -> discovery -> product/USP -> implementation -> verification -> learning.
+ForgeMind exposes six journeys: **Guide**, **Explore**, **Plan**, **Build**, **Verify**, and **Learn**. Users choose the desired outcome; Guide selects the smallest sufficient journey and its playbooks. Safety always takes precedence over discovery, planning, implementation, verification, and learning.
 
 The portable CLI is the cross-platform execution surface:
 
@@ -41,7 +41,7 @@ Use when Codex should behave like a senior product engineer.
 
 ## One-Session MVP Launch
 
-Use `$launch-mvp` when an idea or existing-app opportunity should progress through discovery, testing, implementation, verification, and a release decision without manually selecting each workflow.
+Use `$forgemind-plan` when an idea or existing-app opportunity should progress through discovery, testing, implementation, verification, and a release decision without manually selecting each workflow.
 
 ```text
 node bin/forgemind.mjs launch-mvp --goal "Shorten invoice approvals" --audience "Finance teams" --json
