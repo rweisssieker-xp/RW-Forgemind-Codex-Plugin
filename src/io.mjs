@@ -25,11 +25,28 @@ export async function writeTextAtomic(target, content, options = {}) {
         await rm(temporary, { force: true });
       }
     }
-    await rename(temporary, resolved);
+    await replaceAtomically(temporary, resolved);
   } finally {
     await rm(temporary, { force: true });
   }
   return resolved;
+}
+
+async function replaceAtomically(temporary, resolved) {
+  // Windows can briefly hold a just-written file open (for example through
+  // Defender or an indexer). Retrying the final same-volume rename preserves
+  // atomic replacement and avoids turning that transient lock into a failed
+  // workflow run.
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      await rename(temporary, resolved);
+      return;
+    } catch (error) {
+      const retryable = error?.code === 'EPERM' || error?.code === 'EACCES' || error?.code === 'EBUSY';
+      if (!retryable || attempt >= 4) throw error;
+      await new Promise((resolve) => setTimeout(resolve, 25 * (attempt + 1)));
+    }
+  }
 }
 
 function sortValue(value) {

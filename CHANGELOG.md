@@ -4,6 +4,13 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [1.17.2] - 2026-08-05
+
+### Fixed
+
+- Made release artifacts retain hidden Marketplace metadata and publish downloadable Core and Marketplace archives for every version tag.
+- Retried transient Windows file locks during atomic evidence writes and updated the release smoke test to the current CLI.
+
 ## [1.17.1] - 2026-08-05
 
 ### Fixed

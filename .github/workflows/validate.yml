@@ -42,6 +42,7 @@ jobs:
         with:
           name: forgemind-packages
           if-no-files-found: error
+          include-hidden-files: true
           path: |
             dist/plugin
             dist/marketplace
@@ -58,12 +59,18 @@ jobs:
         with:
           name: forgemind-packages
           path: dist
-      - name: Publish checksums and marketplace catalog
+      - name: Create distributable release archives
+        run: |
+          tar -C dist -czf "dist/forgemind-plugin-${GITHUB_REF_NAME}.tar.gz" plugin
+          tar -C dist -czf "dist/forgemind-marketplace-${GITHUB_REF_NAME}.tar.gz" marketplace
+      - name: Publish release packages and marketplace catalog
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "$GITHUB_REF_NAME" \
             dist/plugin/checksums.json \
             dist/marketplace/.agents/plugins/marketplace.json \
+            "dist/forgemind-plugin-${GITHUB_REF_NAME}.tar.gz" \
+            "dist/forgemind-marketplace-${GITHUB_REF_NAME}.tar.gz" \
             --generate-notes \
             --title "ForgeMind $GITHUB_REF_NAME"

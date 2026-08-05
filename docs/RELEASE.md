@@ -37,7 +37,8 @@ Use isolated temporary home and workspace directories. Test fresh install, upgra
 
 ```text
 node bin/forgemind.mjs install --source dist/plugin --destination <temporary-plugin-directory>
-node bin/forgemind.mjs legacy runtime-discovery-test --json
+node bin/forgemind.mjs validate --plugin <temporary-plugin-directory> --strict-release
+node bin/forgemind.mjs help
 node bin/forgemind.mjs uninstall --destination <temporary-plugin-directory>
 ```
 
