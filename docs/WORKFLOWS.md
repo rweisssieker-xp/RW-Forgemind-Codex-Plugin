@@ -24,6 +24,23 @@ Use `forgemind forge help` for the nine evidence-native capabilities that span a
 
 The complete action matrix and boundaries are in `TRUST_FABRIC.md`.
 
+## Experience And Opportunity Lab
+
+Before committing to a material GUI, feature, or product bet, produce an assumption-labelled market chance and business case, then compare three reversible experience directions:
+
+```text
+node bin/forgemind.mjs experience canvas --goal "Shorten invoice approvals" --market-size 500 --penetration 5 --price 100 --build-cost 10000 --monthly-cost 500 --json
+```
+
+The artifact combines a UX failure forecast, counterfactual tournament, task-time target, market chance, business case, experiment, and kill condition. It never upgrades project assumptions into market facts.
+
+For user-facing delivery, persist the state matrix and required test layers, then use drift detection, review-only flaky-test repair proposals, and a proof-carrying demo:
+
+```text
+node bin/forgemind.mjs experience evidence --task "Approve invoice" --json
+node bin/forgemind.mjs experience demo --title "Approval proof" --json
+```
+
 ## Delivery Acceleration
 
 Use when Codex should behave like a senior product engineer.

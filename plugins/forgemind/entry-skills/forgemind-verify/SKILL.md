@@ -11,6 +11,8 @@ For an MVP, combine target-user, functional, accessibility, and adversarial evid
 
 For a GUI change, prove the critical task across its intended state matrix: loading, empty, error, success, keyboard-only, narrow viewport, and confirmation or recovery paths. Use semantic and accessibility assertions before pixels; then run the smallest fitting browser flow and capture a screenshot or visual comparison when layout, rendering, or design-system changes matter. Treat focus loss, inaccessible names, unreadable contrast, broken escape routes, flaky visual baselines, and untested responsive states as evidence gaps, never as cosmetic polish.
 
+Persist the GUI evidence plan with `forgemind experience evidence --task "<critical-task>" --states "loading|empty|error|success|keyboard|narrow-viewport|recovery" --json`. Use `experience drift` on explicit JSON snapshots to flag design-system drift, `experience test-repair` only as a review proposal for flaky selectors, and `experience demo` to create a truthful proof-carrying demo script.
+
 Load `playbooks/quality-security.md`, `playbooks/mvp-experiments.md`, and `playbooks/release-evidence.md` when deeper guidance is needed.
 
 Never claim a check passed unless it ran successfully. Never release through a blocker or an unmet kill condition.

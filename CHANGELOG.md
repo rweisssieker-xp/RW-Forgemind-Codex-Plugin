@@ -4,6 +4,13 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [1.17.6] - 2026-08-06
+
+### Added
+
+- Added the Experience & Opportunity Lab: market chance scoring, transparent business cases, UX failure forecasting, counterfactual flow tournaments, task-time targets, state-matrix evidence, design-system drift detection, review-only test repair proposals, and trustworthy demo storyboards.
+- Made Explore require an assumption-labelled market chance and business case for material product bets; Build and Verify now retain the selected experience and its GUI evidence.
+
 ## [1.17.5] - 2026-08-06
 
 ### Added

@@ -14,3 +14,7 @@ Prove in this order:
 4. **Resilience:** no trapped focus, lost input, duplicate submission, silent failure, hidden destructive action, or inaccessible recovery path.
 
 Record which layers ran, their viewport or browser context, screenshot evidence when used, and residual states not covered. If the repository lacks a UI test harness, add the smallest compatible layer or record the gap and block a visual-quality claim.
+
+## Opportunity and Business Discipline
+
+For any material product or GUI bet, calculate market chance before build from pain, frequency, willingness to pay, reach, differentiation, feasibility, and evidence. Build a transparent business case from reachable accounts, penetration, price, margin, build cost, and monthly operating cost. Defaults are illustrative assumptions; never present the resulting revenue, ROI, or break-even date as market fact. Use the counterfactual tournament to select the highest-value reversible experience, then bind its task-time target, experiment, and kill condition to release evidence.

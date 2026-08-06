@@ -13,6 +13,8 @@ Use test-driven development when practical, reproduce defects before fixing them
 
 For a GUI, implement the decisive user task rather than a decorative screen: model loading, empty, error, success, keyboard, narrow-viewport, and destructive-confirmation states. Preserve the existing design system. Make the primary action obvious, keep feedback local and reversible, avoid needless steps, and capture a visual baseline or screenshot when visual output can regress. Prefer the smallest suitable UI test layer: component for state logic, browser flow for the critical task, and screenshot comparison for visual risk.
 
+Before building a material UX change, run `forgemind experience canvas --goal "<outcome>" --baseline-seconds <current-task-time> --target-seconds <target-task-time> --json`. Use its counterfactual tournament, UX failure forecast, task-time metric, market chance, and business case to select one reversible experience rather than accumulating features.
+
 Load `playbooks/quality-security.md` for interface work, accessibility, visual QA, or browser testing.
 
 Finish with changed files, acceptance evidence, commands actually run, residual risk, and the next decision.

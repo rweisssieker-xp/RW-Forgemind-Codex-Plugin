@@ -22,6 +22,7 @@ const PRIMARY_COMMANDS = [
   'discovery',
   'checkpoint',
   'visual',
+  'experience',
   'capabilities',
   'compose',
   'factory',
@@ -226,6 +227,17 @@ export async function runCli(argv, context = {}) {
         : positionals[0] === 'compare'
           ? await compareVisualEvidence({ workspace, baseline: options.baseline, candidate: options.candidate, label: options.label })
           : await recordVisualEvidence({ workspace, input: options.input, label: options.label, viewport: options.viewport });
+    } else if (command === 'experience') {
+      const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
+      const action = positionals[0] ?? 'canvas';
+      const { createExperienceCanvas, createOpportunityCase, createTrustworthyDemo, detectDesignDrift, proposeTestRepair, recordExperienceEvidence } = await import('./experience-lab.mjs');
+      if (action === 'canvas') data = await createExperienceCanvas({ workspace, goal: options.goal, options });
+      else if (action === 'market-case') data = await createOpportunityCase({ workspace, goal: options.goal, options });
+      else if (action === 'evidence') data = await recordExperienceEvidence({ workspace, task: options.task, states: options.states, layers: options.layers, viewport: options.viewport });
+      else if (action === 'drift') data = await detectDesignDrift({ workspace, baseline: options.baseline, candidate: options.candidate });
+      else if (action === 'test-repair') data = await proposeTestRepair({ workspace, failure: options.failure, selector: options.selector });
+      else if (action === 'demo') data = await createTrustworthyDemo({ workspace, title: options.title });
+      else throw invalidInput('FM_EXPERIENCE_ACTION_INVALID', 'Experience supports canvas, market-case, evidence, drift, test-repair, and demo.');
     } else if (command === 'capabilities') {
       const { buildCapabilityManifest } = await import('./capabilities.mjs');
       data = await buildCapabilityManifest({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()) });

@@ -40,6 +40,8 @@ For one continuous idea-to-release session, use explicit `$launch-mvp`: it creat
 - **Fast without blind spots:** YOLO keeps a narrow MVP moving while preserving test, risk, rollback, and release boundaries.
 - **Existing apps get product-aware innovation:** repository evidence and current constraints shape opportunities instead of generic idea lists.
 - **Innovation portfolio, not an idea dump:** ten app-aware bets cover workflow elimination, intelligence, trust, learning, integrations, monetization, and autonomous work; each has a moat, test, and kill condition.
+- **Opportunity before output:** market chance and an explicit, assumption-labelled business case connect pain, reach, price, margin, cost, ROI, and break-even to every material product bet.
+- **Counterfactual experience design:** an Experience Lab forecasts UX failures, compares safe flow variants, optimizes task time, detects design drift, proposes review-only test repairs, and turns only evidence into a trustworthy demo.
 
 ## Start Here
 
@@ -52,6 +54,7 @@ Choose one visible path; ForgeMind routes to the smallest sufficient specialist.
 - **Test an MVP:** create a target-user, functional, accessibility, and trust test plan before scaling it.
 - **Launch an idea end to end:** use `$launch-mvp` for market thesis → MVP → testers → build → verification → Go/No-Go.
 - **Maximize product advantage:** use `$forgemind-explore` or `forgemind innovation portfolio --goal "<outcome>"` to rank radical but testable product bets before coding.
+- **Validate a GUI innovation:** use `forgemind experience canvas --goal "<outcome>"` for a market-aware UX tournament, then `$forgemind-verify` to retain experience evidence.
 
 Use `$forgemind-guide` for an interactive selection or `$forgemind-learn` after a completed workflow to record opt-in acceptance and correction data without raw prompts or source.
 
