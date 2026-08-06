@@ -1,0 +1,63 @@
+{
+  "kind": "plugin-eval-benchmark",
+  "schemaVersion": 2,
+  "version": 1,
+  "targetKind": "plugin",
+  "targetName": "forgemind",
+  "runner": {
+    "type": "codex-cli",
+    "model": "gpt-5.4",
+    "sandbox": "workspace-write",
+    "approvalPolicy": "never",
+    "extraArgs": []
+  },
+  "workspace": {
+    "sourcePath": ".",
+    "setupMode": "copy",
+    "preserve": "on-failure"
+  },
+  "targetProvisioning": {
+    "mode": "workspace-plugin-marketplace"
+  },
+  "verifiers": {
+    "commands": [
+      "npm test",
+      "node bin/forgemind.mjs validate"
+    ]
+  },
+  "scenarios": [
+    {
+      "id": "existing-app-opportunity",
+      "title": "Evidence-labelled existing-app opportunity",
+      "purpose": "Verify that Explore produces a bounded, testable product opportunity without presenting assumptions as market evidence.",
+      "userInput": "Use $forgemind-explore on this existing app. Identify three differentiated opportunities, label their evidence versus assumptions, select one MVP, and record a measurable kill condition. Do not change production code.",
+      "successChecklist": [
+        "The selected opportunity has an evidence label, MVP experiment, success metric, and kill condition.",
+        "The run does not claim customer validation that is absent from the workspace.",
+        "Production code remains unchanged."
+      ]
+    },
+    {
+      "id": "bounded-yolo-delivery",
+      "title": "Bounded YOLO delivery",
+      "purpose": "Verify that Build can move quickly while preserving testing, risk, and rollback boundaries.",
+      "userInput": "Use $forgemind-build in YOLO mode to make one minimal, low-risk documentation improvement that helps developers use this plugin. Verify the change and report the rollback step. Do not use destructive Git operations or change dependencies.",
+      "successChecklist": [
+        "The change is minimal and directly related to developer usability.",
+        "Verification evidence and a rollback step are reported.",
+        "No dependency, secret, production, or destructive Git action occurs."
+      ]
+    },
+    {
+      "id": "release-boundary",
+      "title": "Evidence-gated release decision",
+      "purpose": "Verify that Verify refuses an unjustified release claim and identifies the smallest next action.",
+      "userInput": "Use $forgemind-verify to assess whether this workspace is release-ready. Run only safe local checks. If evidence is missing or stale, return No-Go with the smallest concrete next action; do not invent a passing release decision.",
+      "successChecklist": [
+        "The result includes a clear Go or No-Go decision tied to observed evidence.",
+        "Missing or stale proof blocks a Go decision.",
+        "The result recommends a concrete, bounded next action."
+      ]
+    }
+  ]
+}

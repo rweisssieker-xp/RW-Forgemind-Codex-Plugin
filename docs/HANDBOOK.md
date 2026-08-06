@@ -8,14 +8,16 @@ Its distinguishing promises are concrete: proof before completion claims; autono
 
 ForgeMind presents these journeys as a hierarchy: **Guide** routes into **Explore**, **Plan**, **Build**, **Verify**, or **Learn**. Detailed workflow files are internal modules, not additional entry points. See [HIERARCHY.md](HIERARCHY.md) for the full map.
 
-- **Discover** when the repository, current state, risks, or best route are unclear.
-- **Design** when product value, USP, requirements, architecture, stories, or acceptance criteria need definition.
+- **Explore** when the repository, current state, risks, or highest-value opportunity are unclear.
+- **Plan** when product value, USP, requirements, architecture, stories, or acceptance criteria need definition.
 - **Build** when ForgeMind should implement or debug through the common governed orchestration path.
 - **Verify** when you need executable checks, review, risks, traceability, or proof-carrying evidence.
-- **Release** when preparing a package, installation, handoff, rollback, or release decision.
+- **Verify** also owns the evidence-gated Go/No-Go release decision.
 - **Learn** when recording outcomes, feedback, decisions, product signals, or reusable patterns.
 
 When several workflows match, ForgeMind uses one precedence everywhere: safety, debugging, discovery, product/USP, implementation, verification, then learning.
+
+All installed-plugin instructions use the six journeys or `node bin/forgemind.mjs`. Any `scripts/*.ps1` example below is a source-maintainer compatibility wrapper, available only from a full repository checkout.
 
 The Trust Fabric adds nine evidence-native specialist workflows across these journeys. Start with `forgemind forge help`; use the Agent Trust Protocol for cross-agent work, the Strategy Compiler for alignment, Genome and Federation for measured learning, Flight Recorder for audit, Tournament for competing futures, Shrink for reversible simplification, Product Loop for experiments, and Evidence Escrow for acceptance. See `TRUST_FABRIC.md` for exact commands and limits.
 
@@ -182,7 +184,7 @@ This initializes or proposes:
 Script equivalent:
 
 ```powershell
-.\plugins\forgemind\scripts\write-project-profile.ps1 -WithMemory -WithArtifacts
+.\scripts\write-project-profile.ps1 -WithMemory -WithArtifacts
 ```
 
 ### Status
@@ -405,12 +407,12 @@ Release Readiness Score: score this branch from 0-100 and list blockers.
 Script equivalents:
 
 ```powershell
-.\plugins\forgemind\scripts\add-traceability.ps1 -Feature "Feature X" -Story "ST-1" -Acceptance "Acceptance summary"
-.\plugins\forgemind\scripts\gap-scan.ps1
-.\plugins\forgemind\scripts\release-readiness-score.ps1
-.\plugins\forgemind\scripts\risk-radar.ps1
-.\plugins\forgemind\scripts\generate-rollback-plan.ps1 -Change "Feature X"
-.\plugins\forgemind\scripts\generate-pr-summary.ps1 -Title "Feature X"
+.\scripts\add-traceability.ps1 -Feature "Feature X" -Story "ST-1" -Acceptance "Acceptance summary"
+.\scripts\gap-scan.ps1
+.\scripts\release-readiness-score.ps1
+.\scripts\risk-radar.ps1
+.\scripts\generate-rollback-plan.ps1 -Change "Feature X"
+.\scripts\generate-pr-summary.ps1 -Title "Feature X"
 ```
 
 Release score bands:
@@ -441,7 +443,7 @@ Runtime Discovery Test: check whether ForgeMind is installed where Codex can dis
 ```
 
 ```powershell
-.\plugins\forgemind\scripts\runtime-discovery-test.ps1
+.\scripts\runtime-discovery-test.ps1
 ```
 
 It checks Codex home, plugin cache, marketplace registration, config entries, manifest, skills, and hook references.
@@ -453,15 +455,15 @@ Before claiming work is complete, ForgeMind should run relevant verification.
 Common script:
 
 ```powershell
-.\plugins\forgemind\scripts\verify-workspace.ps1
-.\plugins\forgemind\scripts\verify-workspace.ps1 -Run
+.\scripts\verify-workspace.ps1
+.\scripts\verify-workspace.ps1 -Run
 ```
 
 Plugin validation:
 
 ```powershell
-.\plugins\forgemind\scripts\validate-plugin.ps1
-.\plugins\forgemind\scripts\test-forgemind.ps1
+.\scripts\validate-plugin.ps1
+.\scripts\test-forgemind.ps1
 ```
 
 Verification hierarchy:
@@ -488,7 +490,7 @@ Learning Loop: record what worked, what failed, user preferences, reusable patte
 Script:
 
 ```powershell
-.\plugins\forgemind\scripts\record-learning.ps1 -Task "Feature X" -Outcome success -MemoryUsed -Note "Reusable pattern found"
+.\scripts\record-learning.ps1 -Task "Feature X" -Outcome success -MemoryUsed -Note "Reusable pattern found"
 ```
 
 Memory files include:
@@ -508,9 +510,9 @@ Memory files include:
 Use the USP backlog for product differentiation ideas:
 
 ```powershell
-.\plugins\forgemind\scripts\update-usp-backlog.ps1 -Title "AI Feature" -Score 82 -Experiment "Smoke test"
-.\plugins\forgemind\scripts\register-verification.ps1 -Command "npm test" -Category test
-.\plugins\forgemind\scripts\record-decision.ps1 -Decision "Use X" -Rationale "Because Y"
+.\scripts\update-usp-backlog.ps1 -Title "AI Feature" -Score 82 -Experiment "Smoke test"
+.\scripts\register-verification.ps1 -Command "npm test" -Category test
+.\scripts\record-decision.ps1 -Decision "Use X" -Rationale "Because Y"
 ```
 
 ## Differentiation Matrix
@@ -530,7 +532,7 @@ Do not store secrets, credentials, private customer data, patient data, propriet
 Generate a local dashboard:
 
 ```powershell
-.\plugins\forgemind\scripts\generate-dashboard.ps1
+.\scripts\generate-dashboard.ps1
 ```
 
 Output:
@@ -609,10 +611,10 @@ After changing ForgeMind itself:
 ```powershell
 Get-Content -Raw .\plugins\forgemind\.codex-plugin\plugin.json | ConvertFrom-Json | Out-Null
 Get-Content -Raw .\.agents\plugins\marketplace.json | ConvertFrom-Json | Out-Null
-.\plugins\forgemind\scripts\validate-plugin.ps1
-.\plugins\forgemind\scripts\test-forgemind.ps1
-.\plugins\forgemind\scripts\gap-scan.ps1
-.\plugins\forgemind\scripts\release-readiness-score.ps1
+.\scripts\validate-plugin.ps1
+.\scripts\test-forgemind.ps1
+.\scripts\gap-scan.ps1
+.\scripts\release-readiness-score.ps1
 ```
 
 Then reload Codex and test:

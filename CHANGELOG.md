@@ -4,6 +4,18 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [1.17.4] - 2026-08-06
+
+### Fixed
+
+- Replaced Marketplace-facing legacy entry points with the six current journeys and clarified that PowerShell wrappers are source-maintainer tools.
+- Added release-workflow regression assertions for hidden Marketplace metadata, repository context, and downloadable Core and Marketplace archives.
+- Removed an unused Command Center image from the Core and Marketplace payloads.
+
+### Added
+
+- Added an LCOV coverage command and a versioned Plugin Eval benchmark configuration for measurable quality and efficiency improvements.
+
 ## [1.17.3] - 2026-08-05
 
 ### Fixed

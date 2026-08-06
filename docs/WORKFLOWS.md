@@ -16,7 +16,7 @@ node bin/forgemind.mjs readiness
 node bin/forgemind.mjs dashboard
 ```
 
-PowerShell scripts are compatibility aliases only and delegate to the same CLI behavior.
+PowerShell scripts are source-maintainer compatibility aliases only. They are not present in the installed Core plugin; use the six journeys or the portable CLI there.
 
 ## Trust Fabric
 
@@ -123,18 +123,18 @@ Use these before a risky merge, release, installer update, dependency change, or
 
 ```text
 node bin/forgemind.mjs risks
-node bin/forgemind.mjs legacy generate-rollback-plan -Change "Feature name"
-node bin/forgemind.mjs legacy generate-pr-summary -Title "Feature name"
+node bin/forgemind.mjs evidence
+node bin/forgemind.mjs readiness
 ```
 
-Risk Radar flags secret-like files, migrations, dependency changes, generated artifacts, installer/CI changes, missing verification, and large diffs. Rollback Planner writes `docs/forgemind/rollback-plan.md`. PR Summary Builder writes `.codex-orchestrator/reports/pr-summary.md`.
+Risk Radar flags secret-like files, migrations, dependency changes, generated artifacts, installer/CI changes, missing verification, and large diffs. Use `$forgemind-verify` when you need a rollback plan or an evidence-backed handoff summary.
 
 ## Traceability
 
 Use this after implementation to connect product intent to code and tests:
 
 ```powershell
-.\plugins\forgemind\scripts\add-traceability.ps1 -Feature "Feature name" -Story "Story id" -Acceptance "Acceptance summary"
+.\scripts\add-traceability.ps1 -Feature "Feature name" -Story "Story id" -Acceptance "Acceptance summary"
 ```
 
 The artifact lives in `docs/forgemind/traceability.md`.
@@ -144,8 +144,8 @@ The artifact lives in `docs/forgemind/traceability.md`.
 Use these to make repeatable project knowledge durable:
 
 ```powershell
-.\plugins\forgemind\scripts\register-verification.ps1 -Command "npm test" -Category test -When "before release"
-.\plugins\forgemind\scripts\record-decision.ps1 -Decision "Use X" -Rationale "Because Y"
+.\scripts\register-verification.ps1 -Command "npm test" -Category test -When "before release"
+.\scripts\record-decision.ps1 -Decision "Use X" -Rationale "Because Y"
 ```
 
 Verification entries live in `.codex-orchestrator/memory/verification-registry.md`. Decisions live in `.codex-orchestrator/memory/decisions.md`.
@@ -155,7 +155,7 @@ Verification entries live in `.codex-orchestrator/memory/verification-registry.m
 Use this to refresh the visible ForgeMind state machine:
 
 ```powershell
-.\plugins\forgemind\scripts\generate-workflow-graph.ps1
+.\scripts\generate-workflow-graph.ps1
 ```
 
 The graph lives in `.codex-orchestrator/workflow-graph.md`.
@@ -165,7 +165,7 @@ The graph lives in `.codex-orchestrator/workflow-graph.md`.
 Use this after installing or packaging the plugin:
 
 ```powershell
-.\plugins\forgemind\scripts\runtime-discovery-test.ps1
+.\scripts\runtime-discovery-test.ps1
 ```
 
 It checks the Codex plugin cache, marketplace registration, config entry, manifest, skills, and hook references.
@@ -191,9 +191,9 @@ Use after substantial work, failed checks, repeated corrections, or explicit use
 Scripts:
 
 ```powershell
-.\plugins\forgemind\scripts\record-learning.ps1 -Task "Feature X" -Outcome success -MemoryUsed -Note "Pattern extracted"
-.\plugins\forgemind\scripts\update-usp-backlog.ps1 -Title "AI feature" -Score 82 -Experiment "Smoke test"
-.\plugins\forgemind\scripts\init-global-memory.ps1
+.\scripts\record-learning.ps1 -Task "Feature X" -Outcome success -MemoryUsed -Note "Pattern extracted"
+.\scripts\update-usp-backlog.ps1 -Title "AI feature" -Score 82 -Experiment "Smoke test"
+.\scripts\init-global-memory.ps1
 ```
 
 ## Self-Update

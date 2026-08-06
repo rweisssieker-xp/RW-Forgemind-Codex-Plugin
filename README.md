@@ -58,18 +58,18 @@ See [docs/TRUST_FABRIC.md](docs/TRUST_FABRIC.md) for commands, team adoption, an
 
 ## Six Primary Journeys
 
-ForgeMind groups every skill into one stable entry journey for individual and team use on Windows, macOS, and Linux:
+ForgeMind exposes exactly six Marketplace journeys for individual and team use on Windows, macOS, and Linux:
 
 | Journey | Start here | Outcome |
 | --- | --- | --- |
-| Discover | `node bin/forgemind.mjs inspect` | Understand the repository, environment, gaps, and next route. |
-| Design | `Design this product outcome with ForgeMind.` | Turn intent into requirements, USPs, architecture, stories, and acceptance criteria. |
-| Build | `Build this outcome with ForgeMind.` | Implement through one governed orchestration path. |
-| Verify | `node bin/forgemind.mjs verify --run` | Produce test, risk, traceability, and delivery evidence. |
-| Release | `node bin/forgemind.mjs readiness` | Package, install, hand off, or release with proof and rollback context. |
-| Learn | `node bin/forgemind.mjs outcome --help` | Preserve governed outcomes, decisions, signals, and reusable learning. |
+| Guide | `$forgemind-guide` | Select the smallest sufficient path and its safety boundary. |
+| Explore | `$forgemind-explore` | Inspect a new or existing app and rank evidence-labelled opportunities. |
+| Plan | `$forgemind-plan` | Turn the selected opportunity into an MVP scope, test plan, and stop gates. |
+| Build | `$forgemind-build` | Implement a bounded outcome, including the always-available YOLO path. |
+| Verify | `$forgemind-verify` | Produce tester, risk, verification, rollback, and Go/No-Go evidence. |
+| Learn | `$forgemind-learn` | Record opt-in outcomes and improve future project-specific decisions. |
 
-Run `node bin/forgemind.mjs help` for the portable CLI. Existing `scripts/*.ps1` commands remain compatibility launchers on PowerShell hosts.
+Run `node bin/forgemind.mjs help` for the portable CLI. The root `scripts/*.ps1` wrappers are source-maintainer compatibility tools; they are not part of the installed Core plugin.
 
 Installation, upgrade, downgrade, rollback, and uninstall are documented in [docs/INSTALL.md](docs/INSTALL.md). Public and team use is governed by the [MIT License](LICENSE), [Privacy Policy](PRIVACY.md), [Terms](TERMS.md), [Security Policy](SECURITY.md), [Support Policy](SUPPORT.md), [Contributing Guide](CONTRIBUTING.md), and [Code of Conduct](CODE_OF_CONDUCT.md).
 
@@ -225,33 +225,35 @@ Trust Fabric: show all nine forge capabilities and recommend the right one for t
 
 More prompts are in `prompts/README.md`.
 
-## Local Scripts
+## Source-Maintainer Compatibility Scripts
+
+These PowerShell wrappers exist only in a source checkout. Installed Marketplace users should use the six journeys or `node bin/forgemind.mjs` instead.
 
 ```powershell
-.\plugins\forgemind\scripts\orchestrator-status.ps1
-.\plugins\forgemind\scripts\detect-stack.ps1
-.\plugins\forgemind\scripts\write-project-profile.ps1 -WithMemory -WithArtifacts
-.\plugins\forgemind\scripts\init-artifacts.ps1
-.\plugins\forgemind\scripts\verify-workspace.ps1
-.\plugins\forgemind\scripts\verify-workspace.ps1 -Run
-.\plugins\forgemind\scripts\gap-scan.ps1
-.\plugins\forgemind\scripts\release-readiness-score.ps1
-.\plugins\forgemind\scripts\risk-radar.ps1
-.\plugins\forgemind\scripts\generate-rollback-plan.ps1 -Change "My change"
-.\plugins\forgemind\scripts\generate-pr-summary.ps1 -Title "My change"
-.\plugins\forgemind\scripts\generate-workflow-graph.ps1
-.\plugins\forgemind\scripts\runtime-discovery-test.ps1
-.\plugins\forgemind\scripts\add-traceability.ps1 -Feature "My Feature" -Story "ST-1" -Acceptance "Acceptance summary"
-.\plugins\forgemind\scripts\update-usp-backlog.ps1 -Title "AI Feature" -Score 82 -Experiment "Smoke test"
-.\plugins\forgemind\scripts\register-verification.ps1 -Command "npm test" -Category test
-.\plugins\forgemind\scripts\record-decision.ps1 -Decision "Use X" -Rationale "Because Y"
-.\plugins\forgemind\scripts\validate-plugin.ps1
-.\plugins\forgemind\scripts\test-forgemind.ps1
-.\plugins\forgemind\scripts\generate-dashboard.ps1
-.\plugins\forgemind\scripts\record-learning.ps1 -Task "My Feature" -Outcome success -MemoryUsed -Note "Reusable pattern found"
-.\plugins\forgemind\scripts\init-global-memory.ps1
-.\plugins\forgemind\scripts\bump-version.ps1 -Version 0.7.0
-.\plugins\forgemind\scripts\init-workflow.ps1 "My Feature"
+.\scripts\orchestrator-status.ps1
+.\scripts\detect-stack.ps1
+.\scripts\write-project-profile.ps1 -WithMemory -WithArtifacts
+.\scripts\init-artifacts.ps1
+.\scripts\verify-workspace.ps1
+.\scripts\verify-workspace.ps1 -Run
+.\scripts\gap-scan.ps1
+.\scripts\release-readiness-score.ps1
+.\scripts\risk-radar.ps1
+.\scripts\generate-rollback-plan.ps1 -Change "My change"
+.\scripts\generate-pr-summary.ps1 -Title "My change"
+.\scripts\generate-workflow-graph.ps1
+.\scripts\runtime-discovery-test.ps1
+.\scripts\add-traceability.ps1 -Feature "My Feature" -Story "ST-1" -Acceptance "Acceptance summary"
+.\scripts\update-usp-backlog.ps1 -Title "AI Feature" -Score 82 -Experiment "Smoke test"
+.\scripts\register-verification.ps1 -Command "npm test" -Category test
+.\scripts\record-decision.ps1 -Decision "Use X" -Rationale "Because Y"
+.\scripts\validate-plugin.ps1
+.\scripts\test-forgemind.ps1
+.\scripts\generate-dashboard.ps1
+.\scripts\record-learning.ps1 -Task "My Feature" -Outcome success -MemoryUsed -Note "Reusable pattern found"
+.\scripts\init-global-memory.ps1
+.\scripts\bump-version.ps1 -Version 0.7.0
+.\scripts\init-workflow.ps1 "My Feature"
 ```
 
 ## USP Templates

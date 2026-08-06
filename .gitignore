@@ -1,6 +1,7 @@
 .worktrees/
 node_modules/
 dist/
+coverage/
 .forgemind.local.json
 .codex-orchestrator/memory/personal/
 .codex-orchestrator/composition/
