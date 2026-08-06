@@ -9,6 +9,8 @@ Verify claims with artifacts, not confidence. Run the smallest relevant automate
 
 For an MVP, combine target-user, functional, accessibility, and adversarial evidence. Record outcomes with `forgemind testing record` and calculate the decision with `forgemind testing evaluate`; scale, iterate, or stop based on the persisted rule rather than enthusiasm. For release work, require verification, risk review, traceability, delivery proof, and rollback evidence before a Go decision.
 
+For a GUI change, prove the critical task across its intended state matrix: loading, empty, error, success, keyboard-only, narrow viewport, and confirmation or recovery paths. Use semantic and accessibility assertions before pixels; then run the smallest fitting browser flow and capture a screenshot or visual comparison when layout, rendering, or design-system changes matter. Treat focus loss, inaccessible names, unreadable contrast, broken escape routes, flaky visual baselines, and untested responsive states as evidence gaps, never as cosmetic polish.
+
 Load `playbooks/quality-security.md`, `playbooks/mvp-experiments.md`, and `playbooks/release-evidence.md` when deeper guidance is needed.
 
 Never claim a check passed unless it ran successfully. Never release through a blocker or an unmet kill condition.

@@ -4,6 +4,12 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [1.17.5] - 2026-08-06
+
+### Added
+
+- Added an Experience Evidence Loop to Explore, Build, and Verify: decisive user tasks, state coverage, accessibility semantics, browser behavior, visual comparisons, responsive rendering, and recovery paths now produce explicit GUI quality evidence.
+
 ## [1.17.4] - 2026-08-06
 
 ### Fixed

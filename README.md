@@ -35,6 +35,7 @@ For one continuous idea-to-release session, use explicit `$launch-mvp`: it creat
 - **Discovery compounds:** hypotheses become local experiments with evidence-backed pivot, patch, persevere, or stop decisions.
 - **Work resumes cleanly:** checkpoints preserve the local Git state, decisions, and next action; visual QA seals screenshot evidence locally.
 - **MVPs face real tests early:** each selected concept gets target-user, functional, accessibility, and adversarial test coverage; results automatically lead to scale, iterate, or stop.
+- **Experience evidence, not UI theater:** every user-facing change can connect decisive user tasks, state coverage, accessibility semantics, browser behavior, responsive rendering, visual baselines, and recovery paths to the same release evidence.
 - **Kill conditions prevent feature theater:** success, iteration, and stop decisions are defined before delivery rather than rationalized afterwards.
 - **Fast without blind spots:** YOLO keeps a narrow MVP moving while preserving test, risk, rollback, and release boundaries.
 - **Existing apps get product-aware innovation:** repository evidence and current constraints shape opportunities instead of generic idea lists.
