@@ -1,7 +1,8 @@
 import path from 'node:path';
 
 import { writeTextAtomic } from './io.mjs';
-import { resolveWorkspace, assertContained } from './paths.mjs';
+import { resolveWorkspace } from './paths.mjs';
+import { artifactStatePath } from './artifact-store.mjs';
 import { inspectProject } from './project.mjs';
 import { clusterSignals, listSignals } from './signals.mjs';
 
@@ -48,7 +49,7 @@ export async function createInnovationPortfolio({ workspace, goal }) {
     recommendedNextStep: rankedCandidates[0].recommendation === 'build-candidate' ? 'Select one candidate, define its test and rollback boundary, then use launch-mvp.' : 'Validate the top three candidates with qualified users before committing implementation.',
     artifactPath: '.codex-orchestrator/product/innovation-portfolio-latest.json', errors: [],
   };
-  const target = assertContained(root, path.join(root, '.codex-orchestrator', 'product', 'innovation-portfolio-latest.json'));
+  const target = artifactStatePath(root, 'product', 'innovation-portfolio-latest.json');
   await writeTextAtomic(target, `${JSON.stringify(portfolio, null, 2)}\n`);
   return portfolio;
 }

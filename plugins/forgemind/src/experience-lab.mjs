@@ -4,7 +4,8 @@ import path from 'node:path';
 
 import { ForgeMindError } from './errors.mjs';
 import { writeJsonAtomic } from './io.mjs';
-import { assertContained, resolveWorkspace } from './paths.mjs';
+import { resolveWorkspace } from './paths.mjs';
+import { artifactStatePath } from './artifact-store.mjs';
 import { inspectProject } from './project.mjs';
 import { listSignals } from './signals.mjs';
 
@@ -144,5 +145,5 @@ function difference(left = [], right = []) { const rightSet = new Set((right ?? 
 function percentageReduction(options) { const baseline = number(options['baseline-seconds'], 300); const target = number(options['target-seconds'], 180); return baseline > 0 ? round(((baseline - target) / baseline) * 100) : 0; }
 function evidenceForState(state) { return state === 'keyboard' ? 'Focus order, accessible name, keyboard escape route.' : state === 'narrow-viewport' ? 'Responsive screenshot or browser assertion.' : state === 'error' ? 'Visible recovery path and announced error.' : 'Task assertion and user-visible outcome.'; }
 async function readSnapshot(file) { const parsed = JSON.parse(await readFile(path.resolve(file), 'utf8')); return Object.fromEntries(['components', 'tokens', 'copy', 'breakpoints', 'interactions'].map((key) => [key, Array.isArray(parsed[key]) ? parsed[key] : []])); }
-async function readLatest(root, name) { try { return JSON.parse(await readFile(path.join(root, '.codex-orchestrator', 'experience', name), 'utf8')); } catch { return null; } }
-async function save(root, name, value) { await writeJsonAtomic(assertContained(root, path.join(root, '.codex-orchestrator', 'experience', name)), value); }
+async function readLatest(root, name) { try { return JSON.parse(await readFile(artifactStatePath(root, 'experience', name), 'utf8')); } catch { return null; } }
+async function save(root, name, value) { await writeJsonAtomic(artifactStatePath(root, 'experience', name), value); }

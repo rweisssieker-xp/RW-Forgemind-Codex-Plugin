@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.23.0] - 2026-08-07
+
+- Made external, project-stable local artifact storage the default for ForgeMind CLI workflows.
+- Added `--artifacts local|workspace|none` and `--artifact-dir <absolute-path>`; JSON responses now report `artifactMode` and `artifactPath`.
+- Updated Radical, finance, experience, signals, innovation, and AI-native workflows to resume from the same clean external artifact root.
+
 ## [1.22.0] - 2026-08-07
 
 - Added the AI-Native Execution Layer: Outcome Operator contracts, privacy-minimized workflow observation, experiment autopilot, provider governance registry, AI-native refactor portfolio, customer truth loop, autonomy readiness, and proof-carrying demos.

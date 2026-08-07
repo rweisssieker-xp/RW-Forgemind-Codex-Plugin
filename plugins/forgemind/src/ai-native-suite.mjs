@@ -3,7 +3,8 @@ import path from 'node:path';
 
 import { ForgeMindError, invalidInput } from './errors.mjs';
 import { writeTextAtomic } from './io.mjs';
-import { assertContained, resolveWorkspace } from './paths.mjs';
+import { resolveWorkspace } from './paths.mjs';
+import { artifactStatePath } from './artifact-store.mjs';
 import { inspectProject } from './project.mjs';
 import { listSignals } from './signals.mjs';
 
@@ -70,9 +71,9 @@ export async function truthfulDemo({ workspace, title }) {
   return persist(root, 'truthful-demo-latest.json', { status: 'passed', title: String(title ?? 'ForgeMind proof-carrying demo').trim(), claims: blueprint ? [blueprint.newParadigm, blueprint.proof?.successMetric].filter(Boolean) : [], evidenceGaps: [blueprint ? null : 'No Radical blueprint exists.', readiness?.score >= 60 ? null : 'Autonomy is not yet ready beyond observe/suggest.'].filter(Boolean), rule: 'Present only claims linked to persisted artifacts; do not portray planned automation as executed automation.' });
 }
 
-async function persist(root, name, body) { const value = { schemaVersion: 1, generatedAt: new Date().toISOString(), ...body, artifactPath: `.codex-orchestrator/product/${name}`, errors: [] }; await writeTextAtomic(assertContained(root, path.join(root, '.codex-orchestrator', 'product', name)), `${JSON.stringify(value, null, 2)}\n`); return value; }
+async function persist(root, name, body) { const value = { schemaVersion: 1, generatedAt: new Date().toISOString(), ...body, artifactPath: `.codex-orchestrator/product/${name}`, errors: [] }; await writeTextAtomic(artifactStatePath(root, 'product', name), `${JSON.stringify(value, null, 2)}\n`); return value; }
 async function readArtifact(root, name) { const value = await optionalArtifact(root, name); if (!value) throw new ForgeMindError('FM_AI_NATIVE_ARTIFACT_MISSING', `Create the required artifact first: ${name}.`); return value; }
-async function optionalArtifact(root, name) { return optionalJson(path.join(root, '.codex-orchestrator', 'product', name)); }
+async function optionalArtifact(root, name) { return optionalJson(artifactStatePath(root, 'product', name)); }
 async function optionalJson(file) { try { return JSON.parse(await readFile(file, 'utf8')); } catch { return null; } }
 function required(value, code, message) { if (!String(value ?? '').trim()) throw invalidInput(code, message); return String(value).trim(); }
 function slug(value) { return String(value).toLowerCase().replaceAll(/[^a-z0-9]+/g, '-').replaceAll(/^-|-$/g, '').slice(0, 48) || 'experiment'; }

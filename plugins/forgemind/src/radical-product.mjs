@@ -3,7 +3,8 @@ import path from 'node:path';
 
 import { ForgeMindError, invalidInput } from './errors.mjs';
 import { writeTextAtomic } from './io.mjs';
-import { assertContained, resolveWorkspace } from './paths.mjs';
+import { resolveWorkspace } from './paths.mjs';
+import { artifactStatePath } from './artifact-store.mjs';
 import { inspectProject } from './project.mjs';
 import { clusterSignals, listSignals } from './signals.mjs';
 
@@ -101,12 +102,12 @@ function moatFor(id) {
 }
 
 async function persist(root, name, value) {
-  const target = assertContained(root, path.join(root, '.codex-orchestrator', 'product', name));
+  const target = artifactStatePath(root, 'product', name);
   await writeTextAtomic(target, `${JSON.stringify(value, null, 2)}\n`);
 }
 
 async function readArtifact(root, name) {
-  const target = assertContained(root, path.join(root, '.codex-orchestrator', 'product', name));
+  const target = artifactStatePath(root, 'product', name);
   try { return JSON.parse(await readFile(target, 'utf8')); }
   catch { throw new ForgeMindError('FM_RADICAL_ARTIFACT_MISSING', `Create the required Radical Product artifact first: ${name}.`); }
 }

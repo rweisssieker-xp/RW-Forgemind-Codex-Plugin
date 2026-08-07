@@ -1,10 +1,10 @@
 {
   "author": {
-    "name": "rweisssieker-xp",
-    "url": "https://github.com/rweisssieker-xp"
+    "name": "Aivana GmbH",
+    "url": "https://aivana-gmbh.ai/"
   },
   "description": "Optional advanced evidence workflows for ForgeMind Core. Use when cross-agent trust, strategy, governed learning, or sealed delivery proof is required.",
-  "homepage": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin#readme",
+  "homepage": "https://aivana-gmbh.ai/",
   "interface": {
     "brandColor": "#2563EB",
     "capabilities": [
@@ -17,13 +17,13 @@
     "defaultPrompt": [
       "Use ForgeMind Trust Fabric to verify this outcome with portable proof."
     ],
-    "developerName": "rweisssieker-xp",
+    "developerName": "Aivana GmbH",
     "displayName": "ForgeMind Trust Fabric",
     "longDescription": "Adds nine evidence-native workflows for portable trust contracts, executable strategy, learning, replay, experiments, evidence escrow, and privacy-preserving federation. Requires ForgeMind Core.",
-    "privacyPolicyURL": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin/blob/main/PRIVACY.md",
+    "privacyPolicyURL": "https://aivana-gmbh.ai/Privacy",
     "shortDescription": "Optional advanced evidence workflows for ForgeMind Core.",
-    "termsOfServiceURL": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin/blob/main/TERMS.md",
-    "websiteURL": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin"
+    "termsOfServiceURL": "https://aivana-gmbh.ai/Terms",
+    "websiteURL": "https://aivana-gmbh.ai/"
   },
   "keywords": [
     "forgemind",
@@ -34,6 +34,6 @@
   "license": "MIT",
   "name": "forgemind-trust-fabric",
   "repository": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin",
-  "skills": "./skills/",
-  "version": "1.14.3"
+  "skills": "./entry-skills/",
+  "version": "1.23.0"
 }

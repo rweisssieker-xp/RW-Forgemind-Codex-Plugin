@@ -1,5 +1,6 @@
 import { ForgeMindError, invalidInput } from './errors.mjs';
 import { resolvePluginRoot, resolveWorkspace } from './paths.mjs';
+import { activateArtifactStore, addArtifactMetadata, artifactStatePath, deactivateArtifactStore } from './artifact-store.mjs';
 import { fileURLToPath } from 'node:url';
 
 const MODULE_PLUGIN_ROOT = fileURLToPath(new URL('../', import.meta.url));
@@ -70,6 +71,7 @@ Trust Fabric:
 export async function runCli(argv, context = {}) {
   const stdout = context.stdout ?? process.stdout;
   const stderr = context.stderr ?? process.stderr;
+  let artifactStoreActive = false;
   try {
     const command = argv[0] ?? 'help';
     if (command === 'help' || command === '--help' || command === '-h') {
@@ -77,6 +79,14 @@ export async function runCli(argv, context = {}) {
       return { exitCode: 0, data: { commands: PRIMARY_COMMANDS } };
     }
     const { options, positionals } = parseOptions(argv.slice(1));
+    if (!['validate', 'package', 'install', 'uninstall', 'eval', 'legacy'].includes(command)) {
+      await activateArtifactStore({
+        workspace: options.workspace ?? context.cwd ?? process.cwd(),
+        mode: options.artifacts === true ? 'local' : options.artifacts ?? 'local',
+        artifactDir: options['artifact-dir'],
+      });
+      artifactStoreActive = true;
+    }
     let data;
     if (command === 'validate') {
       const { validatePlugin } = await import('./validate.mjs');
@@ -373,6 +383,7 @@ export async function runCli(argv, context = {}) {
       throw invalidInput('FM_COMMAND_UNKNOWN', `Unknown command: ${command}`);
     }
 
+    data = addArtifactMetadata(data);
     if (options.json) {
       stdout.write(`${JSON.stringify(data, null, 2)}\n`);
     } else {
@@ -384,6 +395,8 @@ export async function runCli(argv, context = {}) {
     const normalized = normalizeError(error);
     stderr.write(`${normalized.code}: ${normalized.message}\n`);
     return { exitCode: normalized.exitCode, data: { error: normalized.code } };
+  } finally {
+    if (artifactStoreActive) await deactivateArtifactStore();
   }
 }
 
@@ -391,7 +404,7 @@ async function readWorkspaceReport(workspace, name, fallback) {
   try {
     const { readFile } = await import('node:fs/promises');
     const path = await import('node:path');
-    return JSON.parse(await readFile(path.join(workspace, '.codex-orchestrator', 'reports', name), 'utf8'));
+    return JSON.parse(await readFile(artifactStatePath(workspace, 'reports', name), 'utf8'));
   } catch {
     return fallback;
   }
@@ -406,7 +419,7 @@ async function defaultHome() {
 async function readLatestProof(workspace) {
   const { readFile } = await import('node:fs/promises');
   const path = await import('node:path');
-  return JSON.parse(await readFile(path.join(workspace, '.codex-orchestrator', 'evidence', 'latest.json'), 'utf8'));
+  return JSON.parse(await readFile(artifactStatePath(workspace, 'evidence', 'latest.json'), 'utf8'));
 }
 
 function splitList(value) {
@@ -423,7 +436,17 @@ function parseOptions(args) {
       continue;
     }
     const key = argument.slice(2);
-    if (['json', 'strict-release', 'memory', 'artifacts', 'run', 'allow-inferred', 'non-expiring', 'purge-data', 'approved', 'critical', 'simulated'].includes(key)) {
+    if (key === 'artifacts') {
+      const next = args[index + 1];
+      if (['local', 'workspace', 'none'].includes(String(next).toLowerCase())) {
+        options[key] = String(next).toLowerCase();
+        index += 1;
+      } else {
+        options[key] = true;
+      }
+      continue;
+    }
+    if (['json', 'strict-release', 'memory', 'run', 'allow-inferred', 'non-expiring', 'purge-data', 'approved', 'critical', 'simulated'].includes(key)) {
       options[key] = true;
       continue;
     }

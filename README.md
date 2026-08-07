@@ -24,11 +24,22 @@ For one continuous idea-to-release session, use explicit `$launch-mvp`: it creat
 Use `$forgemind-radical` to **eliminate a workflow**, create a **10x AI product**, **make the UI disappear**, or produce a **Vibe Build**. ForgeMind first distinguishes repository facts from assumptions, then creates five AI-central interaction replacements and one build-ready MVP.
 
 ```text
-forgemind radical analyze --goal "Eliminate manual approval follow-up" --json
-forgemind radical select --id outcome-operator --json
-forgemind radical blueprint --json
-forgemind radical shadow-mode --json
+forgemind radical analyze --goal "Eliminate manual approval follow-up" --artifacts local --json
+forgemind radical select --id outcome-operator --artifacts local --json
+forgemind radical blueprint --artifacts local --json
+forgemind radical shadow-mode --artifacts local --json
 ```
+
+## Clean artifact storage
+
+ForgeMind keeps the analyzed repository clean by default. Generated exploration, Radical, QA, finance, and planning state is stored locally at `~/.cache/forgemind/workspaces/<stable-project-id>/.codex-orchestrator/`; the repository remains the source for inspection, implementation, tests, and project signals.
+
+- `--artifacts local` is the default and is suitable for resumable work.
+- `--artifacts workspace` is an explicit opt-in for versioned, repository-local `.codex-orchestrator/` state.
+- `--artifacts none` creates one-shot JSON only and removes temporary state when the command ends.
+- `--artifact-dir <absolute-path>` selects an explicit external artifact destination.
+
+Use the same mode or explicit artifact directory for commands that consume prior ForgeMind output. Every CLI JSON response includes `artifactMode` and `artifactPath`. ForgeMind never copies generated state into the repository automatically.
 
 The engine designs for Outcome Operator, Invisible Workflow Compiler, Product Digital Twin, Self-Deleting Interface, and Autonomous Experiment Cell patterns. It evolves autonomy from Observe → Suggest → Approve → Bounded Autopilot; it never silently crosses permission, cost, reversibility, production, or high-stakes boundaries.
 

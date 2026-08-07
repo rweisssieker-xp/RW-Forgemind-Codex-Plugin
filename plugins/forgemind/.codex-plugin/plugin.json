@@ -3,7 +3,7 @@
     "name": "Aivana GmbH",
     "url": "https://aivana-gmbh.ai/"
   },
-  "description": "Evidence-first product discovery and delivery for Codex.",
+  "description": "Evidence-first product discovery and delivery for Codex: market-tested MVPs, safe execution, and release-ready proof.",
   "homepage": "https://aivana-gmbh.ai/",
   "interface": {
     "brandColor": "#2563EB",
@@ -21,9 +21,9 @@
     "developerName": "Aivana GmbH",
     "displayName": "ForgeMind",
     "logo": "./assets/aivana-logo.png",
-    "longDescription": "ForgeMind turns product intent into evidence-backed MVPs and verifiable delivery. It runs locally in Codex.",
+    "longDescription": "ForgeMind Core turns discovery, creative exploration, existing-app evidence, and product intent into market-tested MVPs and safe, cost-aware delivery with verifiable release proof. Install the optional ForgeMind Trust Fabric add-on for cross-agent contracts, strategy, learning, and advanced evidence workflows.",
     "privacyPolicyURL": "https://aivana-gmbh.ai/Privacy",
-    "shortDescription": "Evidence-backed MVPs and verifiable delivery.",
+    "shortDescription": "Market-tested MVPs and verifiable delivery.",
     "termsOfServiceURL": "https://aivana-gmbh.ai/Terms",
     "websiteURL": "https://aivana-gmbh.ai/"
   },
@@ -38,5 +38,5 @@
   "name": "forgemind",
   "repository": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin",
   "skills": "./entry-skills/",
-  "version": "1.22.0"
+  "version": "1.23.0"
 }

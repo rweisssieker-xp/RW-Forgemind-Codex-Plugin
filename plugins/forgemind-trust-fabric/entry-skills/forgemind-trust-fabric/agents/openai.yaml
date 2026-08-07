@@ -1,0 +1,6 @@
+interface:
+  display_name: "Trust Fabric"
+  short_description: "Portable evidence and advanced trust workflows."
+  default_prompt: "Use $forgemind-trust-fabric to create portable evidence for this delivery."
+policy:
+  allow_implicit_invocation: false

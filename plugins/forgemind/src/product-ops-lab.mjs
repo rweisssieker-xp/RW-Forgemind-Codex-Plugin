@@ -6,7 +6,8 @@ import path from 'node:path';
 
 import { ForgeMindError } from './errors.mjs';
 import { writeJsonAtomic } from './io.mjs';
-import { assertContained, resolveWorkspace } from './paths.mjs';
+import { resolveWorkspace } from './paths.mjs';
+import { artifactStatePath } from './artifact-store.mjs';
 import { inspectProject } from './project.mjs';
 import { listSignals } from './signals.mjs';
 
@@ -135,5 +136,5 @@ function array(value) { return Array.isArray(value) ? value.map(String) : []; }
 function object(value) { return value && typeof value === 'object' && !Array.isArray(value) ? value : {}; }
 function round(value) { return Math.round(value * 100) / 100; }
 function digest(value) { return createHash('sha256').update(String(value)).digest('hex').slice(0, 24); }
-async function latest(root, name) { try { return JSON.parse(await readFile(path.join(root, ...ROOT, name), 'utf8')); } catch { return null; } }
-async function save(root, name, value) { await writeJsonAtomic(assertContained(root, path.join(root, ...ROOT, name)), value); }
+async function latest(root, name) { try { return JSON.parse(await readFile(artifactStatePath(root, ...ROOT.slice(1), name), 'utf8')); } catch { return null; } }
+async function save(root, name, value) { await writeJsonAtomic(artifactStatePath(root, ...ROOT.slice(1), name), value); }

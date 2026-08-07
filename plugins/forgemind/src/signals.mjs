@@ -6,7 +6,8 @@ import { loadConfig } from './config.mjs';
 import { parseCsv } from './csv.mjs';
 import { ForgeMindError } from './errors.mjs';
 import { canonicalJson, writeTextAtomic } from './io.mjs';
-import { assertContained, resolveWorkspace } from './paths.mjs';
+import { resolveWorkspace } from './paths.mjs';
+import { artifactStatePath } from './artifact-store.mjs';
 import { redactValue } from './redact.mjs';
 
 const STOP_WORDS = new Set(['about', 'after', 'again', 'cannot', 'could', 'from', 'hard', 'hours', 'into', 'lacks', 'long', 'take', 'takes', 'that', 'their', 'there', 'these', 'they', 'this', 'with', 'without']);
@@ -88,7 +89,7 @@ export function createUspRecords(clusters) {
 
 export async function saveUspRecords({ workspace, records }) {
   const root = await resolveWorkspace(workspace);
-  const file = assertContained(root, path.join(root, '.codex-orchestrator', 'product', 'usp-backlog.jsonl'));
+  const file = artifactStatePath(root, 'product', 'usp-backlog.jsonl');
   await writeTextAtomic(file, `${records.map((record) => JSON.stringify(record)).join('\n')}\n`);
   return { schemaVersion: 1, status: 'passed', records, evidencePath: '.codex-orchestrator/product/usp-backlog.jsonl' };
 }
@@ -143,4 +144,4 @@ function positiveNumber(value, fallback) {
 
 function titleCase(value) { return value.charAt(0).toUpperCase() + value.slice(1); }
 
-function signalFile(root) { return assertContained(root, path.join(root, '.codex-orchestrator', 'product', 'signals.jsonl')); }
+function signalFile(root) { return artifactStatePath(root, 'product', 'signals.jsonl'); }
