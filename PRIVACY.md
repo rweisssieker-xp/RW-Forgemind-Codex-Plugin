@@ -1,6 +1,6 @@
 # Privacy
 
-ForgeMind is a local-first Codex plugin. It has no bundled telemetry service, advertising tracker, remote database, MCP server, or hosted account system. The portable CLI reads repository files and may execute locally detected project commands when the user requests verification.
+ForgeMind is a local-first Codex plugin published by Aivana GmbH. It has no bundled telemetry service, advertising tracker, remote database, MCP server, or hosted account system. The portable CLI reads repository files and may execute locally detected project commands when the user requests verification. Aivana's website privacy notice is available at https://aivana-gmbh.ai/Privacy.
 
 ## Data written locally
 

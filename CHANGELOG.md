@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.18.1] - 2026-08-07
+
+- Adopted Aivana GmbH as ForgeMind's published provider, including the Aivana website, public policy links, positioning, and authorized Aivana logo asset.
+- Completed the README start surface with direct telemetry and GUI-test entry points.
+
 ## [1.18.0] - 2026-08-07
 
 - Added Evidence-Connected Product Operations: cited research imports, conservative/base/upside financial scenarios with CAC, churn, sales cycle, product telemetry, a continuous discovery loop, and an evidence-labelled portfolio cockpit.

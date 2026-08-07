@@ -1,10 +1,10 @@
 {
   "author": {
-    "name": "rweisssieker-xp",
-    "url": "https://github.com/rweisssieker-xp"
+    "name": "Aivana GmbH",
+    "url": "https://aivana-gmbh.ai/"
   },
-  "description": "Evidence-first product discovery and delivery for Codex: market-tested MVPs, safe execution, and release-ready proof.",
-  "homepage": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin#readme",
+  "description": "Aivana's evidence-first product discovery and delivery system for Codex: market-tested MVPs, safe execution, and release-ready proof.",
+  "homepage": "https://aivana-gmbh.ai/",
   "interface": {
     "brandColor": "#2563EB",
     "capabilities": [
@@ -38,14 +38,14 @@
       "Use $forgemind-build to implement and verify this outcome.",
       "Use $forgemind-guide to choose the best next step for this goal."
     ],
-    "developerName": "rweisssieker-xp",
+    "developerName": "Aivana GmbH",
     "displayName": "ForgeMind",
-    "logo": "./assets/logo.svg",
-    "longDescription": "ForgeMind Core turns a new or existing app into a ranked innovation portfolio with evidence basis, moats, monetization hypotheses, MVP experiments, and kill conditions, then moves the selected bet into market-tested delivery with verifiable release proof. Install the optional ForgeMind Trust Fabric add-on for cross-agent contracts, strategy, learning, and advanced evidence workflows.",
-    "privacyPolicyURL": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin/blob/main/PRIVACY.md",
-    "shortDescription": "Maximum-USP portfolios and verifiable MVP delivery.",
-    "termsOfServiceURL": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin/blob/main/TERMS.md",
-    "websiteURL": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin"
+    "logo": "./assets/aivana-logo.png",
+    "longDescription": "ForgeMind, published by Aivana GmbH, turns a new or existing app into a ranked innovation portfolio with evidence, moat, monetization hypotheses, MVP experiments, and kill conditions, then moves the selected bet into market-tested delivery with verifiable release proof. Aivana's public product focus on AI-supported work organization, tracking, and sharing informs the product context; ForgeMind remains a local-first Codex plugin.",
+    "privacyPolicyURL": "https://aivana-gmbh.ai/Privacy",
+    "shortDescription": "Aivana-backed innovation portfolios and verifiable MVP delivery.",
+    "termsOfServiceURL": "https://aivana-gmbh.ai/Terms",
+    "websiteURL": "https://aivana-gmbh.ai/"
   },
   "keywords": [
     "codex",
@@ -89,5 +89,5 @@
   "name": "forgemind",
   "repository": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin",
   "skills": "./entry-skills/",
-  "version": "1.18.0"
+  "version": "1.18.1"
 }

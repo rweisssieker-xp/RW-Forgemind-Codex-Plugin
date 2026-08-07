@@ -1,6 +1,6 @@
 # ForgeMind
 
-ForgeMind is the evidence-first delivery system for Codex: autonomous execution with verifiable proof, safe escalation, and release-ready decisions. It combines local orchestration, executable strategy, cross-agent evidence, autonomous product loops, reusable project memory, and privacy-preserving team learning.
+ForgeMind is the evidence-first delivery system for Codex, published by [Aivana GmbH](https://aivana-gmbh.ai/): autonomous execution with verifiable proof, safe escalation, and release-ready decisions. Aivana builds AI-supported solutions for organizing, tracking, and sharing work; ForgeMind applies that product discipline to local-first software discovery and delivery.
 
 ## Start with the journey hierarchy
 
@@ -58,6 +58,8 @@ Choose one visible path; ForgeMind routes to the smallest sufficient specialist.
 - **Maximize product advantage:** use `$forgemind-explore` or `forgemind innovation portfolio --goal "<outcome>"` to rank radical but testable product bets before coding.
 - **Validate a GUI innovation:** use `forgemind experience canvas --goal "<outcome>"` for a market-aware UX tournament, then `$forgemind-verify` to retain experience evidence.
 - **Build a data-backed product case:** import sources with `forgemind research --input sources.json`, calculate scenarios with `forgemind finance`, then use `forgemind discovery-loop` and `forgemind portfolio` to decide what to validate next.
+- **Bring in product behavior:** use `forgemind telemetry --input events.json --source product-export` to add privacy-minimized event evidence, then rerun `forgemind discovery-loop`.
+- **Prove a GUI change:** use `forgemind ui-test plan --url http://localhost:3000`, `ui-test run --command "<test-command>"`, and `ui-test perceptual --input visual-report.json` before a visual-quality claim.
 
 Use `$forgemind-guide` for an interactive selection or `$forgemind-learn` after a completed workflow to record opt-in acceptance and correction data without raw prompts or source.
 

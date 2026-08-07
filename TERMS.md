@@ -1,6 +1,6 @@
 # Terms of Use
 
-ForgeMind is provided under the [MIT License](LICENSE). By using it, you accept that the software is provided without warranty and that you are responsible for reviewing proposed actions, project commands, generated artifacts, policy settings, and release decisions.
+ForgeMind is published by Aivana GmbH and provided under the [MIT License](LICENSE). By using it, you accept that the software is provided without warranty and that you are responsible for reviewing proposed actions, project commands, generated artifacts, policy settings, and release decisions. Aivana's website terms are available at https://aivana-gmbh.ai/Terms.
 
 ForgeMind evidence and readiness scores are engineering aids, not guarantees of correctness, security, compliance, fitness, or successful deployment. Do not use ForgeMind to bypass authorization, organizational policy, license obligations, privacy duties, or applicable law. You remain responsible for backups, approvals, production access, costs, and the handling of personal or confidential data.
 

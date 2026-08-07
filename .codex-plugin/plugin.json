@@ -1,12 +1,12 @@
 {
   "name": "forgemind",
-  "version": "1.18.0",
-  "description": "Evidence-first discovery and delivery for Codex: market-tested MVPs, safe execution, and release-ready proof.",
+  "version": "1.18.1",
+  "description": "Aivana's evidence-first discovery and delivery system for Codex: market-tested MVPs, safe execution, and release-ready proof.",
   "author": {
-    "name": "rweisssieker-xp",
-    "url": "https://github.com/rweisssieker-xp"
+    "name": "Aivana GmbH",
+    "url": "https://aivana-gmbh.ai/"
   },
-  "homepage": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin#readme",
+  "homepage": "https://aivana-gmbh.ai/",
   "repository": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin",
   "license": "MIT",
   "keywords": [
@@ -50,9 +50,9 @@
   "skills": "./entry-skills/",
   "interface": {
     "displayName": "ForgeMind",
-    "shortDescription": "Maximum-USP innovation portfolios and verifiable MVP delivery.",
-    "longDescription": "ForgeMind turns a new or existing app into a ranked innovation portfolio: differentiated product bets with explicit evidence basis, moat, monetization hypothesis, MVP experiment, and kill condition. It then routes the selected bet through market-tested, evidence-backed delivery. YOLO mode remains available for bounded fast MVPs while destructive, credential, production, and high-stakes actions always stop for approval. All records stay local on Windows, macOS, and Linux.",
-    "developerName": "rweisssieker-xp",
+    "shortDescription": "Aivana-backed innovation portfolios and verifiable MVP delivery.",
+    "longDescription": "ForgeMind, published by Aivana GmbH, turns a new or existing app into a ranked innovation portfolio with explicit evidence, moat, monetization hypothesis, MVP experiment, and kill condition. It then routes the selected bet through market-tested, evidence-backed delivery. YOLO remains available for bounded fast MVPs; destructive, credential, production, and high-stakes actions always stop for approval. All records stay local on Windows, macOS, and Linux.",
+    "developerName": "Aivana GmbH",
     "category": "Productivity",
     "capabilities": [
       "Interactive",
@@ -78,9 +78,9 @@
       "Perceptual GUI Evidence",
       "Financial Scenarios"
     ],
-    "websiteURL": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin",
-    "privacyPolicyURL": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin/blob/main/PRIVACY.md",
-    "termsOfServiceURL": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin/blob/main/TERMS.md",
+    "websiteURL": "https://aivana-gmbh.ai/",
+    "privacyPolicyURL": "https://aivana-gmbh.ai/Privacy",
+    "termsOfServiceURL": "https://aivana-gmbh.ai/Terms",
     "defaultPrompt": [
       "Use $forgemind-explore to find the strongest MVP opportunity in this app.",
       "Use $forgemind-build to implement and verify this outcome.",
@@ -88,6 +88,6 @@
     ],
     "brandColor": "#2563EB",
     "composerIcon": "./assets/icon.svg",
-    "logo": "./assets/logo.svg"
+    "logo": "./assets/aivana-logo.png"
   }
 }

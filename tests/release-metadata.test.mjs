@@ -14,8 +14,9 @@ test('release metadata uses the real project identity and consistent version', a
   const manifest = JSON.parse(await readFile(path.join(root, '.codex-plugin', 'plugin.json'), 'utf8'));
   const pkg = JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8'));
   assert.equal(manifest.repository, repository);
-  assert.match(manifest.homepage, /^https:\/\/github\.com\/rweisssieker-xp\/RW-Forgemind-Codex-Plugin/);
-  assert.equal(manifest.author.url, 'https://github.com/rweisssieker-xp');
+  assert.equal(manifest.homepage, 'https://aivana-gmbh.ai/');
+  assert.equal(manifest.author.name, 'Aivana GmbH');
+  assert.equal(manifest.author.url, 'https://aivana-gmbh.ai/');
   assert.doesNotMatch(JSON.stringify(manifest), /example\.com|github\.com\/reinerw(?:["/])/i);
   assert.equal(manifest.version, pkg.version);
   assert.equal(manifest.license, 'MIT');
@@ -35,8 +36,8 @@ test('release package includes community, support, privacy, and terms documents'
 
 test('marketplace policies omit screenshots when the plugin has no embedded UI', async () => {
   const manifest = JSON.parse(await readFile(path.join(root, '.codex-plugin', 'plugin.json'), 'utf8'));
-  assert.equal(manifest.interface.privacyPolicyURL, `${repository}/blob/main/PRIVACY.md`);
-  assert.equal(manifest.interface.termsOfServiceURL, `${repository}/blob/main/TERMS.md`);
+  assert.equal(manifest.interface.privacyPolicyURL, 'https://aivana-gmbh.ai/Privacy');
+  assert.equal(manifest.interface.termsOfServiceURL, 'https://aivana-gmbh.ai/Terms');
   assert.equal(Object.hasOwn(manifest.interface, 'screenshots'), false);
 });
 
