@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.20.1] - 2026-08-07
+
+- Corrected the compact-playbook contract for the new Radical Product Engine playbook.
+
 ## [1.20.0] - 2026-08-07
 
 - Added the internal Radical Product Engine to Explore: five AI-central workflow-replacement paradigms, explicit 10x hypotheses, moats, MVP blueprints, kill conditions, and an autonomy ladder from observation through bounded autopilot.

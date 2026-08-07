@@ -19,5 +19,6 @@ test('journeys load compact playbooks instead of a specialist-skill library', as
     assert.doesNotMatch(content, /skills\//);
   }
   const playbooks = (await readdir(path.join(root, 'playbooks'))).filter((file) => file.endsWith('.md'));
-  assert.equal(playbooks.length, 12);
+  assert.equal(playbooks.length, 13);
+  assert.ok(playbooks.includes('radical-product.md'));
 });
