@@ -18,6 +18,19 @@ The Delivery Engine, routing, and more than sixty specialist modules work undern
 
 For one continuous idea-to-release session, use explicit `$launch-mvp`: it creates the market/MVP brief and tester plan, then drives scoped delivery, verification, and the release decision through stop gates.
 
+## Radical Product Engine
+
+Ask `$forgemind-explore` to **eliminate a workflow**, create a **10x AI product**, **make the UI disappear**, or produce a **Vibe Build**. ForgeMind first distinguishes repository facts from assumptions, then creates five AI-central interaction replacements and one build-ready MVP.
+
+```text
+forgemind radical analyze --goal "Eliminate manual approval follow-up" --json
+forgemind radical select --id outcome-operator --json
+forgemind radical blueprint --json
+forgemind radical shadow-mode --json
+```
+
+The engine designs for Outcome Operator, Invisible Workflow Compiler, Product Digital Twin, Self-Deleting Interface, and Autonomous Experiment Cell patterns. It evolves autonomy from Observe → Suggest → Approve → Bounded Autopilot; it never silently crosses permission, cost, reversibility, production, or high-stakes boundaries.
+
 ## Trust Fabric: Nine Disruptive USPs
 
 `forgemind forge help` exposes nine integrated capabilities: Agent Trust Protocol, Strategy-to-Code Compiler, Engineering Genome, Delivery Flight Recorder, Parallel Future Tournament, Self-Shrinking Software, Autonomous Product Loop, Evidence Escrow, and Federated Learning Network. They share sealed local records, secret redaction, deterministic CLI contracts, and explicit failure states.
@@ -57,6 +70,7 @@ Choose one visible path; ForgeMind routes to the smallest sufficient specialist.
 - **Test an MVP:** create a target-user, functional, accessibility, and trust test plan before scaling it.
 - **Launch an idea end to end:** use `$launch-mvp` for market thesis → MVP → testers → build → verification → Go/No-Go.
 - **Maximize product advantage:** use `$forgemind-explore` or `forgemind innovation portfolio --goal "<outcome>"` to rank radical but testable product bets before coding.
+- **Replace a workflow, not a screen:** ask `$forgemind-explore` to create a radical 10x AI/Vibe Build, then run `forgemind radical analyze --goal "<outcome>"` for five interaction-replacement bets and a build-ready agent blueprint.
 - **Validate a GUI innovation:** use `forgemind experience canvas --goal "<outcome>"` for a market-aware UX tournament, then `$forgemind-verify` to retain experience evidence.
 - **Build a data-backed product case:** import sources with `forgemind research --input sources.json`, calculate scenarios with `forgemind finance`, then use `forgemind discovery-loop` and `forgemind portfolio` to decide what to validate next.
 - **Bring in product behavior:** use `forgemind telemetry --input events.json --source product-export` to add privacy-minimized event evidence, then rerun `forgemind discovery-loop`.

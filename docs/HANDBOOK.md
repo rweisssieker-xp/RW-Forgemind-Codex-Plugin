@@ -21,6 +21,19 @@ All installed-plugin instructions use the seven journeys or `node bin/forgemind.
 
 The Trust Fabric adds nine evidence-native specialist workflows across these journeys. Start with `forgemind forge help`; use the Agent Trust Protocol for cross-agent work, the Strategy Compiler for alignment, Genome and Federation for measured learning, Flight Recorder for audit, Tournament for competing futures, Shrink for reversible simplification, Product Loop for experiments, and Evidence Escrow for acceptance. See `TRUST_FABRIC.md` for exact commands and limits.
 
+## Radical Product Engine
+
+Use this internal Explore mode when the request calls for a radical AI feature, 10x improvement, Vibe Build, disappearing UI, agent-first experience, or complete workflow replacement. It is not a generic feature generator: it creates five interaction-replacement hypotheses and makes one selected paradigm build-ready.
+
+```text
+forgemind radical analyze --goal "<outcome>" --json
+forgemind radical select --id <idea-id> --json
+forgemind radical blueprint --json
+forgemind radical shadow-mode --json
+```
+
+The portfolio captures current-app facts, assumptions, standard steps to challenge, AI core, data needs, 10x hypothesis, moat, MVP, metric, kill condition, and trust boundary. The blueprint gives the new paradigm, minimal input, decision rule, components, lean UI, build steps, replaced interaction, and proof plan. Shadow Mode requires Observe → Suggest → Approve → Bounded Autopilot; only explicitly pre-authorized, reversible, low-risk actions can progress to the last phase.
+
 ## Quick Start
 
 Use this when ForgeMind should handle the whole task:

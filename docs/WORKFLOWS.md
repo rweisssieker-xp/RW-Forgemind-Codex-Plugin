@@ -43,6 +43,19 @@ node bin/forgemind.mjs experience canvas --goal "Shorten invoice approvals" --ma
 
 The artifact combines a UX failure forecast, counterfactual tournament, task-time target, market chance, business case, experiment, and kill condition. It never upgrades project assumptions into market facts.
 
+## Radical Product Engine
+
+For radical AI, 10x, Vibe Build, UI-elimination, or autonomous-agent work, use Explore with the Radical Product Engine. It replaces a complete interaction rather than adding a conventional feature, creates five AI-central paradigms, and produces an evidence-labelled MVP blueprint.
+
+```text
+node bin/forgemind.mjs radical analyze --goal "Eliminate manual approval follow-up" --json
+node bin/forgemind.mjs radical select --id outcome-operator --json
+node bin/forgemind.mjs radical blueprint --json
+node bin/forgemind.mjs radical shadow-mode --json
+```
+
+The blueprint covers the new paradigm, minimal input, agent decisions and permitted data, components, lean UI, build steps, 10x metric, moat, kill condition, and rollback boundary. Shadow Mode stages autonomy as Observe → Suggest → Approve → Bounded Autopilot. It never grants autonomous production, secret, destructive, irreversible, externally billed, legal, or high-stakes actions.
+
 For user-facing delivery, persist the state matrix and required test layers, then use drift detection, review-only flaky-test repair proposals, and a proof-carrying demo:
 
 ```text

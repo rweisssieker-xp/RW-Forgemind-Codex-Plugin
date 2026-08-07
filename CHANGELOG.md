@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.20.0] - 2026-08-07
+
+- Added the internal Radical Product Engine to Explore: five AI-central workflow-replacement paradigms, explicit 10x hypotheses, moats, MVP blueprints, kill conditions, and an autonomy ladder from observation through bounded autopilot.
+- Added `forgemind radical analyze`, `select`, `blueprint`, and `shadow-mode` with local, evidence-labelled artifacts and safety boundaries.
+
 ## [1.19.1] - 2026-08-07
 
 - Reduced always-loaded Marketplace context by making Guide the single implicit entry point; it continues to route natural-language requests to all six specialist journeys.

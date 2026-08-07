@@ -19,6 +19,7 @@ const PRIMARY_COMMANDS = [
   'route',
   'signals',
   'innovation',
+  'radical',
   'discovery',
   'checkpoint',
   'visual',
@@ -245,6 +246,15 @@ export async function runCli(argv, context = {}) {
       else if (action === 'test-repair') data = await proposeTestRepair({ workspace, failure: options.failure, selector: options.selector });
       else if (action === 'demo') data = await createTrustworthyDemo({ workspace, title: options.title });
       else throw invalidInput('FM_EXPERIENCE_ACTION_INVALID', 'Experience supports canvas, market-case, evidence, drift, test-repair, and demo.');
+    } else if (command === 'radical') {
+      const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
+      const action = positionals[0] ?? 'analyze';
+      const { createRadicalBlueprint, createRadicalPortfolio, createShadowModePlan, selectRadicalIdea } = await import('./radical-product.mjs');
+      if (action === 'analyze' || action === 'portfolio') data = await createRadicalPortfolio({ workspace, goal: options.goal });
+      else if (action === 'select') data = await selectRadicalIdea({ workspace, id: options.id });
+      else if (action === 'blueprint') data = await createRadicalBlueprint({ workspace, id: options.id });
+      else if (action === 'shadow-mode') data = await createShadowModePlan({ workspace, id: options.id });
+      else throw invalidInput('FM_RADICAL_ACTION_INVALID', 'Radical supports analyze, portfolio, select, blueprint, and shadow-mode.');
     } else if (command === 'complete') {
       const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
       const { createCompletionContract, getCompletionContract } = await import('./completion.mjs');
