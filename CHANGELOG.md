@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.19.1] - 2026-08-07
+
+- Reduced always-loaded Marketplace context by making Guide the single implicit entry point; it continues to route natural-language requests to all six specialist journeys.
+- Focused Marketplace metadata and starter prompts on the core value proposition while retaining the complete feature set, CLI, docs, YOLO mode, and end-to-end Complete journey.
+- Improved the static Plugin Eval score from 82 to 86 by reducing trigger cost from 319 to 91 tokens and normal invocation cost from 3,082 to 656 tokens.
+
 ## [1.19.0] - 2026-08-07
 
 - Added the visible `forgemind-complete` journey for autonomous end-to-end delivery: a persistent Definition of Done, safe continuation loop, explicit evidence-gap handling, and a narrow high-risk pause boundary.

@@ -3,4 +3,4 @@ interface:
   short_description: "Ship a bounded outcome with tests and rollback boundaries."
   default_prompt: "Use $forgemind-build to implement and verify this outcome."
 policy:
-  allow_implicit_invocation: true
+  allow_implicit_invocation: false

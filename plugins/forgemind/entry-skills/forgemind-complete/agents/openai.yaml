@@ -3,4 +3,4 @@ interface:
   short_description: "Finish an agreed outcome end to end."
   default_prompt: "Use $forgemind-complete to implement this outcome fully."
 policy:
-  allow_implicit_invocation: true
+  allow_implicit_invocation: false

@@ -20,10 +20,10 @@ test('Marketplace exposes exactly seven hierarchical journeys while retaining in
   assert.match(await readFile(path.join(root, 'docs', 'HIERARCHY.md'), 'utf8'), /Guide[\s\S]*Explore[\s\S]*Plan[\s\S]*Build[\s\S]*Complete[\s\S]*Verify[\s\S]*Learn/);
 });
 
-test('only the four low-friction journeys are implicit', async () => {
+test('Guide is the sole implicit journey and routes natural-language requests to specialist journeys', async () => {
   for (const journey of JOURNEYS) {
     const ui = await readFile(path.join(root, 'entry-skills', journey, 'agents', 'openai.yaml'), 'utf8');
-    const expected = ['forgemind-guide', 'forgemind-explore', 'forgemind-build', 'forgemind-complete'].includes(journey);
+    const expected = journey === 'forgemind-guide';
     assert.match(ui, new RegExp(`allow_implicit_invocation: ${expected}`));
   }
 });
