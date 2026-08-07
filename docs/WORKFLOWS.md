@@ -56,6 +56,21 @@ node bin/forgemind.mjs radical shadow-mode --json
 
 The blueprint covers the new paradigm, minimal input, agent decisions and permitted data, components, lean UI, build steps, 10x metric, moat, kill condition, and rollback boundary. Shadow Mode stages autonomy as Observe → Suggest → Approve → Bounded Autopilot. It never grants autonomous production, secret, destructive, irreversible, externally billed, legal, or high-stakes actions.
 
+## AI-Native Execution Layer
+
+The following local-first commands make the eight advanced capabilities operational. They write evidence-labelled artifacts and do not contact providers or external systems without an explicit project adapter.
+
+```text
+forgemind operator plan --goal "Approve invoices" --json
+forgemind observer --input events.json --json
+forgemind experiment-autopilot create --goal "Reduce approval time" --json
+forgemind ai --json
+forgemind ai-refactor --json
+forgemind truth-loop --goal "Reduce approval time" --json
+forgemind autonomy --json
+forgemind demo --title "Approval proof" --json
+```
+
 For user-facing delivery, persist the state matrix and required test layers, then use drift detection, review-only flaky-test repair proposals, and a proof-carrying demo:
 
 ```text

@@ -32,6 +32,10 @@ forgemind radical shadow-mode --json
 
 The engine designs for Outcome Operator, Invisible Workflow Compiler, Product Digital Twin, Self-Deleting Interface, and Autonomous Experiment Cell patterns. It evolves autonomy from Observe → Suggest → Approve → Bounded Autopilot; it never silently crosses permission, cost, reversibility, production, or high-stakes boundaries.
 
+## AI-Native Execution Layer
+
+ForgeMind also ships an Outcome Operator contract, workflow observer, experiment autopilot, provider registry, AI-native refactor portfolio, customer truth loop, autonomy-readiness score, and proof-carrying demo generator. These are local-first artifacts and adapter contracts; no model, credential, or external app is contacted implicitly.
+
 ## Trust Fabric: Nine Disruptive USPs
 
 `forgemind forge help` exposes nine integrated capabilities: Agent Trust Protocol, Strategy-to-Code Compiler, Engineering Genome, Delivery Flight Recorder, Parallel Future Tournament, Self-Shrinking Software, Autonomous Product Loop, Evidence Escrow, and Federated Learning Network. They share sealed local records, secret redaction, deterministic CLI contracts, and explicit failure states.

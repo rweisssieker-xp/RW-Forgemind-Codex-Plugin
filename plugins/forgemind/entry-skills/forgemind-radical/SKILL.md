@@ -1,6 +1,6 @@
 ---
 name: forgemind-radical
-description: Replace a complete app workflow with a radical, AI-central 10x product paradigm. Use for Vibe Build, disruptive AI product ideas, disappearing UI, autonomous-agent experiences, workflow elimination, or when conventional feature improvements are explicitly insufficient.
+description: "Use when you need to replace a complete app workflow with a radical, AI-central 10x product paradigm: Vibe Build, disruptive AI ideas, disappearing UI, autonomous-agent experiences, or workflow elimination beyond conventional feature improvements."
 ---
 
 # Radical

@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.22.0] - 2026-08-07
+
+- Added the AI-Native Execution Layer: Outcome Operator contracts, privacy-minimized workflow observation, experiment autopilot, provider governance registry, AI-native refactor portfolio, customer truth loop, autonomy readiness, and proof-carrying demos.
+
 ## [1.21.0] - 2026-08-07
 
 - Promoted Radical to the explicit `$forgemind-radical` Marketplace entry point for direct 10x AI, Vibe Build, workflow-elimination, and autonomous-agent product requests.

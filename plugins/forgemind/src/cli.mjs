@@ -20,6 +20,14 @@ const PRIMARY_COMMANDS = [
   'signals',
   'innovation',
   'radical',
+  'operator',
+  'observer',
+  'experiment-autopilot',
+  'ai',
+  'ai-refactor',
+  'truth-loop',
+  'autonomy',
+  'demo',
   'discovery',
   'checkpoint',
   'visual',
@@ -246,6 +254,17 @@ export async function runCli(argv, context = {}) {
       else if (action === 'test-repair') data = await proposeTestRepair({ workspace, failure: options.failure, selector: options.selector });
       else if (action === 'demo') data = await createTrustworthyDemo({ workspace, title: options.title });
       else throw invalidInput('FM_EXPERIENCE_ACTION_INVALID', 'Experience supports canvas, market-case, evidence, drift, test-repair, and demo.');
+    } else if (['operator', 'observer', 'experiment-autopilot', 'ai', 'ai-refactor', 'truth-loop', 'autonomy', 'demo'].includes(command)) {
+      const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
+      const suite = await import('./ai-native-suite.mjs');
+      if (command === 'operator') data = await suite.operator({ workspace, action: positionals[0] ?? 'plan', goal: options.goal, approved: Boolean(options.approved) });
+      else if (command === 'observer') data = await suite.observeWorkflow({ workspace, input: options.input });
+      else if (command === 'experiment-autopilot') data = await suite.experimentAutopilot({ workspace, action: positionals[0] ?? 'create', goal: options.goal });
+      else if (command === 'ai') data = await suite.providerRegistry({ workspace });
+      else if (command === 'ai-refactor') data = await suite.refactorPortfolio({ workspace });
+      else if (command === 'truth-loop') data = await suite.truthLoop({ workspace, goal: options.goal });
+      else if (command === 'autonomy') data = await suite.autonomyReadiness({ workspace });
+      else data = await suite.truthfulDemo({ workspace, title: options.title });
     } else if (command === 'radical') {
       const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
       const action = positionals[0] ?? 'analyze';
