@@ -42,6 +42,8 @@ For one continuous idea-to-release session, use explicit `$launch-mvp`: it creat
 - **Innovation portfolio, not an idea dump:** ten app-aware bets cover workflow elimination, intelligence, trust, learning, integrations, monetization, and autonomous work; each has a moat, test, and kill condition.
 - **Opportunity before output:** market chance and an explicit, assumption-labelled business case connect pain, reach, price, margin, cost, ROI, and break-even to every material product bet.
 - **Counterfactual experience design:** an Experience Lab forecasts UX failures, compares safe flow variants, optimizes task time, detects design drift, proposes review-only test repairs, and turns only evidence into a trustworthy demo.
+- **Evidence-connected opportunity operations:** cited research, customer signals, privacy-minimized telemetry, financial scenarios, and a transparent portfolio cockpit turn idea selection into a continuous discovery loop.
+- **Portable GUI-proof stack:** ForgeMind detects the smallest compatible GUI test surface, records actual test commands, accepts perceptual-regression reports, and stages—not silently applies—test repairs.
 
 ## Start Here
 
@@ -55,6 +57,7 @@ Choose one visible path; ForgeMind routes to the smallest sufficient specialist.
 - **Launch an idea end to end:** use `$launch-mvp` for market thesis → MVP → testers → build → verification → Go/No-Go.
 - **Maximize product advantage:** use `$forgemind-explore` or `forgemind innovation portfolio --goal "<outcome>"` to rank radical but testable product bets before coding.
 - **Validate a GUI innovation:** use `forgemind experience canvas --goal "<outcome>"` for a market-aware UX tournament, then `$forgemind-verify` to retain experience evidence.
+- **Build a data-backed product case:** import sources with `forgemind research --input sources.json`, calculate scenarios with `forgemind finance`, then use `forgemind discovery-loop` and `forgemind portfolio` to decide what to validate next.
 
 Use `$forgemind-guide` for an interactive selection or `$forgemind-learn` after a completed workflow to record opt-in acceptance and correction data without raw prompts or source.
 

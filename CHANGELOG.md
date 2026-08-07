@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.18.0] - 2026-08-07
+
+- Added Evidence-Connected Product Operations: cited research imports, conservative/base/upside financial scenarios with CAC, churn, sales cycle, product telemetry, a continuous discovery loop, and an evidence-labelled portfolio cockpit.
+- Added portable GUI test orchestration: stack-aware test planning, persisted real command results, perceptual-regression report intake, and staged reviewer-only test repairs.
+- Extended Explore, Build, Verify, the quality playbook, and workflow documentation with the new evidence and safety boundaries.
+
 All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and Semantic Versioning.
 
 ## [Unreleased]

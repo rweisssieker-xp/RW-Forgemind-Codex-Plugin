@@ -41,6 +41,29 @@ node bin/forgemind.mjs experience evidence --task "Approve invoice" --json
 node bin/forgemind.mjs experience demo --title "Approval proof" --json
 ```
 
+## Evidence-Connected Product Operations
+
+Import dated, cited market research rather than treating an LLM assumption as evidence. Add unit economics across conservative, base, and upside scenarios; CAC, churn, sales cycle, operating cost, and customer growth remain editable assumptions.
+
+```text
+node bin/forgemind.mjs research --input sources.json --json
+node bin/forgemind.mjs finance --price 100 --cac 300 --churn 3 --new-customers 12 --json
+node bin/forgemind.mjs telemetry --input events.json --source product-export --json
+node bin/forgemind.mjs discovery-loop --goal "Shorten invoice approvals" --json
+node bin/forgemind.mjs portfolio --json
+```
+
+`sources.json` is an array of `{ "title", "url", "claim", "confidence" }` records. `events.json` is a privacy-minimized array of event names, timestamps, optional pseudonymous users, and properties. The cockpit ranks the evidence that is present; it does not convert research or correlations into a release decision.
+
+For GUI quality, choose the installed test layer, retain a real run, and consume the report from the project's perceptual visual tool. ForgeMind deliberately does not claim that byte-identical images are a visual regression check, and it never applies a selector repair to source automatically.
+
+```text
+node bin/forgemind.mjs ui-test plan --url http://localhost:3000 --json
+node bin/forgemind.mjs ui-test run --command "npm run test:e2e" --timeout 120 --json
+node bin/forgemind.mjs ui-test perceptual --input visual-report.json --threshold 0.02 --json
+node bin/forgemind.mjs ui-test repair --failure "CTA renamed" --replacement "getByRole('button', { name: 'Continue' })" --json
+```
+
 ## Delivery Acceleration
 
 Use when Codex should behave like a senior product engineer.

@@ -26,7 +26,10 @@
       "Trust Fabric",
       "Federated Learning",
       "MVP Testing",
-      "Innovation Portfolio"
+      "Innovation Portfolio",
+      "Product Operations",
+      "Perceptual GUI Evidence",
+      "Financial Scenarios"
     ],
     "category": "Productivity",
     "composerIcon": "./assets/icon.svg",
@@ -86,5 +89,5 @@
   "name": "forgemind",
   "repository": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin",
   "skills": "./entry-skills/",
-  "version": "1.17.6"
+  "version": "1.18.0"
 }

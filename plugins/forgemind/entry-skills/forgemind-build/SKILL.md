@@ -15,6 +15,8 @@ For a GUI, implement the decisive user task rather than a decorative screen: mod
 
 Before building a material UX change, run `forgemind experience canvas --goal "<outcome>" --baseline-seconds <current-task-time> --target-seconds <target-task-time> --json`. Use its counterfactual tournament, UX failure forecast, task-time metric, market chance, and business case to select one reversible experience rather than accumulating features.
 
+For a user-facing change, first run `forgemind ui-test plan --url <local-url> --json`. Use the detected stack to choose the smallest compatible semantic, browser, and perceptual test layers. Preserve the fast MVP path: only run `forgemind ui-test run --command "<existing-test-command>" --timeout 120 --json` when a command is available; otherwise record the testing gap and its release boundary.
+
 Load `playbooks/quality-security.md` for interface work, accessibility, visual QA, or browser testing.
 
 Finish with changed files, acceptance evidence, commands actually run, residual risk, and the next decision.

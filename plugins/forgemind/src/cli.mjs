@@ -23,6 +23,12 @@ const PRIMARY_COMMANDS = [
   'checkpoint',
   'visual',
   'experience',
+  'research',
+  'finance',
+  'telemetry',
+  'discovery-loop',
+  'portfolio',
+  'ui-test',
   'capabilities',
   'compose',
   'factory',
@@ -238,6 +244,30 @@ export async function runCli(argv, context = {}) {
       else if (action === 'test-repair') data = await proposeTestRepair({ workspace, failure: options.failure, selector: options.selector });
       else if (action === 'demo') data = await createTrustworthyDemo({ workspace, title: options.title });
       else throw invalidInput('FM_EXPERIENCE_ACTION_INVALID', 'Experience supports canvas, market-case, evidence, drift, test-repair, and demo.');
+    } else if (command === 'research') {
+      const { recordResearch } = await import('./product-ops-lab.mjs');
+      data = await recordResearch({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), input: options.input, source: options.source });
+    } else if (command === 'finance') {
+      const { createFinancialModel } = await import('./product-ops-lab.mjs');
+      data = await createFinancialModel({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), options });
+    } else if (command === 'telemetry') {
+      const { recordTelemetry } = await import('./product-ops-lab.mjs');
+      data = await recordTelemetry({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), input: options.input, source: options.source });
+    } else if (command === 'discovery-loop') {
+      const { runDiscoveryLoop } = await import('./product-ops-lab.mjs');
+      data = await runDiscoveryLoop({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), goal: options.goal });
+    } else if (command === 'portfolio') {
+      const { createPortfolioCockpit } = await import('./product-ops-lab.mjs');
+      data = await createPortfolioCockpit({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()) });
+    } else if (command === 'ui-test') {
+      const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
+      const action = positionals[0] ?? 'plan';
+      const { planUiTesting, recordPerceptualComparison, runUiTest, stageTestRepair } = await import('./product-ops-lab.mjs');
+      if (action === 'plan') data = await planUiTesting({ workspace, url: options.url });
+      else if (action === 'run') data = await runUiTest({ workspace, command: options.command, timeoutSeconds: options.timeout });
+      else if (action === 'perceptual') data = await recordPerceptualComparison({ workspace, input: options.input, threshold: options.threshold });
+      else if (action === 'repair') data = await stageTestRepair({ workspace, failure: options.failure, replacement: options.replacement });
+      else throw invalidInput('FM_UI_TEST_ACTION_INVALID', 'UI testing supports plan, run, perceptual, and repair.');
     } else if (command === 'capabilities') {
       const { buildCapabilityManifest } = await import('./capabilities.mjs');
       data = await buildCapabilityManifest({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()) });
@@ -299,6 +329,10 @@ export async function runCli(argv, context = {}) {
         purgeData: Boolean(options['purge-data']),
         approvedPurge: Boolean(options.approved),
       });
+    } else if (command === 'legacy') {
+      const { runLegacy } = await import('./legacy.mjs');
+      const pluginRoot = await resolvePluginRoot(MODULE_PLUGIN_ROOT);
+      data = await runLegacy(positionals[0], positionals.slice(1), { pluginRoot, cwd: context.cwd ?? process.cwd() });
     } else {
       throw invalidInput('FM_COMMAND_UNKNOWN', `Unknown command: ${command}`);
     }

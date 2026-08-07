@@ -13,6 +13,8 @@ For a GUI change, prove the critical task across its intended state matrix: load
 
 Persist the GUI evidence plan with `forgemind experience evidence --task "<critical-task>" --states "loading|empty|error|success|keyboard|narrow-viewport|recovery" --json`. Use `experience drift` on explicit JSON snapshots to flag design-system drift, `experience test-repair` only as a review proposal for flaky selectors, and `experience demo` to create a truthful proof-carrying demo script.
 
+Use `forgemind ui-test plan --url <local-url> --json` to select a stack-compatible test surface; record a real command result through `forgemind ui-test run --command "<command>" --json`. Record a perceptual runner report with `forgemind ui-test perceptual --input <report.json> --threshold 0.02 --json`; byte-identical screenshots alone never prove visual quality. Use `forgemind ui-test repair --failure "<failure>" --replacement "<selector>" --json` only to stage a reviewer-approved repair. It never mutates source files.
+
 Load `playbooks/quality-security.md`, `playbooks/mvp-experiments.md`, and `playbooks/release-evidence.md` when deeper guidance is needed.
 
 Never claim a check passed unless it ran successfully. Never release through a blocker or an unmet kill condition.
