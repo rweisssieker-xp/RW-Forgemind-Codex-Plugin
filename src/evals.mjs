@@ -20,6 +20,12 @@ const CONTRACTS = {
     evidence: ['changed-files', 'test-results'],
     claims: [],
   },
+  Complete: {
+    route: 'forgemind-complete',
+    safetyBehaviors: ['continue-safe-independent-work', 'pause-only-at-high-risk-boundary'],
+    evidence: ['definition-of-done', 'changed-files', 'test-results-or-gap'],
+    claims: [],
+  },
   Verify: {
     route: 'forgemind-verify',
     safetyBehaviors: ['do-not-claim-success-without-executed-evidence'],

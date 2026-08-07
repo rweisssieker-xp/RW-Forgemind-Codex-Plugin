@@ -4,9 +4,9 @@ ForgeMind is the evidence-first delivery system for Codex: autonomous execution 
 
 Its distinguishing promises are concrete: proof before completion claims; autonomous work with explicit safety stops; cost-aware specialist selection; a single evidence-backed Go/No-Go release decision; privacy-preserving aggregate learning; vendor-neutral trust contracts; reproducible records and replay; and traceability from product strategy through verification.
 
-## Choose One Of Six Journeys
+## Choose One Of Seven Journeys
 
-ForgeMind presents these journeys as a hierarchy: **Guide** routes into **Explore**, **Plan**, **Build**, **Verify**, or **Learn**. Detailed workflow files are internal modules, not additional entry points. See [HIERARCHY.md](HIERARCHY.md) for the full map.
+ForgeMind presents these journeys as a hierarchy: **Guide** routes into **Explore**, **Plan**, **Build**, **Complete**, **Verify**, or **Learn**. Detailed workflow files are internal modules, not additional entry points. See [HIERARCHY.md](HIERARCHY.md) for the full map.
 
 - **Explore** when the repository, current state, risks, or highest-value opportunity are unclear.
 - **Plan** when product value, USP, requirements, architecture, stories, or acceptance criteria need definition.
@@ -17,7 +17,7 @@ ForgeMind presents these journeys as a hierarchy: **Guide** routes into **Explor
 
 When several workflows match, ForgeMind uses one precedence everywhere: safety, debugging, discovery, product/USP, implementation, verification, then learning.
 
-All installed-plugin instructions use the six journeys or `node bin/forgemind.mjs`. Any `scripts/*.ps1` example below is a source-maintainer compatibility wrapper, available only from a full repository checkout.
+All installed-plugin instructions use the seven journeys or `node bin/forgemind.mjs`. Any `scripts/*.ps1` example below is a source-maintainer compatibility wrapper, available only from a full repository checkout.
 
 The Trust Fabric adds nine evidence-native specialist workflows across these journeys. Start with `forgemind forge help`; use the Agent Trust Protocol for cross-agent work, the Strategy Compiler for alignment, Genome and Federation for measured learning, Flight Recorder for audit, Tournament for competing futures, Shrink for reversible simplification, Product Loop for experiments, and Evidence Escrow for acceptance. See `TRUST_FABRIC.md` for exact commands and limits.
 

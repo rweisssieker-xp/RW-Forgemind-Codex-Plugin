@@ -4,7 +4,7 @@ For the complete command and persona manual, see `HANDBOOK.md`.
 
 ## Primary Journey Map
 
-ForgeMind exposes six journeys: **Guide**, **Explore**, **Plan**, **Build**, **Verify**, and **Learn**. Users choose the desired outcome; Guide selects the smallest sufficient journey and its playbooks. Safety always takes precedence over discovery, planning, implementation, verification, and learning.
+ForgeMind exposes seven journeys: **Guide**, **Explore**, **Plan**, **Build**, **Complete**, **Verify**, and **Learn**. Users choose the desired outcome; Guide selects the smallest sufficient journey and its playbooks. Safety always takes precedence over discovery, planning, implementation, verification, and learning.
 
 The portable CLI is the cross-platform execution surface:
 
@@ -16,11 +16,20 @@ node bin/forgemind.mjs readiness
 node bin/forgemind.mjs dashboard
 ```
 
-PowerShell scripts are source-maintainer compatibility aliases only. They are not present in the installed Core plugin; use the six journeys or the portable CLI there.
+PowerShell scripts are source-maintainer compatibility aliases only. They are not present in the installed Core plugin; use the seven journeys or the portable CLI there.
+
+## Complete End To End
+
+Use `$forgemind-complete` for an outcome that must not stop at scaffolding or a partial vertical slice. It derives a Definition of Done, continues through safe independent tasks, and records optional evidence gaps without turning them into build blockers.
+
+```text
+node bin/forgemind.mjs complete --goal "Finish the account settings experience" --acceptance "Profile updates persist|Password validation is covered|The focused tests pass" --json
+node bin/forgemind.mjs complete status --json
+```
 
 ## Trust Fabric
 
-Use `forgemind forge help` for the nine evidence-native capabilities that span all six journeys. Trust contracts and the flight recorder strengthen Verify; strategy, tournaments, and shrink plans strengthen Design; product loops, genomes, and federation strengthen Learn; evidence escrow strengthens Release. They use the same sealed local record store and never bypass the normal safety, verification, or approval precedence.
+Use `forgemind forge help` for the nine evidence-native capabilities that span all seven journeys. Trust contracts and the flight recorder strengthen Verify; strategy, tournaments, and shrink plans strengthen Design; product loops, genomes, and federation strengthen Learn; evidence escrow strengthens Release. They use the same sealed local record store and never bypass the normal safety, verification, or approval precedence.
 
 The complete action matrix and boundaries are in `TRUST_FABRIC.md`.
 

@@ -29,7 +29,8 @@
       "Innovation Portfolio",
       "Product Operations",
       "Perceptual GUI Evidence",
-      "Financial Scenarios"
+      "Financial Scenarios",
+      "End-to-End Completion"
     ],
     "category": "Productivity",
     "composerIcon": "./assets/icon.svg",
@@ -89,5 +90,5 @@
   "name": "forgemind",
   "repository": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin",
   "skills": "./entry-skills/",
-  "version": "1.18.1"
+  "version": "1.19.0"
 }

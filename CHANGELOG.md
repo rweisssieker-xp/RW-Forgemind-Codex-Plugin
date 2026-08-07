@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.19.0] - 2026-08-07
+
+- Added the visible `forgemind-complete` journey for autonomous end-to-end delivery: a persistent Definition of Done, safe continuation loop, explicit evidence-gap handling, and a narrow high-risk pause boundary.
+- Updated Guide, README, hierarchy, workflows, structural evaluations, and runtime coverage for the seven-journey surface.
+
 ## [1.18.1] - 2026-08-07
 
 - Adopted Aivana GmbH as ForgeMind's published provider, including the Aivana website, public policy links, positioning, and authorized Aivana logo asset.

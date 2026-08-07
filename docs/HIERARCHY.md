@@ -1,12 +1,13 @@
 # ForgeMind Journey Hierarchy
 
-ForgeMind exposes six skills in the Marketplace. This is the complete user-facing surface; all other workflow files are internal modules loaded only by the relevant journey.
+ForgeMind exposes seven skills in the Marketplace. This is the complete user-facing surface; all other workflow files are internal modules loaded only by the relevant journey.
 
 ```text
 Guide
 ├── Explore  — evidence, market opportunities, innovation portfolio, MVP choice
 ├── Plan     — scope, architecture, acceptance, experiments, delivery sequence
 ├── Build    — normal delivery, fixes, refactors, and bounded YOLO MVPs
+├── Complete — end-to-end completion with a persistent Definition of Done and safe continuation
 ├── Verify   — tests, review, security, testers, proof, and release decision
 └── Learn    — outcomes, feedback, memory, experiments, and portfolio updates
 ```
@@ -17,6 +18,7 @@ Guide
 - Start with **Explore** for a new idea, an existing-app opportunity, market evidence, or maximum-USP work.
 - Use **Plan** after selecting a product bet or when a feature needs a build-ready contract.
 - Use **Build** for a concrete change. A request for a fast MVP activates its bounded YOLO path.
+- Use **Complete** when an agreed feature, app improvement, or MVP must be implemented fully rather than delivered as a partial vertical slice. It pauses only at a genuine high-risk boundary.
 - Use **Verify** before a release, after an MVP test, or whenever a claim needs evidence.
 - Use **Learn** after delivery, an experiment, feedback, or a failed assumption.
 

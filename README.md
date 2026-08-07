@@ -10,10 +10,11 @@ ForgeMind is the evidence-first delivery system for Codex, published by [Aivana 
 | `$forgemind-explore` | Existing apps, market opportunities, disruptive ideas, MVP choice | Understand → research → portfolio → test plan → measurable MVP |
 | `$forgemind-plan` | A selected product bet or feature | Scope → architecture → acceptance → experiment → delivery sequence |
 | `$forgemind-build` | A clear feature, fix, or delivery outcome | Implement → test → review → report; YOLO remains available for a bounded MVP |
+| `$forgemind-complete` | A feature or app improvement that must be fully finished | Continue → integrate → test → close every achievable acceptance criterion |
 | `$forgemind-verify` | Quality, tester evidence, security, or release readiness | Verify → assess risks → prove → Go/No-Go |
 | `$forgemind-learn` | Outcomes, feedback, and experiments | Retain evidence → improve future routing and product bets |
 
-The Delivery Engine, routing, and more than sixty specialist modules work underneath these six journeys. They are not Marketplace entry points. See [the journey hierarchy](docs/HIERARCHY.md). A fast MVP request activates the bounded YOLO path inside Build.
+The Delivery Engine, routing, and more than sixty specialist modules work underneath these seven journeys. They are not Marketplace entry points. See [the journey hierarchy](docs/HIERARCHY.md). A fast MVP request activates the bounded YOLO path inside Build.
 
 For one continuous idea-to-release session, use explicit `$launch-mvp`: it creates the market/MVP brief and tester plan, then drives scoped delivery, verification, and the release decision through stop gates.
 
@@ -65,9 +66,9 @@ Use `$forgemind-guide` for an interactive selection or `$forgemind-learn` after 
 
 See [docs/TRUST_FABRIC.md](docs/TRUST_FABRIC.md) for commands, team adoption, and precise safety boundaries.
 
-## Six Primary Journeys
+## Seven Primary Journeys
 
-ForgeMind exposes exactly six Marketplace journeys for individual and team use on Windows, macOS, and Linux:
+ForgeMind exposes exactly seven Marketplace journeys for individual and team use on Windows, macOS, and Linux:
 
 | Journey | Start here | Outcome |
 | --- | --- | --- |
@@ -75,6 +76,7 @@ ForgeMind exposes exactly six Marketplace journeys for individual and team use o
 | Explore | `$forgemind-explore` | Inspect a new or existing app and rank evidence-labelled opportunities. |
 | Plan | `$forgemind-plan` | Turn the selected opportunity into an MVP scope, test plan, and stop gates. |
 | Build | `$forgemind-build` | Implement a bounded outcome, including the always-available YOLO path. |
+| Complete | `$forgemind-complete` | Finish an agreed outcome end to end; continue through safe independent work until its Definition of Done is met. |
 | Verify | `$forgemind-verify` | Produce tester, risk, verification, rollback, and Go/No-Go evidence. |
 | Learn | `$forgemind-learn` | Record opt-in outcomes and improve future project-specific decisions. |
 
@@ -122,7 +124,7 @@ Installation, upgrade, downgrade, rollback, and uninstall are documented in [doc
 
 ## Internal Playbooks
 
-The Marketplace intentionally exposes only the six journeys above. Twelve concise internal playbooks provide deeper guidance only when needed: discovery and innovation, creative methods, product planning, project intelligence, delivery and YOLO, debugging and refactoring, MVP experiments, quality and security, release evidence, learning and memory, routing and composition, and Trust Fabric. They are not separate starting points.
+The Marketplace intentionally exposes only the seven journeys above. Twelve concise internal playbooks provide deeper guidance only when needed: discovery and innovation, creative methods, product planning, project intelligence, delivery and YOLO, debugging and refactoring, MVP experiments, quality and security, release evidence, learning and memory, routing and composition, and Trust Fabric. They are not separate starting points.
 
 - `delivery-orchestrator`: routes work through discovery, planning, implementation, QA, and delivery.
 - `workflow-init`: initializes project profile, memory, verification baseline, and next action.
@@ -236,7 +238,7 @@ More prompts are in `prompts/README.md`.
 
 ## Source-Maintainer Compatibility Scripts
 
-These PowerShell wrappers exist only in a source checkout. Installed Marketplace users should use the six journeys or `node bin/forgemind.mjs` instead.
+These PowerShell wrappers exist only in a source checkout. Installed Marketplace users should use the seven journeys or `node bin/forgemind.mjs` instead.
 
 ```powershell
 .\scripts\orchestrator-status.ps1

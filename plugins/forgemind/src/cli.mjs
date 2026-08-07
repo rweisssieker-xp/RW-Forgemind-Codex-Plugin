@@ -23,6 +23,7 @@ const PRIMARY_COMMANDS = [
   'checkpoint',
   'visual',
   'experience',
+  'complete',
   'research',
   'finance',
   'telemetry',
@@ -244,6 +245,12 @@ export async function runCli(argv, context = {}) {
       else if (action === 'test-repair') data = await proposeTestRepair({ workspace, failure: options.failure, selector: options.selector });
       else if (action === 'demo') data = await createTrustworthyDemo({ workspace, title: options.title });
       else throw invalidInput('FM_EXPERIENCE_ACTION_INVALID', 'Experience supports canvas, market-case, evidence, drift, test-repair, and demo.');
+    } else if (command === 'complete') {
+      const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
+      const { createCompletionContract, getCompletionContract } = await import('./completion.mjs');
+      data = positionals[0] === 'status'
+        ? await getCompletionContract({ workspace })
+        : await createCompletionContract({ workspace, goal: options.goal, acceptance: splitList(options.acceptance) });
     } else if (command === 'research') {
       const { recordResearch } = await import('./product-ops-lab.mjs');
       data = await recordResearch({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), input: options.input, source: options.source });
