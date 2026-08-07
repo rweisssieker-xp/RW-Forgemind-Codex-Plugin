@@ -1,10 +1,11 @@
 # ForgeMind Journey Hierarchy
 
-ForgeMind exposes seven skills in the Marketplace. This is the complete user-facing surface; all other workflow files are internal modules loaded only by the relevant journey.
+ForgeMind exposes eight skills in the Marketplace. This is the complete user-facing surface; all other workflow files are internal modules loaded only by the relevant journey.
 
 ```text
 Guide
 ├── Explore  — evidence, market opportunities, innovation portfolio, MVP choice
+├── Radical  — radical 10x AI paradigms, workflow elimination, Vibe Build blueprints
 ├── Plan     — scope, architecture, acceptance, experiments, delivery sequence
 ├── Build    — normal delivery, fixes, refactors, and bounded YOLO MVPs
 ├── Complete — end-to-end completion with a persistent Definition of Done and safe continuation
@@ -16,6 +17,7 @@ Guide
 
 - Start with **Guide** if the desired outcome or safest next step is unclear.
 - Start with **Explore** for a new idea, an existing-app opportunity, market evidence, or maximum-USP work.
+- Use **Radical** for a 10x AI product, disappearing UI, workflow replacement, or autonomous-agent experience.
 - Use **Plan** after selecting a product bet or when a feature needs a build-ready contract.
 - Use **Build** for a concrete change. A request for a fast MVP activates its bounded YOLO path.
 - Use **Complete** when an agreed feature, app improvement, or MVP must be implemented fully rather than delivered as a partial vertical slice. It pauses only at a genuine high-risk boundary.

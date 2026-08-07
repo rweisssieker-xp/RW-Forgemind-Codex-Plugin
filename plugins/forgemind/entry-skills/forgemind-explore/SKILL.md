@@ -13,7 +13,7 @@ For every serious bet provide the target job, differentiator, moat, monetization
 
 Use `forgemind discovery-loop --goal "<outcome>" --json` to connect interviews, reviews, sales/support signals, cited research, and telemetry without treating correlation as causation. Use `forgemind portfolio --json` only as a transparent priority cockpit, never as an autonomous product decision.
 
-For a radical, 10x, UI-elimination, autonomous-agent, or Vibe Build request, load `playbooks/radical-product.md`. Use `forgemind radical analyze --goal "<outcome>" --json` to create five AI-central interaction replacements, then `radical select --id <idea-id>`, `radical blueprint`, and `radical shadow-mode`. The selected bet must replace a complete interaction, include a measurable 10x hypothesis, defensible data/workflow moat, MVP, trust boundary, and kill condition. Start autonomy in Observe → Suggest → Approve → Bounded Autopilot; never skip material-decision review or rollback.
+Route a radical, 10x, UI-elimination, autonomous-agent, or Vibe Build request to `$forgemind-radical`; it owns the dedicated interaction-replacement workflow.
 
 Load `playbooks/discovery-innovation.md`, `playbooks/creative-methods.md`, and `playbooks/project-intelligence.md` when deeper guidance is needed. Load `playbooks/quality-security.md` when the opportunity changes a user-facing flow.
 

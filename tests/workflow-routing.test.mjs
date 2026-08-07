@@ -4,9 +4,9 @@ import path from 'node:path';
 import test from 'node:test';
 
 const root = path.resolve(import.meta.dirname, '..');
-const JOURNEYS = ['forgemind-guide', 'forgemind-explore', 'forgemind-plan', 'forgemind-build', 'forgemind-complete', 'forgemind-verify', 'forgemind-learn'];
+const JOURNEYS = ['forgemind-guide', 'forgemind-explore', 'forgemind-radical', 'forgemind-plan', 'forgemind-build', 'forgemind-complete', 'forgemind-verify', 'forgemind-learn'];
 
-test('seven journeys are the complete skill hierarchy', async () => {
+test('eight journeys are the complete skill hierarchy', async () => {
   const directories = (await readdir(path.join(root, 'entry-skills'), { withFileTypes: true })).filter((entry) => entry.isDirectory()).map((entry) => entry.name).sort();
   assert.deepEqual(directories, [...JOURNEYS].sort());
   const guide = await readFile(path.join(root, 'entry-skills', 'forgemind-guide', 'SKILL.md'), 'utf8');

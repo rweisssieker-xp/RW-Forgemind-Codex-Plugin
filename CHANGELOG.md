@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.21.0] - 2026-08-07
+
+- Promoted Radical to the explicit `$forgemind-radical` Marketplace entry point for direct 10x AI, Vibe Build, workflow-elimination, and autonomous-agent product requests.
+
 ## [1.20.1] - 2026-08-07
 
 - Corrected the compact-playbook contract for the new Radical Product Engine playbook.

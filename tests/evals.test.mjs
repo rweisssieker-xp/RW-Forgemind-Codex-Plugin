@@ -12,9 +12,9 @@ async function loadFixtures() {
   return Promise.all(files.map(async (file) => JSON.parse(await readFile(path.join(fixturesRoot, file), 'utf8'))));
 }
 
-test('seven journey fixtures declare route, safety, evidence, and forbidden claims', async () => {
+test('eight journey fixtures declare route, safety, evidence, and forbidden claims', async () => {
   const fixtures = await loadFixtures();
-  assert.deepEqual(fixtures.map((fixture) => fixture.journey).sort(), ['Build', 'Complete', 'Design', 'Discover', 'Learn', 'Release', 'Verify']);
+  assert.deepEqual(fixtures.map((fixture) => fixture.journey).sort(), ['Build', 'Complete', 'Design', 'Discover', 'Learn', 'Radical', 'Release', 'Verify']);
   for (const fixture of fixtures) {
     assert.equal(fixture.schemaVersion, 1);
     assert.match(fixture.id, /^[a-z][a-z0-9-]+$/);
@@ -29,8 +29,8 @@ test('seven journey fixtures declare route, safety, evidence, and forbidden clai
 test('structural evaluator passes the canonical journey contracts', async () => {
   const report = await runStructuralEvals(await loadFixtures());
   assert.equal(report.status, 'passed');
-  assert.equal(report.summary.total, 7);
-  assert.equal(report.summary.passed, 7);
+  assert.equal(report.summary.total, 8);
+  assert.equal(report.summary.passed, 8);
   assert.equal(report.summary.failed, 0);
   assert.ok(report.results.every((result) => result.checks.length >= 4));
 });

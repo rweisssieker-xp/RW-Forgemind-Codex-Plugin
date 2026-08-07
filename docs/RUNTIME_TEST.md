@@ -27,7 +27,7 @@ Use $forgemind-verify to assess tests, risk, rollback, and release readiness.
 Use $forgemind-learn to retain the measured outcome and improve the next iteration.
 ```
 
-Expected: only these seven journeys are shown as ForgeMind skills. Their deeper guidance comes from compact internal playbooks rather than a long specialist-skill list.
+Expected: only these eight journeys are shown as ForgeMind skills. Their deeper guidance comes from compact internal playbooks rather than a long specialist-skill list.
 
 ## MVP Command Tests And YOLO Boundaries
 

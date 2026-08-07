@@ -8,19 +8,20 @@ ForgeMind is the evidence-first delivery system for Codex, published by [Aivana 
 | --- | --- | --- |
 | `$forgemind-guide` | An unclear goal or uncertainty about the right path | Select the smallest sufficient journey |
 | `$forgemind-explore` | Existing apps, market opportunities, disruptive ideas, MVP choice | Understand → research → portfolio → test plan → measurable MVP |
+| `$forgemind-radical` | Radical 10x AI products, workflow elimination, Vibe Build | Replace interaction → select paradigm → build-ready agent blueprint |
 | `$forgemind-plan` | A selected product bet or feature | Scope → architecture → acceptance → experiment → delivery sequence |
 | `$forgemind-build` | A clear feature, fix, or delivery outcome | Implement → test → review → report; YOLO remains available for a bounded MVP |
 | `$forgemind-complete` | A feature or app improvement that must be fully finished | Continue → integrate → test → close every achievable acceptance criterion |
 | `$forgemind-verify` | Quality, tester evidence, security, or release readiness | Verify → assess risks → prove → Go/No-Go |
 | `$forgemind-learn` | Outcomes, feedback, and experiments | Retain evidence → improve future routing and product bets |
 
-The Delivery Engine, routing, and more than sixty specialist modules work underneath these seven journeys. They are not Marketplace entry points. See [the journey hierarchy](docs/HIERARCHY.md). A fast MVP request activates the bounded YOLO path inside Build.
+The Delivery Engine, routing, and more than sixty specialist modules work underneath these eight journeys. See [the journey hierarchy](docs/HIERARCHY.md). A fast MVP request activates the bounded YOLO path inside Build.
 
 For one continuous idea-to-release session, use explicit `$launch-mvp`: it creates the market/MVP brief and tester plan, then drives scoped delivery, verification, and the release decision through stop gates.
 
 ## Radical Product Engine
 
-Ask `$forgemind-explore` to **eliminate a workflow**, create a **10x AI product**, **make the UI disappear**, or produce a **Vibe Build**. ForgeMind first distinguishes repository facts from assumptions, then creates five AI-central interaction replacements and one build-ready MVP.
+Use `$forgemind-radical` to **eliminate a workflow**, create a **10x AI product**, **make the UI disappear**, or produce a **Vibe Build**. ForgeMind first distinguishes repository facts from assumptions, then creates five AI-central interaction replacements and one build-ready MVP.
 
 ```text
 forgemind radical analyze --goal "Eliminate manual approval follow-up" --json
@@ -138,7 +139,7 @@ Installation, upgrade, downgrade, rollback, and uninstall are documented in [doc
 
 ## Internal Playbooks
 
-The Marketplace intentionally exposes only the seven journeys above. Twelve concise internal playbooks provide deeper guidance only when needed: discovery and innovation, creative methods, product planning, project intelligence, delivery and YOLO, debugging and refactoring, MVP experiments, quality and security, release evidence, learning and memory, routing and composition, and Trust Fabric. They are not separate starting points.
+The Marketplace intentionally exposes only the eight journeys above. Thirteen concise internal playbooks provide deeper guidance only when needed; Radical is the explicit entry point for the workflow-elimination playbook. They are not additional starting points.
 
 - `delivery-orchestrator`: routes work through discovery, planning, implementation, QA, and delivery.
 - `workflow-init`: initializes project profile, memory, verification baseline, and next action.
@@ -252,7 +253,7 @@ More prompts are in `prompts/README.md`.
 
 ## Source-Maintainer Compatibility Scripts
 
-These PowerShell wrappers exist only in a source checkout. Installed Marketplace users should use the seven journeys or `node bin/forgemind.mjs` instead.
+These PowerShell wrappers exist only in a source checkout. Installed Marketplace users should use the eight journeys or `node bin/forgemind.mjs` instead.
 
 ```powershell
 .\scripts\orchestrator-status.ps1
