@@ -4,7 +4,7 @@ ForgeMind is a local-first Codex plugin published by Aivana GmbH. It has no bund
 
 ## Data written locally
 
-Depending on the command, ForgeMind writes project configuration, reports, dashboards, verification evidence, delivery proofs, product signals, and governed memory under the current workspace, primarily in `.forgemind/`, `.codex-orchestrator/`, and `docs/forgemind/`. Personal installations and personal memory may be stored below the destination or home path explicitly selected by the user.
+Depending on the command, ForgeMind writes project configuration and durable decision documents under the current workspace, including `docs/forgemind/`. By default, generated reports, dashboards, verification evidence, delivery proofs, product signals, governed memory, market calculations, and temporary workflow state are stored in the local ForgeMind artifact cache rather than the project; `--artifacts workspace` is the explicit repository-local opt-in. Personal installations and personal memory may be stored below the destination or home path explicitly selected by the user.
 
 Inputs and command output are redacted for common secret patterns before supported persistence paths. Redaction is risk reduction, not a guarantee. Do not provide credentials, private keys, regulated data, patient data, customer confidential data, or proprietary source as product-signal content.
 

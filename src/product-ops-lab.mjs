@@ -10,6 +10,7 @@ import { resolveWorkspace } from './paths.mjs';
 import { artifactStatePath } from './artifact-store.mjs';
 import { inspectProject } from './project.mjs';
 import { listSignals } from './signals.mjs';
+import { markdownTable, publishProjectDocument } from './project-documents.mjs';
 
 const ROOT = ['.codex-orchestrator', 'product-ops'];
 
@@ -37,8 +38,15 @@ export async function createFinancialModel({ workspace, options = {} }) {
     ['conservative', 0.65, 1.25, 1.3], ['base', 1, 1, 1], ['upside', 1.35, 0.85, 0.8],
   ].map(([name, revenueFactor, churnFactor, cacFactor]) => scenario(name, base, revenueFactor, churnFactor, cacFactor));
   const result = { schemaVersion: 1, status: 'passed', generatedAt: new Date().toISOString(), assumptions: base, scenarios, decisionRule: 'Proceed only if the conservative scenario reaches contribution-positive acquisition inside the available runway.', claimBoundary: 'Financial outputs are scenario calculations from explicit assumptions, not forecasts or investment advice.', errors: [] };
+  const document = await publishProjectDocument({ workspace: root, name: 'financial-model.md', title: 'Financial Model', body: renderFinancialModel(result) });
+  if (document) result.projectDocuments = ['docs/forgemind/financial-model.md'];
   await save(root, 'financial-model-latest.json', result);
   return result;
+}
+
+function renderFinancialModel(result) {
+  const scenarioRows = result.scenarios.map((item) => ({ scenario: item.name, annualRevenue: item.annualRevenue, grossProfit: item.grossProfit, twelveMonthNet: item.twelveMonthNet, ltvToCac: item.ltvToCac ?? 'n/a', viabilityScore: item.viabilityScore }));
+  return `## Decision rule\n\n${result.decisionRule}\n\n## Scenarios\n\n${markdownTable(scenarioRows)}\n\n## Assumptions\n\n\`\`\`json\n${JSON.stringify(result.assumptions, null, 2)}\n\`\`\`\n\n## Boundary\n\n${result.claimBoundary}`;
 }
 
 export async function recordTelemetry({ workspace, input, source = 'manual-export' }) {

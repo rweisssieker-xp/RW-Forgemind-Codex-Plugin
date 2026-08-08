@@ -44,8 +44,9 @@ Use the same mode or explicit artifact directory for commands that consume prior
 
 ForgeMind separates generated working state from durable project documentation:
 
-- Market chances, financial models, scans, evidence, temporary plans, and resumable workflow state remain external by default.
-- Durable, human-facing documents for the app belong in the app project under `docs/forgemind/` when explicitly requested through `forgemind init --artifacts` or a future publish/export action.
+- Detailed, machine-readable market cases, financial scenarios, scans, evidence, temporary plans, and resumable workflow state remain external by default.
+- `experience market-case` (and `experience canvas`) publishes `docs/forgemind/market-opportunity.md`; `finance` publishes `docs/forgemind/financial-model.md`; `product scan` publishes `docs/forgemind/product-bet.md` in the app project. These concise Markdown records are intended to be reviewed and versioned with the app.
+- `--artifacts none` persists neither cache state nor project documents; use it for truly one-shot JSON.
 - Nothing is ever written into the installed ForgeMind plugin directory during normal use.
 
 ## Product OS: one prompt to a measurable product bet

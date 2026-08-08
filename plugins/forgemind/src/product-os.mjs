@@ -8,6 +8,7 @@ import { artifactStatePath } from './artifact-store.mjs';
 import { inspectProject } from './project.mjs';
 import { createInnovationPortfolio } from './innovation-portfolio.mjs';
 import { createRadicalPortfolio } from './radical-product.mjs';
+import { markdownTable, publishProjectDocument } from './project-documents.mjs';
 
 const ROOT = ['product-os'];
 
@@ -46,8 +47,15 @@ export async function scanProduct({ workspace, goal }) {
     projectSignals: { stacks: project.stacks, availableCommands: project.commands.length }, candidates,
     topRisks: ['Demand is unproven until a qualified customer signal or behavioral measure is attached.', 'Automation must retain approval, undo, and exception handling for consequential actions.'],
     recommendation: candidates[0] ?? null, nextAction: candidates[0] ? `Create an experiment and action for ${candidates[0].id}.` : 'Import customer signals, then rerun the scan.', artifactPath: '.codex-orchestrator/product-os/autonomous-scan-latest.json', errors: [] };
+  const document = await publishProjectDocument({ workspace: root, name: 'product-bet.md', title: 'Product Bet', body: renderProductBet(report) });
+  if (document) report.projectDocuments = ['docs/forgemind/product-bet.md'];
   await save(root, 'autonomous-scan-latest.json', report);
   return report;
+}
+
+function renderProductBet(report) {
+  const rows = report.candidates.slice(0, 10).map((item) => ({ type: item.type, title: item.title, score: item.score, evidence: item.evidence, nextAction: item.action }));
+  return `## Goal\n\n${report.goal}\n\n## Recommended bet\n\n${report.recommendation ? `**${report.recommendation.title}** (${report.recommendation.score})` : 'No candidate is ready.'}\n\n## Candidates\n\n${markdownTable(rows)}\n\n## Risks to validate\n\n${report.topRisks.map((item) => `- ${item}`).join('\n')}\n\n## Next action\n\n${report.nextAction}`;
 }
 
 export async function createAction({ workspace, action }) {

@@ -8,6 +8,7 @@ import { resolveWorkspace } from './paths.mjs';
 import { artifactStatePath } from './artifact-store.mjs';
 import { inspectProject } from './project.mjs';
 import { listSignals } from './signals.mjs';
+import { publishProjectDocument } from './project-documents.mjs';
 
 export async function createOpportunityCase({ workspace, goal, options = {} }) {
   const root = await resolveWorkspace(workspace);
@@ -28,8 +29,16 @@ export async function createOpportunityCase({ workspace, goal, options = {} }) {
     recommendation: score.total >= 70 && businessCase.twelveMonthNet > 0 ? 'validate-with-qualified-users' : 'refine-assumptions-before-build',
     artifactPath: '.codex-orchestrator/experience/opportunity-case-latest.json', errors: [],
   };
+  const document = await publishProjectDocument({ workspace: root, name: 'market-opportunity.md', title: 'Market Opportunity', body: renderOpportunity(result) });
+  if (document) result.projectDocuments = ['docs/forgemind/market-opportunity.md'];
   await save(root, 'opportunity-case-latest.json', result);
   return result;
+}
+
+function renderOpportunity(result) {
+  const score = result.marketChance;
+  const business = result.businessCase;
+  return `## Product bet\n\n${result.goal}\n\n## Market chance\n\n- Score: **${score.total}/100** (${score.band})\n- Confidence: ${score.confidence}\n- Evidence basis: ${result.evidence.basis}\n- Recommendation: ${result.recommendation}\n\n## Business case\n\n- Annual revenue: ${business.annualRevenue}\n- Gross profit: ${business.grossProfit}\n- Twelve-month net: ${business.twelveMonthNet}\n- ROI: ${business.roiPercent ?? 'not applicable'}%\n- Break-even months: ${business.breakEvenMonths ?? 'not reached'}\n\n## Assumptions\n\n\`\`\`json\n${JSON.stringify(business.assumptions, null, 2)}\n\`\`\`\n\n## Required validation\n\n${business.requiredValidation.map((item) => `- ${item}`).join('\n')}`;
 }
 
 export async function createExperienceCanvas({ workspace, goal, options = {} }) {

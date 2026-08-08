@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.26.0] - 2026-08-08
+
+- Published concise, reviewable project decision records automatically: market opportunity, financial model, and product bet now live under `docs/forgemind/` in the app project.
+- Kept detailed machine-readable state in the external artifact cache by default; `--artifacts none` now guarantees that neither cache state nor project decision documents persist.
+
 ## [1.25.0] - 2026-08-08
 
 - Added `$forgemind-product` as the ninth visible Marketplace journey for the continuous Product OS workflow.

@@ -20,7 +20,7 @@ PowerShell scripts are source-maintainer compatibility aliases only. They are no
 
 ## Artifact and documentation locations
 
-ForgeMind stores generated working state such as market cases, finance, scans, evidence, and temporary plans outside the app repository by default. Durable human-facing documents belong to the app project: explicitly run `forgemind init --artifacts` to create them under `docs/forgemind/`. The installed plugin directory is never used as artifact storage.
+ForgeMind stores detailed, machine-readable working state such as market cases, finance, scans, evidence, and temporary plans outside the app repository by default. Its decision-ready Markdown documents are deliberately kept with the app: `experience market-case` (and `experience canvas`) writes `docs/forgemind/market-opportunity.md`, `finance` writes `docs/forgemind/financial-model.md`, and `product scan` writes `docs/forgemind/product-bet.md`. This makes business decisions reviewable and versionable alongside the implementation without putting generated state in the repository. `--artifacts none` writes neither cache state nor project documents. The installed plugin directory is never used as artifact storage.
 
 ## Complete End To End
 
