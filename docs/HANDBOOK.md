@@ -17,7 +17,7 @@ ForgeMind presents these journeys as a hierarchy: **Guide** routes into **Explor
 
 When several workflows match, ForgeMind uses one precedence everywhere: safety, debugging, discovery, product/USP, implementation, verification, then learning.
 
-All installed-plugin instructions use the eight journeys or `node bin/forgemind.mjs`. Any `scripts/*.ps1` example below is a source-maintainer compatibility wrapper, available only from a full repository checkout.
+All installed-plugin instructions use the nine journeys or the bundled `node <plugin-root>/bin/forgemind.mjs` runner. Any `scripts/*.ps1` example below is a source-maintainer compatibility wrapper, available only from a full repository checkout.
 
 The Trust Fabric adds nine evidence-native specialist workflows across these journeys. Start with `forgemind forge help`; use the Agent Trust Protocol for cross-agent work, the Strategy Compiler for alignment, Genome and Federation for measured learning, Flight Recorder for audit, Tournament for competing futures, Shrink for reversible simplification, Product Loop for experiments, and Evidence Escrow for acceptance. See `TRUST_FABRIC.md` for exact commands and limits.
 

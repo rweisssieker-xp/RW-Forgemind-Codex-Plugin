@@ -7,6 +7,7 @@ ForgeMind is the evidence-first delivery system for Codex, published by [Aivana 
 | Path | Use it for | What happens |
 | --- | --- | --- |
 | `$forgemind-guide` | An unclear goal or uncertainty about the right path | Select the smallest sufficient journey |
+| `$forgemind-product` | One idea or existing app through a measurable product bet | Scan → validate → build → evidence → release decision |
 | `$forgemind-explore` | Existing apps, market opportunities, disruptive ideas, MVP choice | Understand → research → portfolio → test plan → measurable MVP |
 | `$forgemind-radical` | Radical 10x AI products, workflow elimination, Vibe Build | Replace interaction → select paradigm → build-ready agent blueprint |
 | `$forgemind-plan` | A selected product bet or feature | Scope → architecture → acceptance → experiment → delivery sequence |
@@ -15,7 +16,7 @@ ForgeMind is the evidence-first delivery system for Codex, published by [Aivana 
 | `$forgemind-verify` | Quality, tester evidence, security, or release readiness | Verify → assess risks → prove → Go/No-Go |
 | `$forgemind-learn` | Outcomes, feedback, and experiments | Retain evidence → improve future routing and product bets |
 
-The Delivery Engine, routing, and more than sixty specialist modules work underneath these eight journeys. See [the journey hierarchy](docs/HIERARCHY.md). A fast MVP request activates the bounded YOLO path inside Build.
+The Delivery Engine, routing, and more than sixty specialist modules work underneath these nine journeys. See [the journey hierarchy](docs/HIERARCHY.md). A fast MVP request activates the bounded YOLO path inside Build.
 
 For one continuous idea-to-release session, use explicit `$launch-mvp`: it creates the market/MVP brief and tester plan, then drives scoped delivery, verification, and the release decision through stop gates.
 
@@ -55,6 +56,16 @@ forgemind product simulate --json
 ```
 
 Product OS adds a stable run manifest, a closed-loop action ledger, an evidence graph with falsifiers, a repository-aware autonomous scan, a bounded release simulator, and a benchmark that checks whether the project has enough evidence to claim progress. It never treats an unmeasured recommendation as a proven result.
+
+### CLI availability in a distributed Marketplace plugin
+
+`$forgemind-product` is the preferred entry point. Marketplace installation provides skills to Codex; it does **not** automatically install a global `forgemind` command in the user's shell. If `forgemind` is not found, invoke the bundled runner from the installed plugin location:
+
+```text
+node <plugin-root>/bin/forgemind.mjs product launch --goal "<outcome>" --json
+```
+
+The Product skill uses this portable fallback automatically. A global command is optional convenience, never a requirement.
 
 The engine designs for Outcome Operator, Invisible Workflow Compiler, Product Digital Twin, Self-Deleting Interface, and Autonomous Experiment Cell patterns. It evolves autonomy from Observe → Suggest → Approve → Bounded Autopilot; it never silently crosses permission, cost, reversibility, production, or high-stakes boundaries.
 
@@ -169,7 +180,7 @@ Installation, upgrade, downgrade, rollback, and uninstall are documented in [doc
 
 ## Internal Playbooks
 
-The Marketplace intentionally exposes only the eight journeys above. Thirteen concise internal playbooks provide deeper guidance only when needed; Radical is the explicit entry point for the workflow-elimination playbook. They are not additional starting points.
+The Marketplace intentionally exposes only the nine journeys above. Thirteen concise internal playbooks provide deeper guidance only when needed; Radical is the explicit entry point for the workflow-elimination playbook. They are not additional starting points.
 
 - `delivery-orchestrator`: routes work through discovery, planning, implementation, QA, and delivery.
 - `workflow-init`: initializes project profile, memory, verification baseline, and next action.
@@ -283,7 +294,7 @@ More prompts are in `prompts/README.md`.
 
 ## Source-Maintainer Compatibility Scripts
 
-These PowerShell wrappers exist only in a source checkout. Installed Marketplace users should use the eight journeys or `node bin/forgemind.mjs` instead.
+These PowerShell wrappers exist only in a source checkout. Installed Marketplace users should use the nine journeys or the bundled `node <plugin-root>/bin/forgemind.mjs` runner instead.
 
 ```powershell
 .\scripts\orchestrator-status.ps1

@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.25.0] - 2026-08-08
+
+- Added `$forgemind-product` as the ninth visible Marketplace journey for the continuous Product OS workflow.
+- Documented and embedded the portable plugin-runner fallback so a missing global `forgemind` shell command no longer blocks installed-plugin use.
+
 ## [1.24.0] - 2026-08-08
 
 - Added Product OS: resumable run manifests, autonomous repository-aware scans, closed-loop actions, evidence graphs, release simulation, and benchmark checks.

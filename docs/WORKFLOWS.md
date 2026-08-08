@@ -4,7 +4,7 @@ For the complete command and persona manual, see `HANDBOOK.md`.
 
 ## Primary Journey Map
 
-ForgeMind exposes eight journeys: **Guide**, **Explore**, **Radical**, **Plan**, **Build**, **Complete**, **Verify**, and **Learn**. Users choose the desired outcome; Guide selects the smallest sufficient journey and its playbooks. Safety always takes precedence over discovery, planning, implementation, verification, and learning.
+ForgeMind exposes nine journeys: **Guide**, **Product**, **Explore**, **Radical**, **Plan**, **Build**, **Complete**, **Verify**, and **Learn**. Product is the direct one-prompt route from an idea or existing app to a measurable product bet; Guide selects the smallest sufficient journey when the outcome is unclear. Safety always takes precedence over discovery, planning, implementation, verification, and learning.
 
 The portable CLI is the cross-platform execution surface:
 
@@ -16,7 +16,7 @@ node bin/forgemind.mjs readiness
 node bin/forgemind.mjs dashboard
 ```
 
-PowerShell scripts are source-maintainer compatibility aliases only. They are not present in the installed Core plugin; use the eight journeys or the portable CLI there.
+PowerShell scripts are source-maintainer compatibility aliases only. They are not present in the installed Core plugin; use the nine journeys or the bundled `node <plugin-root>/bin/forgemind.mjs` runner there.
 
 ## Complete End To End
 
@@ -29,7 +29,7 @@ node bin/forgemind.mjs complete status --json
 
 ## Trust Fabric
 
-Use `forgemind forge help` for the nine evidence-native capabilities that span all eight journeys. Trust contracts and the flight recorder strengthen Verify; strategy, tournaments, and shrink plans strengthen Design; product loops, genomes, and federation strengthen Learn; evidence escrow strengthens Release. They use the same sealed local record store and never bypass the normal safety, verification, or approval precedence.
+Use `forgemind forge help` for the nine evidence-native capabilities that span all nine journeys. Trust contracts and the flight recorder strengthen Verify; strategy, tournaments, and shrink plans strengthen Design; product loops, genomes, and federation strengthen Learn; evidence escrow strengthens Release. They use the same sealed local record store and never bypass the normal safety, verification, or approval precedence.
 
 The complete action matrix and boundaries are in `TRUST_FABRIC.md`.
 
