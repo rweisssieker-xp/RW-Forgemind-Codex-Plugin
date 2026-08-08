@@ -68,10 +68,15 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" \
-            dist/plugin/checksums.json \
-            dist/marketplace/.agents/plugins/marketplace.json \
-            "dist/forgemind-plugin-${GITHUB_REF_NAME}.tar.gz" \
-            "dist/forgemind-marketplace-${GITHUB_REF_NAME}.tar.gz" \
-            --generate-notes \
-            --title "ForgeMind $GITHUB_REF_NAME"
+          assets=(
+            dist/plugin/checksums.json
+            dist/marketplace/.agents/plugins/marketplace.json
+            "dist/forgemind-plugin-${GITHUB_REF_NAME}.tar.gz"
+            "dist/forgemind-marketplace-${GITHUB_REF_NAME}.tar.gz"
+          )
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" "${assets[@]}" --clobber
+            gh release edit "$GITHUB_REF_NAME" --title "ForgeMind $GITHUB_REF_NAME"
+          else
+            gh release create "$GITHUB_REF_NAME" "${assets[@]}" --generate-notes --title "ForgeMind $GITHUB_REF_NAME"
+          fi
