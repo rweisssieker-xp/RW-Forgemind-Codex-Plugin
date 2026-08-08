@@ -40,7 +40,13 @@ ForgeMind keeps the analyzed repository clean by default. Generated exploration,
 - `--artifacts none` creates one-shot JSON only and removes temporary state when the command ends.
 - `--artifact-dir <absolute-path>` selects an explicit external artifact destination.
 
-Use the same mode or explicit artifact directory for commands that consume prior ForgeMind output. Every CLI JSON response includes `artifactMode` and `artifactPath`. ForgeMind never copies generated state into the repository automatically.
+Use the same mode or explicit artifact directory for commands that consume prior ForgeMind output. Every CLI JSON response includes `artifactMode` and `artifactPath`.
+
+ForgeMind separates generated working state from durable project documentation:
+
+- Market chances, financial models, scans, evidence, temporary plans, and resumable workflow state remain external by default.
+- Durable, human-facing documents for the app belong in the app project under `docs/forgemind/` when explicitly requested through `forgemind init --artifacts` or a future publish/export action.
+- Nothing is ever written into the installed ForgeMind plugin directory during normal use.
 
 ## Product OS: one prompt to a measurable product bet
 

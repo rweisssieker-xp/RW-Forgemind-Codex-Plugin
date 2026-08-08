@@ -18,6 +18,10 @@ node bin/forgemind.mjs dashboard
 
 PowerShell scripts are source-maintainer compatibility aliases only. They are not present in the installed Core plugin; use the nine journeys or the bundled `node <plugin-root>/bin/forgemind.mjs` runner there.
 
+## Artifact and documentation locations
+
+ForgeMind stores generated working state such as market cases, finance, scans, evidence, and temporary plans outside the app repository by default. Durable human-facing documents belong to the app project: explicitly run `forgemind init --artifacts` to create them under `docs/forgemind/`. The installed plugin directory is never used as artifact storage.
+
 ## Complete End To End
 
 Use `$forgemind-complete` for an outcome that must not stop at scaffolding or a partial vertical slice. It derives a Definition of Done, continues through safe independent tasks, and records optional evidence gaps without turning them into build blockers.
