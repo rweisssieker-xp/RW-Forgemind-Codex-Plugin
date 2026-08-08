@@ -3,6 +3,7 @@ import path from 'node:path';
 
 import { writeJsonAtomic } from './io.mjs';
 import { assertContained, resolveWorkspace } from './paths.mjs';
+import { artifactStatePath } from './artifact-store.mjs';
 
 export async function scoreReadiness({ workspace, verification, gaps, risks }) {
   const root = await resolveWorkspace(workspace);
@@ -31,7 +32,7 @@ export async function scoreReadiness({ workspace, verification, gaps, risks }) {
 
 async function latestProofStatus(root) {
   try {
-    const latest = JSON.parse(await readFile(path.join(root, '.codex-orchestrator', 'evidence', 'latest.json'), 'utf8'));
+    const latest = JSON.parse(await readFile(artifactStatePath(root, 'evidence', 'latest.json'), 'utf8'));
     const { verifyDeliveryProof } = await import('./evidence.mjs');
     return verifyDeliveryProof({ workspace: root, proofPath: latest.proofPath });
   } catch {
@@ -40,5 +41,5 @@ async function latestProofStatus(root) {
 }
 
 async function readReport(root, name, fallback) {
-  try { return JSON.parse(await readFile(path.join(root, '.codex-orchestrator', 'reports', name), 'utf8')); } catch { return fallback; }
+  try { return JSON.parse(await readFile(artifactStatePath(root, 'reports', name), 'utf8')); } catch { return fallback; }
 }

@@ -39,6 +39,7 @@ const PRIMARY_COMMANDS = [
   'telemetry',
   'discovery-loop',
   'portfolio',
+  'product',
   'ui-test',
   'capabilities',
   'compose',
@@ -305,6 +306,19 @@ export async function runCli(argv, context = {}) {
     } else if (command === 'portfolio') {
       const { createPortfolioCockpit } = await import('./product-ops-lab.mjs');
       data = await createPortfolioCockpit({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()) });
+    } else if (command === 'product') {
+      const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
+      const action = positionals[0] ?? 'scan';
+      const productOs = await import('./product-os.mjs');
+      if (action === 'launch') data = await productOs.launchProductRun({ workspace, goal: options.goal, mode: options.mode });
+      else if (action === 'continue' || action === 'status') data = await productOs.continueProductRun({ workspace });
+      else if (action === 'scan') data = await productOs.scanProduct({ workspace, goal: options.goal });
+      else if (action === 'action') data = await productOs.createAction({ workspace, action: { title: options.title, lane: options.lane, owner: options.owner, hypothesis: options.hypothesis, metric: options.metric, impact: options.impact, confidence: options.confidence, evidence: options.evidence } });
+      else if (action === 'measure') data = await productOs.measureAction({ workspace, id: options.id, outcome: options.outcome, evidence: options.evidence });
+      else if (action === 'evidence') data = await productOs.evidenceGraph({ workspace });
+      else if (action === 'simulate') data = await productOs.simulateRelease({ workspace, goal: options.goal });
+      else if (action === 'benchmark') data = await productOs.benchmarkProduct({ workspace });
+      else throw invalidInput('FM_PRODUCT_ACTION_INVALID', 'Product supports launch, continue, status, scan, action, measure, evidence, simulate, and benchmark.');
     } else if (command === 'ui-test') {
       const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
       const action = positionals[0] ?? 'plan';

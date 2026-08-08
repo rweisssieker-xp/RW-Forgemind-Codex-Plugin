@@ -7,6 +7,7 @@ import { getGitState } from './git.mjs';
 import { canonicalJson, writeJsonAtomic, writeTextAtomic } from './io.mjs';
 import { assertContained, resolveWorkspace } from './paths.mjs';
 import { redactValue } from './redact.mjs';
+import { artifactStatePath } from './artifact-store.mjs';
 
 export async function createDeliveryProof(options) {
   const workspace = await resolveWorkspace(options.workspace);
@@ -57,7 +58,7 @@ export async function createDeliveryProof(options) {
   await writeJsonAtomic(path.join(directory, 'delivery-proof.json'), proof);
   await writeTextAtomic(path.join(directory, 'delivery-proof.md'), renderProof(proof));
   await writeTextAtomic(path.join(directory, 'sha256.txt'), `${proof.digest}\n`);
-  await writeJsonAtomic(path.join(workspace, '.codex-orchestrator', 'evidence', 'latest.json'), { schemaVersion: 1, proofPath, digest: proof.digest });
+  await writeJsonAtomic(artifactStatePath(workspace, 'evidence', 'latest.json'), { schemaVersion: 1, proofPath, digest: proof.digest });
   return { schemaVersion: 1, status: proof.status, proof, proofPath, digestPath: `${relativeDirectory}/sha256.txt` };
 }
 

@@ -3,12 +3,13 @@ import path from 'node:path';
 
 import { writeJsonAtomic } from './io.mjs';
 import { assertContained, resolveWorkspace } from './paths.mjs';
+import { artifactStatePath } from './artifact-store.mjs';
 
 export async function scanGaps({ workspace }) {
   const root = await resolveWorkspace(workspace);
   const gaps = [];
   const add = (severity, area, message, evidence, action) => gaps.push({ severity, area, message, evidence, action });
-  const verificationPath = path.join(root, '.codex-orchestrator', 'reports', 'verification-latest.json');
+  const verificationPath = artifactStatePath(root, 'reports', 'verification-latest.json');
 
   try {
     const verification = JSON.parse(await readFile(verificationPath, 'utf8'));

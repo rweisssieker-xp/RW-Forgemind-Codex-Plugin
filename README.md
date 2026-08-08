@@ -41,6 +41,21 @@ ForgeMind keeps the analyzed repository clean by default. Generated exploration,
 
 Use the same mode or explicit artifact directory for commands that consume prior ForgeMind output. Every CLI JSON response includes `artifactMode` and `artifactPath`. ForgeMind never copies generated state into the repository automatically.
 
+## Product OS: one prompt to a measurable product bet
+
+Use the continuous, resumable Product OS when you want ForgeMind to turn an existing app or new idea into a measured, release-ready bet rather than a collection of suggestions:
+
+```text
+forgemind product launch --goal "Make approvals disappear safely" --mode guided --json
+forgemind product scan --json
+forgemind product action --title "Prototype outcome operator" --owner product --metric "task completion" --json
+forgemind product measure --id <action-id> --outcome iterate --evidence "test-run-42" --json
+forgemind product evidence --json
+forgemind product simulate --json
+```
+
+Product OS adds a stable run manifest, a closed-loop action ledger, an evidence graph with falsifiers, a repository-aware autonomous scan, a bounded release simulator, and a benchmark that checks whether the project has enough evidence to claim progress. It never treats an unmeasured recommendation as a proven result.
+
 The engine designs for Outcome Operator, Invisible Workflow Compiler, Product Digital Twin, Self-Deleting Interface, and Autonomous Experiment Cell patterns. It evolves autonomy from Observe → Suggest → Approve → Bounded Autopilot; it never silently crosses permission, cost, reversibility, production, or high-stakes boundaries.
 
 ## AI-Native Execution Layer

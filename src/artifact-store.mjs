@@ -4,7 +4,7 @@ import { homedir, tmpdir } from 'node:os';
 import path from 'node:path';
 
 import { ForgeMindError } from './errors.mjs';
-import { assertContained, resolveWorkspace } from './paths.mjs';
+import { assertContained, clearArtifactRedirection, resolveWorkspace, setArtifactRedirection } from './paths.mjs';
 
 let active = null;
 
@@ -35,12 +35,14 @@ export async function activateArtifactStore({ workspace, mode = 'local', artifac
     stateRoot: selectedMode === 'workspace' && !artifactDir ? path.join(projectRoot, '.codex-orchestrator') : path.join(basePath, '.codex-orchestrator'),
     temporary: selectedMode === 'none',
   };
+  setArtifactRedirection(active.projectRoot, active.stateRoot);
   return metadata();
 }
 
 export async function deactivateArtifactStore() {
   const previous = active;
   active = null;
+  clearArtifactRedirection();
   if (previous?.temporary) await rm(previous.basePath, { recursive: true, force: true });
 }
 

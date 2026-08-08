@@ -13,6 +13,8 @@ For every serious bet provide the target job, differentiator, moat, monetization
 
 Use `forgemind discovery-loop --goal "<outcome>" --json` to connect interviews, reviews, sales/support signals, cited research, and telemetry without treating correlation as causation. Use `forgemind portfolio --json` only as a transparent priority cockpit, never as an autonomous product decision.
 
+For an end-to-end, resumable bet instead of separate commands, launch `forgemind product launch --goal "<outcome>" --json`, then run `product scan`. Create each intervention with `product action --title "<action>" --metric "<metric>" --owner "<owner>"`; record only measured `scale`, `iterate`, `kill`, or `inconclusive` outcomes through `product measure`. Use `product evidence` and `product simulate` before a release decision.
+
 Route a radical, 10x, UI-elimination, autonomous-agent, or Vibe Build request to `$forgemind-radical`; it owns the dedicated interaction-replacement workflow.
 
 Load `playbooks/discovery-innovation.md`, `playbooks/creative-methods.md`, and `playbooks/project-intelligence.md` when deeper guidance is needed. Load `playbooks/quality-security.md` when the opportunity changes a user-facing flow.

@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.24.0] - 2026-08-08
+
+- Added Product OS: resumable run manifests, autonomous repository-aware scans, closed-loop actions, evidence graphs, release simulation, and benchmark checks.
+- Centralized artifact redirection so legacy artifact paths also respect `--artifacts local`, `workspace`, `none`, and `--artifact-dir`.
+- Added Product OS guidance to Guide and Explore, plus regression coverage for clean, resumable product operations.
+
 ## [1.23.0] - 2026-08-07
 
 - Made external, project-stable local artifact storage the default for ForgeMind CLI workflows.

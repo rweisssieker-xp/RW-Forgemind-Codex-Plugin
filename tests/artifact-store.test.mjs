@@ -16,6 +16,10 @@ test('Radical defaults to a stable external artifact root and none leaves the pr
     assert.match(first.data.artifactPath, /[\\/]\.cache[\\/]forgemind[\\/]workspaces[\\/]/);
     await assert.rejects(access(path.join(workspace, '.codex-orchestrator')));
 
+    const completion = await runCli(['complete', '--workspace', workspace, '--goal', 'keep every generated artifact external'], { stdout: sink(), stderr: sink() });
+    assert.equal(completion.data.artifactMode, 'local');
+    await assert.rejects(access(path.join(workspace, '.codex-orchestrator')));
+
     const ephemeral = await runCli(['radical', 'analyze', '--workspace', workspace, '--artifacts', 'none'], { stdout: sink(), stderr: sink() });
     assert.equal(ephemeral.data.artifactMode, 'none');
     assert.equal(ephemeral.data.artifactPath, null);
