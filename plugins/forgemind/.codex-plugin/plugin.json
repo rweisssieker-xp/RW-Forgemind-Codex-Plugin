@@ -9,6 +9,7 @@
     "brandColor": "#2563EB",
     "capabilities": [
       "Product Strategy",
+      "Creative Intelligence",
       "Automation",
       "Code Review",
       "Release Readiness"
@@ -38,5 +39,5 @@
   "name": "forgemind",
   "repository": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin",
   "skills": "./entry-skills/",
-  "version": "1.26.0"
+  "version": "1.27.0"
 }

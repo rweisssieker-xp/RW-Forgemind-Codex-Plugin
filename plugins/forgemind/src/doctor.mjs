@@ -1,7 +1,7 @@
 import { access, constants, readFile } from 'node:fs/promises';
 import path from 'node:path';
 
-export async function diagnose({ pluginRoot, workspace }) {
+export async function diagnose({ pluginRoot, workspace, installation = false }) {
   const checks = [];
   const check = (name, status, evidence, remediation) => checks.push({ name, status, evidence, remediation });
   const nodeMajor = Number.parseInt(process.versions.node.split('.')[0], 10);
@@ -16,6 +16,11 @@ export async function diagnose({ pluginRoot, workspace }) {
 
   await permissionCheck(check, 'workspace-readable', workspace, constants.R_OK, 'Grant read permission to the workspace.');
   await permissionCheck(check, 'workspace-writable', workspace, constants.W_OK, 'Grant write permission to the workspace.');
+  if (installation) {
+    const runner = path.join(pluginRoot, 'bin', 'forgemind.mjs');
+    await permissionCheck(check, 'bundled-runner', runner, constants.R_OK, 'Reinstall ForgeMind from the Marketplace or a verified package.');
+    try { const manifest = JSON.parse(await readFile(path.join(pluginRoot, '.codex-plugin', 'plugin.json'), 'utf8')); check('installed-version', 'passed', manifest.version, 'Upgrade with codex plugin marketplace upgrade forgemind-marketplace, then reinstall ForgeMind.'); } catch {}
+  }
 
   const config = path.join(workspace, 'forgemind.config.json');
   try {

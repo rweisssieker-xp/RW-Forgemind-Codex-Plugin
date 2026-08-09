@@ -1,0 +1,6 @@
+interface:
+  display_name: "Spark"
+  short_description: "Guided creative product discovery and narrative."
+  default_prompt: "Use $forgemind-spark to turn this challenge into a decision-ready creative direction."
+policy:
+  allow_implicit_invocation: false

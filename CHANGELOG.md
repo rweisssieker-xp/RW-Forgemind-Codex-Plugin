@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.27.0] - 2026-08-09
+
+- Added `$forgemind-spark`, a visible creative-intelligence entry point for structured brainstorming, problem solving, design thinking, product narratives, and decision-ready pitches.
+- Added App Intelligence for bounded existing-application scans and Evidence Engine commands for traceable external evidence imports and gap assessment.
+- Made every JSON response report its resolved artifact mode and path, and extended Distribution Doctor with installation diagnostics.
+- Published the complete Marketplace snapshot from the validated source package so GitHub installs include all ten ForgeMind journeys, including Spark.
+
 ## [1.26.0] - 2026-08-08
 
 - Published concise, reviewable project decision records automatically: market opportunity, financial model, and product bet now live under `docs/forgemind/` in the app project.
