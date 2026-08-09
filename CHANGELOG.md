@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.29.0] - 2026-08-09
+
+- Added Leap `status` and `continue`, explicit autonomy envelopes, tester-panel and UX-baseline contracts, and Marketplace cache freshness diagnostics.
+
 ## [1.28.0] - 2026-08-09
 
 - Added `$forgemind-leap`, the autonomous disruption journey for turning a new idea or existing app into five radical options, an assumption-labelled market chance and business case, a selected reversible MVP, tested delivery contract, and release-ready proof.

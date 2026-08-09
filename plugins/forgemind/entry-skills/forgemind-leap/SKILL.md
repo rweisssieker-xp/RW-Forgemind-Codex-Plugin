@@ -20,3 +20,5 @@ Do not ask routine design, naming, scope, or sequencing questions. Make the smal
 Stop only before secrets or credentials, production access, data deletion, irreversible migrations, external spend, legal or compliance commitments, or high-stakes decisions. State the exact boundary, complete all independent work, and request only the minimum decision needed to proceed.
 
 Load `playbooks/leap.md` for the full operating contract.
+
+Resume after any interruption with `leap status` or `leap continue`; pass `--autonomy '{"maxExternalSpend":0,"requireFeatureFlag":true}'` to make the execution envelope explicit.

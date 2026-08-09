@@ -237,9 +237,12 @@ export async function runCli(argv, context = {}) {
       }
     } else if (command === 'leap') {
       const action = positionals[0] ?? 'run';
-      if (action !== 'run') throw invalidInput('FM_LEAP_ACTION_INVALID', 'Leap supports run.');
-      const { runLeap } = await import('./leap.mjs');
-      data = await runLeap({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), goal: options.goal, mode: options.mode });
+      const { continueLeap, getLeapStatus, runLeap } = await import('./leap.mjs');
+      const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
+      if (action === 'run') data = await runLeap({ workspace, goal: options.goal, mode: options.mode, autonomy: parseJson(options.autonomy, 'FM_LEAP_AUTONOMY_INVALID') });
+      else if (action === 'continue') data = await continueLeap({ workspace });
+      else if (action === 'status') data = await getLeapStatus({ workspace });
+      else throw invalidInput('FM_LEAP_ACTION_INVALID', 'Leap supports run, continue, and status.');
     } else if (command === 'innovation') {
       const action = positionals[0] ?? 'portfolio';
       if (action !== 'portfolio') throw invalidInput('FM_INNOVATION_ACTION_INVALID', 'Innovation supports portfolio.');
@@ -457,6 +460,7 @@ async function readLatestProof(workspace) {
 function splitList(value) {
   return value ? String(value).split('|').map((item) => item.trim()).filter(Boolean) : [];
 }
+function parseJson(value, code) { if (!value) return {}; try { const parsed = JSON.parse(value); return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {}; } catch { throw invalidInput(code, '--autonomy must be a JSON object.'); } }
 
 function parseOptions(args) {
   const options = {};

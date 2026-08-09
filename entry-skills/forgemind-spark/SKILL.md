@@ -1,6 +1,6 @@
 ---
 name: forgemind-spark
-description: "Use for guided creative product work: brainstorm disruptive options, frame a hard problem, run design thinking, craft a product story, or prepare a decision-ready pitch before moving into Explore, Radical, Product, or Plan."
+description: "Use when you need to brainstorm disruptive options, frame a hard problem, run design thinking, craft a product story, or prepare a decision-ready pitch before Explore, Radical, Product, or Plan."
 ---
 
 # Spark
