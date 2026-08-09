@@ -73,3 +73,15 @@
 - Tasks cover the response contract, project model, cited evidence, adaptive bets, decision publication, continuation, dashboard, skill guidance, documentation, packaging, and release.
 - Consumers depend only on interfaces introduced in earlier tasks.
 - Each task begins with a failure assertion and ends with focused verification and a commit.
+
+### Task 5: Distribution Reliability Layer
+
+**Files:** Modify `src/package.mjs`, `src/doctor.mjs`, `src/cli.mjs`, `src/forge/index.mjs`, `.github/workflows/validate.yml`, `README.md`, `docs/INSTALL.md`, `docs/RUNTIME_TEST.md`, and `tests/{doctor,package,release-metadata}.test.mjs`.
+
+**Interfaces:** `diagnose({ pluginRoot, workspace, installation: true })` returns installed version, marketplace identity, runner path, Core/Add-on state, and an update command. Missing Trust Fabric returns `FM_TRUST_FABRIC_NOT_INSTALLED` with its install command.
+
+- [ ] Write failing tests asserting built marketplace name equals `forgemind-marketplace`, installation doctor reports a cache version and runner, a missing add-on gives the specific remediation, and CI matrix contains Node 22 and 24.
+- [ ] Run `node --test tests/doctor.test.mjs tests/package.test.mjs tests/release-metadata.test.mjs`; expect the new assertions to fail.
+- [ ] Make `src/package.mjs` emit the repository marketplace identity, add installation inspection to Doctor, gate Forge commands that require add-on templates, and expose `doctor --installation` through CLI.
+- [ ] Update docs to one GitHub install/update path, fix the obsolete seven-journey and 0.7.0 text, add a clean-home install/upgrade runner test, and keep marketplace guidance compact.
+- [ ] Change CI to Node 22 and 24 across all three operating systems; run the focused tests, full suite, build, strict validation, package snapshot refresh, and commit `feat: harden distribution reliability`.
