@@ -47,20 +47,23 @@ export async function createRadicalPortfolio({ workspace, goal }) {
   return portfolio;
 }
 
-export async function selectRadicalIdea({ workspace, id }) {
+export async function selectRadicalIdea({ workspace, id, selectionMode = 'explicit' }) {
   if (!String(id ?? '').trim()) throw invalidInput('FM_RADICAL_ID_REQUIRED', 'Radical selection requires --id from radical portfolio.');
   const root = await resolveWorkspace(workspace);
   const portfolio = await readArtifact(root, 'radical-portfolio-latest.json');
   const idea = portfolio.ideas?.find((candidate) => candidate.id === id);
   if (!idea) throw invalidInput('FM_RADICAL_ID_UNKNOWN', `Unknown radical idea: ${id}.`);
-  const selection = { schemaVersion: 1, status: 'passed', generatedAt: new Date().toISOString(), selected: idea, rationale: 'Selected explicitly by the product team; score is a prioritization aid, not an autonomous product decision.', requiredBeforeBuild: ['named target workflow', 'success metric', 'kill condition', 'permission boundary', 'rollback path'], errors: [] };
+  const rationale = selectionMode === 'leap-deterministic'
+    ? 'Selected by Leap using the deterministic disruption score; it remains an assumption-led product bet until validated with qualified evidence.'
+    : 'Selected explicitly by the product team; score is a prioritization aid, not an autonomous product decision.';
+  const selection = { schemaVersion: 1, status: 'passed', generatedAt: new Date().toISOString(), selected: idea, rationale, requiredBeforeBuild: ['named target workflow', 'success metric', 'kill condition', 'permission boundary', 'rollback path'], errors: [] };
   await persist(root, 'radical-selection-latest.json', selection);
   return selection;
 }
 
-export async function createRadicalBlueprint({ workspace, id }) {
+export async function createRadicalBlueprint({ workspace, id, selectionMode }) {
   const root = await resolveWorkspace(workspace);
-  const selected = id ? (await selectRadicalIdea({ workspace: root, id })).selected : (await readArtifact(root, 'radical-selection-latest.json')).selected;
+  const selected = id ? (await selectRadicalIdea({ workspace: root, id, selectionMode })).selected : (await readArtifact(root, 'radical-selection-latest.json')).selected;
   const blueprint = {
     schemaVersion: 1, status: 'passed', generatedAt: new Date().toISOString(), idea: selected,
     newParadigm: `Replace the existing interaction with ${selected.title}: ${selected.interactionReplaced}`,

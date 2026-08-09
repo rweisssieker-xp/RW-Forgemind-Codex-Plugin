@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.28.0] - 2026-08-09
+
+- Added `$forgemind-leap`, the autonomous disruption journey for turning a new idea or existing app into five radical options, an assumption-labelled market chance and business case, a selected reversible MVP, tested delivery contract, and release-ready proof.
+- Added `forgemind leap run --goal "<outcome>" --mode yolo|guided --json`, with a contrarian alternative, kill condition, commercial wedge, shadow-mode plan, and strict hard-stop boundaries.
+
 ## [1.27.0] - 2026-08-09
 
 - Added `$forgemind-spark`, a visible creative-intelligence entry point for structured brainstorming, problem solving, design thinking, product narratives, and decision-ready pitches.

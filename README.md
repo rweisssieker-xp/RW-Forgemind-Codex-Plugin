@@ -7,6 +7,7 @@ ForgeMind is the evidence-first delivery system for Codex, published by [Aivana 
 | Path | Use it for | What happens |
 | --- | --- | --- |
 | `$forgemind-guide` | An unclear goal or uncertainty about the right path | Select the smallest sufficient journey |
+| `$forgemind-leap` | A new idea or existing app needs autonomous, disruptive MVP delivery | Analyze → select → business case → implement → prove |
 | `$forgemind-spark` | Brainstorming, design thinking, problem-solving, story, or pitch | Create a decision-ready creative direction |
 | `$forgemind-product` | One idea or existing app through a measurable product bet | Scan → validate → build → evidence → release decision |
 | `$forgemind-explore` | Existing apps, market opportunities, disruptive ideas, MVP choice | Understand → research → portfolio → test plan → measurable MVP |
@@ -17,7 +18,9 @@ ForgeMind is the evidence-first delivery system for Codex, published by [Aivana 
 | `$forgemind-verify` | Quality, tester evidence, security, or release readiness | Verify → assess risks → prove → Go/No-Go |
 | `$forgemind-learn` | Outcomes, feedback, and experiments | Retain evidence → improve future routing and product bets |
 
-The Delivery Engine, routing, and more than sixty specialist modules work underneath these ten journeys. See [the journey hierarchy](docs/HIERARCHY.md). A fast MVP request activates the bounded YOLO path inside Build.
+The Delivery Engine, routing, and more than sixty specialist modules work underneath these eleven journeys. See [the journey hierarchy](docs/HIERARCHY.md). A fast MVP request activates the bounded YOLO path inside Build.
+
+For the most autonomous and disruptive start, use `$forgemind-leap`: it analyzes a new idea or existing app, creates five AI-central workflow replacements, ranks market chance and an assumption-labelled business case, selects a reversible MVP with a contrarian and kill condition, then hands it straight to Complete/YOLO implementation. It asks no routine questions and stops only at a hard safety or authority boundary.
 
 For one continuous idea-to-release session, use explicit `$launch-mvp`: it creates the market/MVP brief and tester plan, then drives scoped delivery, verification, and the release decision through stop gates.
 
@@ -130,15 +133,18 @@ Use `$forgemind-guide` for an interactive selection or `$forgemind-learn` after 
 
 See [docs/TRUST_FABRIC.md](docs/TRUST_FABRIC.md) for commands, team adoption, and precise safety boundaries.
 
-## Ten Primary Journeys
+## Eleven Primary Journeys
 
-ForgeMind exposes exactly ten Marketplace journeys for individual and team use on Windows, macOS, and Linux:
+ForgeMind exposes exactly eleven Marketplace journeys for individual and team use on Windows, macOS, and Linux:
 
 | Journey | Start here | Outcome |
 | --- | --- | --- |
 | Guide | `$forgemind-guide` | Select the smallest sufficient path and its safety boundary. |
+| Leap | `$forgemind-leap` | Autonomously turn an app or idea into a disruptive, market-aware, tested MVP. |
 | Spark | `$forgemind-spark` | Turn a challenge into a validated creative direction, narrative, or pitch. |
+| Product | `$forgemind-product` | Run a measurable, resumable product bet. |
 | Explore | `$forgemind-explore` | Inspect a new or existing app and rank evidence-labelled opportunities. |
+| Radical | `$forgemind-radical` | Create five 10x AI workflow replacements and a build-ready blueprint. |
 | Plan | `$forgemind-plan` | Turn the selected opportunity into an MVP scope, test plan, and stop gates. |
 | Build | `$forgemind-build` | Implement a bounded outcome, including the always-available YOLO path. |
 | Complete | `$forgemind-complete` | Finish an agreed outcome end to end; continue through safe independent work until its Definition of Done is met. |

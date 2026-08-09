@@ -1,9 +1,11 @@
 # ForgeMind Journey Hierarchy
 
-ForgeMind exposes nine skills in the Marketplace. This is the complete user-facing surface; all other workflow files are internal modules loaded only by the relevant journey.
+ForgeMind exposes eleven skills in the Marketplace. This is the complete user-facing surface; all other workflow files are internal modules loaded only by the relevant journey.
 
 ```text
 Guide
+├── Leap     — autonomous disruption: app or idea → selected, market-aware, tested MVP
+├── Spark    — structured creative direction, problem framing, story, and pitch
 ├── Product  — one continuous product bet: scan, validation, build, evidence, release decision
 ├── Explore  — evidence, market opportunities, innovation portfolio, MVP choice
 ├── Radical  — radical 10x AI paradigms, workflow elimination, Vibe Build blueprints
@@ -17,6 +19,8 @@ Guide
 ## Routing
 
 - Start with **Guide** if the desired outcome or safest next step is unclear.
+- Start with **Leap** to autonomously turn a new idea or existing app into a disruptive, market-aware MVP without routine questions.
+- Start with **Spark** for structured brainstorming, design thinking, problem solving, story, or pitch before selecting a product direction.
 - Start with **Product** to turn a new idea or existing app into one measurable, release-ready product bet.
 - Start with **Explore** for a new idea, an existing-app opportunity, market evidence, or maximum-USP work.
 - Use **Radical** for a 10x AI product, disappearing UI, workflow replacement, or autonomous-agent experience.

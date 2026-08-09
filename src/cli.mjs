@@ -21,6 +21,7 @@ const PRIMARY_COMMANDS = [
   'route',
   'signals',
   'innovation',
+  'leap',
   'radical',
   'operator',
   'observer',
@@ -234,6 +235,11 @@ export async function runCli(argv, context = {}) {
           ? await saveUspRecords({ workspace, records: createUspRecords(clusters) })
           : { schemaVersion: 1, status: 'passed', clusters, errors: [] };
       }
+    } else if (command === 'leap') {
+      const action = positionals[0] ?? 'run';
+      if (action !== 'run') throw invalidInput('FM_LEAP_ACTION_INVALID', 'Leap supports run.');
+      const { runLeap } = await import('./leap.mjs');
+      data = await runLeap({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), goal: options.goal, mode: options.mode });
     } else if (command === 'innovation') {
       const action = positionals[0] ?? 'portfolio';
       if (action !== 'portfolio') throw invalidInput('FM_INNOVATION_ACTION_INVALID', 'Innovation supports portfolio.');
