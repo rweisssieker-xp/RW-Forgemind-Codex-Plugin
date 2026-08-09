@@ -11,6 +11,7 @@ const PRIMARY_COMMANDS = [
   'validate',
   'init',
   'inspect',
+  'intelligence',
   'verify',
   'gaps',
   'risks',
@@ -76,8 +77,10 @@ export async function runCli(argv, context = {}) {
   try {
     const command = argv[0] ?? 'help';
     if (command === 'help' || command === '--help' || command === '-h') {
-      stdout.write(HELP);
-      return { exitCode: 0, data: { commands: PRIMARY_COMMANDS } };
+      const data = addArtifactMetadata({ commands: PRIMARY_COMMANDS });
+      if (argv.includes('--json')) stdout.write(`${JSON.stringify(data, null, 2)}\n`);
+      else stdout.write(HELP);
+      return { exitCode: 0, data };
     }
     const { options, positionals } = parseOptions(argv.slice(1));
     if (!['validate', 'package', 'install', 'uninstall', 'eval', 'legacy'].includes(command)) {
@@ -97,11 +100,20 @@ export async function runCli(argv, context = {}) {
       const { diagnose } = await import('./doctor.mjs');
       const pluginRoot = await resolvePluginRoot(options.plugin ?? MODULE_PLUGIN_ROOT);
       const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
-      data = await diagnose({ pluginRoot, workspace });
+      data = await diagnose({ pluginRoot, workspace, installation: Boolean(options.installation) });
     } else if (command === 'inspect') {
       const { inspectProject } = await import('./project.mjs');
       const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
       data = { status: 'passed', ...await inspectProject(workspace), errors: [] };
+    } else if (command === 'intelligence') {
+      const { scanAppIntelligence } = await import('./app-intelligence.mjs');
+      data = await scanAppIntelligence({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()) });
+    } else if (command === 'evidence' && positionals[0] === 'import') {
+      const { importEvidence } = await import('./evidence-engine.mjs');
+      data = await importEvidence({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), input: options.input });
+    } else if (command === 'evidence' && positionals[0] === 'assess') {
+      const { assessEvidence } = await import('./evidence-engine.mjs');
+      data = await assessEvidence({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), goal: options.goal });
     } else if (command === 'init') {
       const { initializeWorkspace } = await import('./artifacts.mjs');
       const pluginRoot = await resolvePluginRoot(options.plugin ?? MODULE_PLUGIN_ROOT);
@@ -408,7 +420,7 @@ export async function runCli(argv, context = {}) {
   } catch (error) {
     const normalized = normalizeError(error);
     stderr.write(`${normalized.code}: ${normalized.message}\n`);
-    return { exitCode: normalized.exitCode, data: { error: normalized.code } };
+    return { exitCode: normalized.exitCode, data: addArtifactMetadata({ error: normalized.code }) };
   } finally {
     if (artifactStoreActive) await deactivateArtifactStore();
   }
@@ -460,7 +472,7 @@ function parseOptions(args) {
       }
       continue;
     }
-    if (['json', 'strict-release', 'memory', 'run', 'allow-inferred', 'non-expiring', 'purge-data', 'approved', 'critical', 'simulated'].includes(key)) {
+    if (['json', 'strict-release', 'memory', 'run', 'allow-inferred', 'non-expiring', 'purge-data', 'approved', 'critical', 'simulated', 'installation'].includes(key)) {
       options[key] = true;
       continue;
     }

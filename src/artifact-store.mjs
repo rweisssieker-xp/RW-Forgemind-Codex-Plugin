@@ -57,8 +57,10 @@ export function artifactMetadata() {
 }
 
 export function addArtifactMetadata(data) {
-  if (!active || !data || typeof data !== 'object' || Array.isArray(data)) return data;
+  if (!data || typeof data !== 'object' || Array.isArray(data)) return data;
+  if (!active) return { ...data, ...metadata(), projectDocuments: data.projectDocuments ?? [] };
   const result = { ...data, artifactMode: active.mode, artifactPath: active.temporary ? null : active.stateRoot };
+  result.projectDocuments = data.projectDocuments ?? [];
   if (typeof data.artifactPath === 'string') {
     const relative = data.artifactPath.replace(/^\.codex-orchestrator[\\/]?/, '');
     result.artifactPath = active.temporary ? null : path.join(active.stateRoot, relative);

@@ -46,7 +46,7 @@ test('decision records are published in the app project while generated state re
     await assert.rejects(access(path.join(workspace, '.codex-orchestrator')));
 
     const oneShot = await runCli(['finance', '--workspace', workspace, '--artifacts', 'none'], context);
-    assert.equal(oneShot.data.projectDocuments, undefined);
+    assert.deepEqual(oneShot.data.projectDocuments, []);
     await assert.rejects(access(path.join(workspace, '.codex-orchestrator')));
   } finally {
     await rm(workspace, { recursive: true, force: true });

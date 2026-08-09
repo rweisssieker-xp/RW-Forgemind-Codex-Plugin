@@ -8,7 +8,7 @@ const root = path.resolve(import.meta.dirname, '..');
 test('CI validates all supported operating systems and Node release lines', async () => {
   const workflow = await readFile(path.join(root, '.github', 'workflows', 'validate.yml'), 'utf8');
   for (const os of ['ubuntu-latest', 'macos-latest', 'windows-latest']) assert.match(workflow, new RegExp(os));
-  assert.match(workflow, /node-version:\s*\[?[^\n]*20/);
+  assert.match(workflow, /node-version:\s*\[?[^\n]*22/);
   assert.match(workflow, /node-version:\s*\[?[^\n]*24/);
   assert.match(workflow, /npm run ci/);
 });

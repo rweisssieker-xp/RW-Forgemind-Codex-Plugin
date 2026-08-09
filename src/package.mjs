@@ -39,8 +39,8 @@ export async function buildPackages({ pluginRoot, outputRoot = path.join(pluginR
   const hasTrustFabric = await exists(path.join(root, 'templates', 'forge')) && await exists(path.join(root, 'playbooks', 'trust-fabric.md'));
   if (hasTrustFabric) await buildTrustFabricAddon({ root, output: trustFabricPath });
   await writeJsonAtomic(path.join(marketplacePath, '.agents', 'plugins', 'marketplace.json'), {
-    name: 'rw-local-productivity',
-    interface: { displayName: 'RW Local Productivity' },
+    name: 'forgemind-marketplace',
+    interface: { displayName: 'ForgeMind Marketplace' },
     plugins: [
       { name: 'forgemind', source: { source: 'local', path: './plugins/forgemind' }, policy: { installation: 'AVAILABLE', authentication: 'ON_INSTALL' }, category: 'Productivity' },
       ...(hasTrustFabric ? [{ name: 'forgemind-trust-fabric', source: { source: 'local', path: './plugins/forgemind-trust-fabric' }, policy: { installation: 'AVAILABLE', authentication: 'ON_INSTALL' }, category: 'Productivity' }] : []),
