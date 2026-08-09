@@ -109,3 +109,15 @@ Unit and CLI tests will prove that:
 4. Replace direct document writes with the Decision Ledger.
 5. Add Delivery Controller and Dashboard summary.
 6. Add command, integration, regression, package, and release tests; document the new workflow; publish a minor version release.
+
+## Distribution Reliability Layer
+
+The repository marketplace, built marketplace bundle, documentation, release assets, and installed plugin cache use the single identity `forgemind-marketplace`. Core remains the independent `forgemind` plugin and Trust Fabric remains the independent optional `forgemind-trust-fabric` add-on.
+
+`forgemind doctor --installation` reports the running plugin root, manifest version, cache discovery, marketplace registration, bundled-runner availability, Core/Add-on compatibility, and the precise next update command. It performs no writes.
+
+Core capabilities never imply that Trust Fabric is installed. A Trust Fabric request without the add-on returns a clear `FM_TRUST_FABRIC_NOT_INSTALLED` result with the exact install command. When present, its capabilities are included in Doctor output.
+
+The Marketplace package contains a compact entry surface. Each journey keeps its short skill file; longer workflow material is divided into focused references loaded only by that journey. The runtime test suite includes a clean-home path: register the GitHub marketplace, install Core, invoke the bundled runner, assert manifest version and entry skill discovery, upgrade the marketplace, reinstall, and assert the newer version.
+
+CI tests Node.js 22 and 24 on Windows, macOS, and Linux. Documentation identifies one recommended path for GitHub installation, update, offline package installation, and plugin development. It contains no obsolete journey count or legacy version example.
