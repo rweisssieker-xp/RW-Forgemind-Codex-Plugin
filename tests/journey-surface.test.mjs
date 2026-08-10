@@ -4,9 +4,9 @@ import path from 'node:path';
 import test from 'node:test';
 
 const root = path.resolve(import.meta.dirname, '..');
-const JOURNEYS = ['forgemind-guide', 'forgemind-leap', 'forgemind-spark', 'forgemind-product', 'forgemind-explore', 'forgemind-radical', 'forgemind-plan', 'forgemind-build', 'forgemind-complete', 'forgemind-verify', 'forgemind-learn'];
+const JOURNEYS = ['forgemind-guide', 'forgemind-leap', 'forgemind-council', 'forgemind-venture', 'forgemind-portfolio', 'forgemind-showcase', 'forgemind-spark', 'forgemind-product', 'forgemind-explore', 'forgemind-radical', 'forgemind-plan', 'forgemind-build', 'forgemind-complete', 'forgemind-verify', 'forgemind-learn'];
 
-test('Marketplace exposes exactly eleven hierarchical journeys while retaining internal modules', async () => {
+test('Marketplace exposes exactly fifteen hierarchical journeys while retaining internal modules', async () => {
   const manifest = JSON.parse(await readFile(path.join(root, '.codex-plugin', 'plugin.json'), 'utf8'));
   assert.equal(manifest.skills, './entry-skills/');
   const entries = await readdir(path.join(root, 'entry-skills'), { withFileTypes: true });

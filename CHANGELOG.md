@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.30.0] - 2026-08-10
+
+- Added Council, Venture, Portfolio, and Showcase as focused ForgeMind entry points for decision rounds, market cases, delivery portfolios, and proof-carrying narratives.
+
 ## [1.29.0] - 2026-08-09
 
 - Added Leap `status` and `continue`, explicit autonomy envelopes, tester-panel and UX-baseline contracts, and Marketplace cache freshness diagnostics.

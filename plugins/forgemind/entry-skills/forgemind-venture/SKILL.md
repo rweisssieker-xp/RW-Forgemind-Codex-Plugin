@@ -1,0 +1,8 @@
+---
+name: forgemind-venture
+description: "Use when you need cited market opportunity, competition, pricing, business-case sensitivity, or go-to-market decisions."
+---
+
+# Venture
+
+Build an evidence-labelled venture case: sources, customer problem, competitive alternatives, pricing hypotheses, conservative/base/upside scenarios, sensitivity, required validation, and a Go/No-Go recommendation. Never turn missing sources into market facts.

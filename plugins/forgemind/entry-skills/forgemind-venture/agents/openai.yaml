@@ -1,0 +1,6 @@
+interface:
+  display_name: "Venture"
+  short_description: "Market evidence, pricing, and business-case decisions."
+  default_prompt: "Use $forgemind-venture to build a source-backed market and business case."
+policy:
+  allow_implicit_invocation: false
