@@ -5,6 +5,8 @@ description: "Use when a new idea or an existing app needs a one-prompt, disrupt
 
 # Leap
 
+When invoked without user text, load `playbooks/zero-input-defaults.md` and execute **Leap**. Analyze the current app when present; otherwise derive a disruptive opportunity from project context. State the automatically derived goal and continue autonomously.
+
 Leap is ForgeMind's autonomous product-disruption journey. It converts an outcome into five AI-central workflow replacements, an assumption-labelled market chance and business case, one selected reversible MVP, a credible contrarian, and a completion contract.
 
 Resolve this installed plugin's root and run the bundled runner:

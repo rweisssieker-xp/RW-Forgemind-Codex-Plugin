@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.32.0] - 2026-08-10
+
+- Added full zero-input defaults for every primary journey. Bare skill calls now derive and state a project-aware goal; explicit user intent always takes precedence.
+- Made CLI journeys and Leap accept missing `--goal` values and record `goalSource: zero-input-default` for auditable autonomous starts.
+
 ## [1.31.0] - 2026-08-10
 
 - Replaced the broad visible surface with seven outcome-oriented entry points: Compass, Spark, Evolve, Venture, Council, Ship, and Leap.

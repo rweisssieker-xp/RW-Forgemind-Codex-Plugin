@@ -5,6 +5,8 @@ description: "Use when you need to brainstorm disruptive options, frame a hard p
 
 # Spark
 
+When invoked without user text, load `playbooks/zero-input-defaults.md` and execute **Spark**. Do not ask what to brainstorm; derive the project opportunity and state it as a zero-input default.
+
 Choose the smallest mode that creates a decision-ready artifact:
 
 - **Brainstorm**: diverge, cluster, converge, then retain the strongest options and their assumptions.

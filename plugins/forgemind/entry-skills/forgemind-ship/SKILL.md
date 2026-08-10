@@ -5,6 +5,8 @@ description: Turn a selected product bet into bounded implementation, testing, a
 
 # Ship
 
+When invoked without user text, load `playbooks/zero-input-defaults.md` and execute **Ship** for the latest ForgeMind bet or the smallest high-leverage reversible MVP.
+
 Create an executable delivery contract, user-experience test surface, and rollback-aware verification path:
 
 `node <plugin-root>/bin/forgemind.mjs ship plan --goal "<outcome>" --artifacts local --json`

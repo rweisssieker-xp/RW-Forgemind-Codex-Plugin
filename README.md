@@ -14,6 +14,8 @@ ForgeMind is an evidence-first product innovation and delivery plugin for Codex,
 | Ship | `$forgemind-ship Implement and prove …` | Delivery contract, UX test surface, and release path. |
 | Leap | `$forgemind-leap Autonomously turn this app or idea into a disruptive MVP: …` | Developer automode from idea/app to bounded MVP. |
 
+Every entry also works without appended text. For example, `$forgemind-spark` automatically runs its radical-idea default for the current project, and `$forgemind-leap` starts autonomous product mode. The first response states the derived goal; any supplied text overrides it.
+
 ## Developer automode
 
 Use **Leap** for fast autonomous MVP work:

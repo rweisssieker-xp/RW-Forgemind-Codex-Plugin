@@ -7,6 +7,8 @@ description: Choose the best ForgeMind starting point for an unclear product, ap
 
 Use this as the default start. Ask no question unless the answer changes safety, cost, production access, or the chosen path.
 
+When invoked without user text, load `playbooks/zero-input-defaults.md` and execute **Compass**. State the automatically derived goal and path before continuing.
+
 - `$forgemind-spark`: generate disruptive directions before choosing a bet.
 - `$forgemind-evolve`: radically improve an existing application.
 - `$forgemind-venture`: establish market evidence, USP, and business-case scenarios.

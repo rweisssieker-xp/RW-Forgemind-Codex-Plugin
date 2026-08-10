@@ -13,9 +13,9 @@ import { resolveWorkspace } from './paths.mjs';
 
 export async function runSpark({ workspace, goal }) {
   const root = await resolveWorkspace(workspace);
-  const outcome = requiredGoal(goal);
+  const { outcome, goalSource } = resolveGoal(goal, 'spark');
   const result = {
-    schemaVersion: 1, status: 'passed', generatedAt: new Date().toISOString(), goal: outcome,
+    schemaVersion: 1, status: 'passed', generatedAt: new Date().toISOString(), goal: outcome, goalSource,
     directions: [
       direction('eliminate', 'Remove the most repetitive step and let the system prepare a reversible outcome.', outcome, 92),
       direction('anticipate', 'Detect intent from project context and offer the next decision before the user asks.', outcome, 88),
@@ -33,11 +33,11 @@ export async function runSpark({ workspace, goal }) {
 }
 
 export async function runEvolve({ workspace, goal }) {
-  const root = await resolveWorkspace(workspace); const outcome = requiredGoal(goal);
+  const root = await resolveWorkspace(workspace); const { outcome, goalSource } = resolveGoal(goal, 'evolve');
   const [intelligence, radical, opportunity] = await Promise.all([
     scanAppIntelligence({ workspace: root }), createRadicalPortfolio({ workspace: root, goal: outcome }), createOpportunityCase({ workspace: root, goal: outcome }),
   ]);
-  const result = { schemaVersion: 1, status: 'passed', generatedAt: new Date().toISOString(), goal: outcome, intelligence, radicalOptions: radical.ideas, selectedDirection: radical.ideas[0], opportunity,
+  const result = { schemaVersion: 1, status: 'passed', generatedAt: new Date().toISOString(), goal: outcome, goalSource, intelligence, radicalOptions: radical.ideas, selectedDirection: radical.ideas[0], opportunity,
     nextAction: 'Run council decide to challenge the selected transformation, then ship plan for bounded delivery.',
     claimBoundary: 'The selected direction is a repository-aware hypothesis; validate it with customers before claiming demand.', artifactPath: '.codex-orchestrator/primary/evolve-latest.json', errors: [] };
   const document = await publishProjectDocument({ workspace: root, name: 'evolution-brief.md', title: 'Product Evolution Brief', body: `## Outcome\n\n${outcome}\n\n## Selected direction\n\n${result.selectedDirection.title}\n\n${result.selectedDirection.thesis}\n\n## Kill condition\n\n${result.selectedDirection.killCondition}\n\n## Boundary\n\n${result.claimBoundary}` });
@@ -46,12 +46,12 @@ export async function runEvolve({ workspace, goal }) {
 }
 
 export async function runVenture({ workspace, goal, options = {} }) {
-  const root = await resolveWorkspace(workspace); const outcome = requiredGoal(goal);
+  const root = await resolveWorkspace(workspace); const { outcome, goalSource } = resolveGoal(goal, 'venture');
   const [opportunity, financialModel, discoveryLoop] = await Promise.all([
     createOpportunityCase({ workspace: root, goal: outcome, options }), createFinancialModel({ workspace: root, options }), runDiscoveryLoop({ workspace: root, goal: outcome }),
   ]);
   const conservative = financialModel.scenarios.find((item) => item.name === 'conservative');
-  const result = { schemaVersion: 1, status: 'passed', generatedAt: new Date().toISOString(), goal: outcome, opportunity, financialModel, discoveryLoop,
+  const result = { schemaVersion: 1, status: 'passed', generatedAt: new Date().toISOString(), goal: outcome, goalSource, opportunity, financialModel, discoveryLoop,
     recommendation: opportunity.recommendation === 'validate-with-qualified-users' && conservative?.viabilityScore >= 50 ? 'validate' : 'research-first',
     nextAction: 'Import customer or market evidence, then re-run venture before committing material delivery spend.',
     claimBoundary: 'Market scores and financial scenarios are explicit assumptions unless supported by imported sources; they are not market facts, forecasts, or investment advice.', artifactPath: '.codex-orchestrator/primary/venture-latest.json', errors: [] };
@@ -61,7 +61,7 @@ export async function runVenture({ workspace, goal, options = {} }) {
 }
 
 export async function runCouncil({ workspace, goal }) {
-  const root = await resolveWorkspace(workspace); const outcome = requiredGoal(goal);
+  const root = await resolveWorkspace(workspace); const { outcome, goalSource } = resolveGoal(goal, 'council');
   const opportunity = await createOpportunityCase({ workspace: root, goal: outcome });
   const perspectives = [
     ['product', 'Prioritize only the smallest outcome that removes a measurable user step.', 'Use completion time and independent success as the decision metric.'],
@@ -70,36 +70,49 @@ export async function runCouncil({ workspace, goal }) {
     ['risk', 'Automation must show its rationale, boundary, and recovery route.', 'Pause for production access, external spend, or regulated decisions.'],
     ['contrarian', 'A better workflow may be less valuable than deleting it entirely.', 'Test whether the user would prefer no new interface.'],
   ].map(([role, position, condition]) => ({ role, position, condition, evidenceBasis: opportunity.evidence.basis }));
-  const result = { schemaVersion: 1, status: 'passed', generatedAt: new Date().toISOString(), goal: outcome, perspectives,
+  const result = { schemaVersion: 1, status: 'passed', generatedAt: new Date().toISOString(), goal: outcome, goalSource, perspectives,
     decision: 'validate-a-reversible-thin-slice', dissent: 'Customer demand remains an assumption until external evidence is imported.', owner: 'product owner', metric: 'independent completion and time-to-outcome', killCondition: 'Stop when qualified users do not complete the core task better than the current alternative.', nextAction: 'Run ship plan with a feature flag and the stated kill condition.', artifactPath: '.codex-orchestrator/primary/council-latest.json', errors: [] };
   const document = await publishProjectDocument({ workspace: root, name: 'council-decision.md', title: 'Council Decision', body: `## Decision\n\n${result.decision}\n\n## Perspectives\n\n${markdownTable(perspectives)}\n\n## Dissent\n\n${result.dissent}\n\n## Kill condition\n\n${result.killCondition}` });
   if (document) result.projectDocuments = ['docs/forgemind/council-decision.md']; await save(root, 'council-latest.json', result); return result;
 }
 
 export async function runPortfolio({ workspace, goal }) {
-  const root = await resolveWorkspace(workspace); const outcome = requiredGoal(goal);
+  const root = await resolveWorkspace(workspace); const { outcome, goalSource } = resolveGoal(goal, 'portfolio');
   const portfolio = await createInnovationPortfolio({ workspace: root, goal: outcome }); const selected = portfolio.candidates[0];
-  const result = { schemaVersion: 1, status: 'passed', generatedAt: new Date().toISOString(), goal: outcome, selectedBet: selected,
+  const result = { schemaVersion: 1, status: 'passed', generatedAt: new Date().toISOString(), goal: outcome, goalSource, selectedBet: selected,
     epics: [{ id: 'epic-1', outcome, metric: selected.experiment, killCondition: selected.killCondition, stories: ['Instrument the baseline.', 'Implement one reversible thin slice behind a flag.', 'Run target-user and quality checks.', 'Decide using recorded evidence.'] }],
     sprint: { goal: 'Prove or disprove the selected bet with the smallest releasable slice.', order: ['baseline', 'thin-slice', 'verification', 'decision'] }, nextAction: 'Run ship plan to convert the first story into an implementation contract.', artifactPath: '.codex-orchestrator/primary/portfolio-latest.json', errors: [] };
   await save(root, 'portfolio-latest.json', result); return result;
 }
 
 export async function runShowcase({ workspace, goal }) {
-  const root = await resolveWorkspace(workspace); const outcome = requiredGoal(goal); const demo = await createTrustworthyDemo({ workspace: root, title: outcome });
-  const result = { schemaVersion: 1, status: 'passed', generatedAt: new Date().toISOString(), goal: outcome, demo,
+  const root = await resolveWorkspace(workspace); const { outcome, goalSource } = resolveGoal(goal, 'showcase'); const demo = await createTrustworthyDemo({ workspace: root, title: outcome });
+  const result = { schemaVersion: 1, status: 'passed', generatedAt: new Date().toISOString(), goal: outcome, goalSource, demo,
     narrative: { audience: 'decision makers and early users', tension: 'The current workflow leaves a material outcome manual or unproven.', transformation: 'Show one user outcome, evidence, boundary, and decision—not a feature tour.', ask: 'Approve a bounded validation release.' }, nextAction: 'Attach real verification and customer evidence before presenting outcomes as proven.', artifactPath: '.codex-orchestrator/primary/showcase-latest.json', errors: [] };
   await save(root, 'showcase-latest.json', result); return result;
 }
 
 export async function runShip({ workspace, goal }) {
-  const root = await resolveWorkspace(workspace); const outcome = requiredGoal(goal);
+  const root = await resolveWorkspace(workspace); const { outcome, goalSource } = resolveGoal(goal, 'ship');
   const [contract, canvas, uiTestPlan] = await Promise.all([createCompletionContract({ workspace: root, goal: outcome }), createExperienceCanvas({ workspace: root, goal: outcome }), planUiTesting({ workspace: root })]);
-  const result = { schemaVersion: 1, status: 'passed', generatedAt: new Date().toISOString(), goal: outcome, contract, canvas, uiTestPlan,
+  const result = { schemaVersion: 1, status: 'passed', generatedAt: new Date().toISOString(), goal: outcome, goalSource, contract, canvas, uiTestPlan,
     executionMode: 'developer-autonomous-with-hard-stops', hardStops: contract.executionPolicy.pauseOnlyFor, nextAction: 'Implement the first open criterion, run the smallest relevant tests, and continue until the contract is satisfied or a hard stop is reached.', artifactPath: '.codex-orchestrator/primary/ship-latest.json', errors: [] };
   await save(root, 'ship-latest.json', result); return result;
 }
 
 function direction(id, thesis, goal, score) { return { id, thesis: `${thesis} Applied to: ${goal}`, score, metric: 'independent completion and time-to-outcome', killCondition: 'Stop if the new interaction does not reduce the core task time or improve independent completion in five qualified sessions.' }; }
-function requiredGoal(goal) { const value = String(goal ?? '').trim(); if (!value) throw new Error('A primary journey requires --goal.'); return value; }
+function resolveGoal(goal, journey) {
+  const value = String(goal ?? '').trim();
+  if (value) return { outcome: value, goalSource: 'user' };
+  return { outcome: ZERO_INPUT_DEFAULTS[journey], goalSource: 'zero-input-default' };
+}
+const ZERO_INPUT_DEFAULTS = {
+  spark: 'Discover five radical AI product opportunities that eliminate the highest-friction workflow in this project.',
+  evolve: 'Radically transform the highest-friction workflow in this existing application with an AI-central, reversible MVP.',
+  venture: 'Validate the strongest available product opportunity with market evidence, USP differentiation, and a transparent business case.',
+  council: 'Choose the strongest next reversible product or delivery decision for this project.',
+  portfolio: 'Turn the strongest available product opportunity into a measurable, reversible delivery portfolio.',
+  showcase: 'Create a truthful, proof-carrying narrative for the strongest available product opportunity.',
+  ship: 'Implement and verify the smallest reversible MVP with the greatest measurable user impact.',
+};
 async function save(workspace, name, value) { await writeJsonAtomic(artifactStatePath(workspace, 'primary', name), value); }

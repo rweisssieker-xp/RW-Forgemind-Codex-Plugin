@@ -20,8 +20,17 @@ test('Marketplace exposes exactly seven primary journeys while retaining interna
     const ui = await readFile(path.join(root, 'entry-skills', journey, 'agents', 'openai.yaml'), 'utf8');
     assert.match(instructions, new RegExp(`name: ${journey}`));
     assert.match(ui, new RegExp(`\\$${journey}`));
+    assert.match(instructions, /zero-input-defaults\.md/i);
+    assert.match(ui, /Zero-Input Default/);
   }
   assert.match(await readFile(path.join(root, 'docs', 'HIERARCHY.md'), 'utf8'), /Compass[\s\S]*Spark[\s\S]*Evolve[\s\S]*Venture[\s\S]*Council[\s\S]*Ship[\s\S]*Leap/);
+});
+
+test('zero-input defaults cover every primary journey without treating assumptions as facts', async () => {
+  const defaults = await readFile(path.join(root, 'playbooks', 'zero-input-defaults.md'), 'utf8');
+  for (const name of ['Compass', 'Spark', 'Evolve', 'Venture', 'Council', 'Ship', 'Leap']) assert.match(defaults, new RegExp(`## ${name}`));
+  assert.match(defaults, /never as facts/i);
+  assert.match(defaults, /hard safety boundary/i);
 });
 
 test('Compass is the sole implicit journey and routes natural-language requests to specialist journeys', async () => {

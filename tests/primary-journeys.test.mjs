@@ -26,3 +26,15 @@ test('the primary journeys produce decision-ready, evidence-labelled outputs', a
     await readFile(path.join(workspace, 'docs', 'forgemind', 'council-decision.md'), 'utf8');
   } finally { await rm(workspace, { recursive: true, force: true }); }
 });
+
+test('primary journeys derive a documented zero-input default instead of rejecting an empty goal', async () => {
+  const workspace = await mkdtemp(path.join(tmpdir(), 'forgemind-zero-input-'));
+  try {
+    for (const [command, action] of [['spark', 'run'], ['evolve', 'run'], ['venture', 'run'], ['council', 'decide'], ['portfolio', 'plan'], ['showcase', 'create'], ['ship', 'plan'], ['leap', 'run']]) {
+      const result = await runCli([command, action, '--workspace', workspace, '--json'], context());
+      assert.equal(result.exitCode, 0, `${command} should derive a default goal`);
+      assert.equal(result.data.goalSource, 'zero-input-default');
+      assert.match(result.data.goal, /./);
+    }
+  } finally { await rm(workspace, { recursive: true, force: true }); }
+});

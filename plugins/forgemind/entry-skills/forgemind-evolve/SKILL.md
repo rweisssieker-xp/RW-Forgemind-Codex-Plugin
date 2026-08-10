@@ -5,6 +5,8 @@ description: Radically improve an existing app through repository-aware AI produ
 
 # Evolve
 
+When invoked without user text, load `playbooks/zero-input-defaults.md` and execute **Evolve**. Use the current application as the subject and state the derived transformation goal.
+
 Inspect the existing application before proposing changes. Identify the current user job, needless steps, durable constraints, and the decisive outcome. Then run:
 
 `node <plugin-root>/bin/forgemind.mjs evolve run --goal "<outcome>" --artifacts local --json`

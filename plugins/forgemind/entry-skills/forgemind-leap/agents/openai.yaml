@@ -1,6 +1,6 @@
 interface:
   display_name: "Leap"
   short_description: "Autonomous disruption from app or idea to tested MVP."
-  default_prompt: "Use $forgemind-leap to turn this app or idea into a disruptive, market-aware MVP and implement it autonomously."
+  default_prompt: "Use $forgemind-leap with its Zero-Input Default when no additional outcome is supplied."
 policy:
   allow_implicit_invocation: false

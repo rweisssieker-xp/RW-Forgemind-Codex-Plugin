@@ -13,8 +13,9 @@ const HARD_STOPS = ['secrets-or-credentials', 'production-access', 'data-deletio
 
 export async function runLeap({ workspace, goal, mode = 'yolo', autonomy = {} }) {
   const root = await resolveWorkspace(workspace);
-  const outcome = String(goal ?? '').trim();
-  if (!outcome) throw new Error('Leap requires --goal.');
+  const requestedGoal = String(goal ?? '').trim();
+  const outcome = requestedGoal || 'Analyze this project and autonomously create the strongest disruptive AI product opportunity as a reversible, tested MVP.';
+  const goalSource = requestedGoal ? 'user' : 'zero-input-default';
   const selectedMode = ['yolo', 'guided'].includes(String(mode).toLowerCase()) ? String(mode).toLowerCase() : 'yolo';
   const [appIntelligence, innovation, radical, opportunity] = await Promise.all([
     scanAppIntelligence({ workspace: root }),
@@ -38,6 +39,7 @@ export async function runLeap({ workspace, goal, mode = 'yolo', autonomy = {} })
     status: 'ready-for-autonomous-delivery',
     generatedAt: new Date().toISOString(),
     goal: outcome,
+    goalSource,
     mode: selectedMode,
     hardStopBoundary: HARD_STOPS,
     autonomyPolicy: {
