@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.31.0] - 2026-08-10
+
+- Replaced the broad visible surface with seven outcome-oriented entry points: Compass, Spark, Evolve, Venture, Council, Ship, and Leap.
+- Made Spark, Evolve, Venture, Council, Ship, and Leap executable, artifact-aware CLI workflows rather than instruction-only entries.
+- Established Leap as the developer automode and Ship as the explicit delivery, testing, and release entry point.
+- Updated US English documentation and kept generated working state external by default.
+
 ## [1.30.0] - 2026-08-10
 
 - Added Council, Venture, Portfolio, and Showcase as focused ForgeMind entry points for decision rounds, market cases, delivery portfolios, and proof-carrying narratives.

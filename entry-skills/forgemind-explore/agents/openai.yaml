@@ -1,6 +1,0 @@
-interface:
-  display_name: "Explore"
-  short_description: "Find and validate the strongest product opportunity."
-  default_prompt: "Use $forgemind-explore to find the strongest MVP for this app."
-policy:
-  allow_implicit_invocation: false

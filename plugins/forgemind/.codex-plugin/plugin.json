@@ -17,7 +17,7 @@
     "category": "Productivity",
     "composerIcon": "./assets/icon.svg",
     "defaultPrompt": [
-      "Use $forgemind-guide to choose the best next step for this goal."
+      "Use $forgemind-compass to choose the best next path for this goal."
     ],
     "developerName": "Aivana GmbH",
     "displayName": "ForgeMind",
@@ -39,5 +39,5 @@
   "name": "forgemind",
   "repository": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin",
   "skills": "./entry-skills/",
-  "version": "1.30.0"
+  "version": "1.31.0"
 }

@@ -23,7 +23,7 @@ test('Leap creates a disruption-first, evidence-labelled MVP contract without pr
     assert.deepEqual(result.data.hardStopBoundary, ['secrets-or-credentials', 'production-access', 'data-deletion', 'irreversible-migration', 'external-spend', 'legal-or-compliance-commitment', 'high-stakes-decision']);
     assert.equal(result.data.completionContract.executionPolicy.continueByDefault, true);
     const resumed = await runCli(['leap', 'continue', '--workspace', workspace, '--json'], context());
-    assert.equal(resumed.data.handoff, '$forgemind-complete');
+    assert.equal(resumed.data.handoff, '$forgemind-ship');
     assert.equal(result.data.artifactMode, 'local');
     assert.match(result.data.artifactPath, /[\\/]\.cache[\\/]forgemind[\\/]/);
     await assert.rejects(access(path.join(workspace, '.codex-orchestrator')));

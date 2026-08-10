@@ -1,6 +1,0 @@
-interface:
-  display_name: "ForgeMind Product"
-  short_description: "Turn an app or idea into a measurable product bet."
-  default_prompt: "Use $forgemind-product to turn this app or idea into a measurable product bet."
-policy:
-  allow_implicit_invocation: false

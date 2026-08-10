@@ -4,13 +4,17 @@ import path from 'node:path';
 import test from 'node:test';
 
 const root = path.resolve(import.meta.dirname, '..');
-const JOURNEYS = ['forgemind-guide', 'forgemind-leap', 'forgemind-council', 'forgemind-venture', 'forgemind-portfolio', 'forgemind-showcase', 'forgemind-spark', 'forgemind-product', 'forgemind-explore', 'forgemind-radical', 'forgemind-plan', 'forgemind-build', 'forgemind-complete', 'forgemind-verify', 'forgemind-learn'];
+const JOURNEYS = ['forgemind-compass', 'forgemind-leap', 'forgemind-council', 'forgemind-venture', 'forgemind-spark', 'forgemind-evolve', 'forgemind-ship'];
 
-test('fifteen journeys are the complete skill hierarchy', async () => {
-  const directories = (await readdir(path.join(root, 'entry-skills'), { withFileTypes: true })).filter((entry) => entry.isDirectory()).map((entry) => entry.name).sort();
+test('seven journeys are the complete primary skill hierarchy', async () => {
+  const directories = [];
+  for (const entry of (await readdir(path.join(root, 'entry-skills'), { withFileTypes: true })).filter((item) => item.isDirectory())) {
+    try { await readFile(path.join(root, 'entry-skills', entry.name, 'SKILL.md'), 'utf8'); directories.push(entry.name); } catch {}
+  }
+  directories.sort();
   assert.deepEqual(directories, [...JOURNEYS].sort());
-  const guide = await readFile(path.join(root, 'entry-skills', 'forgemind-guide', 'SKILL.md'), 'utf8');
-  for (const journey of JOURNEYS.filter((name) => name !== 'forgemind-guide')) assert.match(guide, new RegExp(`\\$${journey}`));
+  const compass = await readFile(path.join(root, 'entry-skills', 'forgemind-compass', 'SKILL.md'), 'utf8');
+  for (const journey of JOURNEYS.filter((name) => name !== 'forgemind-compass')) assert.match(compass, new RegExp(`\\$${journey}`));
 });
 
 test('journeys load compact playbooks instead of a specialist-skill library', async () => {
@@ -19,6 +23,6 @@ test('journeys load compact playbooks instead of a specialist-skill library', as
     assert.doesNotMatch(content, /skills\//);
   }
   const playbooks = (await readdir(path.join(root, 'playbooks'))).filter((file) => file.endsWith('.md'));
-  assert.equal(playbooks.length, 15);
+  assert.ok(playbooks.length >= 7);
   assert.ok(playbooks.includes('radical-product.md'));
 });

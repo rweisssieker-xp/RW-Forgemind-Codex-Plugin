@@ -1,6 +1,6 @@
 {
   "name": "forgemind",
-  "version": "1.30.0",
+  "version": "1.31.0",
   "description": "Evidence-first product discovery and delivery for Codex.",
   "author": {
     "name": "Aivana GmbH",
@@ -34,7 +34,7 @@
     "privacyPolicyURL": "https://aivana-gmbh.ai/Privacy",
     "termsOfServiceURL": "https://aivana-gmbh.ai/Terms",
     "defaultPrompt": [
-      "Use $forgemind-guide to choose the best next step for this goal."
+      "Use $forgemind-compass to choose the best next path for this goal."
     ],
     "brandColor": "#2563EB",
     "composerIcon": "./assets/icon.svg",

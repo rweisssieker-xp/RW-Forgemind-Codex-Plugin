@@ -1,6 +1,0 @@
-interface:
-  display_name: "Plan"
-  short_description: "Turn a product bet into a build-ready delivery plan."
-  default_prompt: "Use $forgemind-plan to turn this product bet into a safe build plan."
-policy:
-  allow_implicit_invocation: false

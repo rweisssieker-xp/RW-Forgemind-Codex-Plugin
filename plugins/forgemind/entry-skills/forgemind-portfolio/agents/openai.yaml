@@ -1,6 +1,0 @@
-interface:
-  display_name: "Portfolio"
-  short_description: "Outcome-led epics, stories, and sprint delivery."
-  default_prompt: "Use $forgemind-portfolio to turn these bets into an executable delivery portfolio."
-policy:
-  allow_implicit_invocation: false

@@ -1,6 +1,0 @@
-interface:
-  display_name: "Learn"
-  short_description: "Turn outcomes and feedback into durable product learning."
-  default_prompt: "Use $forgemind-learn to retain the outcome and improve the next iteration."
-policy:
-  allow_implicit_invocation: false

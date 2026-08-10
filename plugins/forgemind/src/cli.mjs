@@ -22,6 +22,12 @@ const PRIMARY_COMMANDS = [
   'signals',
   'innovation',
   'leap',
+  'spark',
+  'evolve',
+  'venture',
+  'council',
+  'showcase',
+  'ship',
   'radical',
   'operator',
   'observer',
@@ -243,6 +249,14 @@ export async function runCli(argv, context = {}) {
       else if (action === 'continue') data = await continueLeap({ workspace });
       else if (action === 'status') data = await getLeapStatus({ workspace });
       else throw invalidInput('FM_LEAP_ACTION_INVALID', 'Leap supports run, continue, and status.');
+    } else if (['spark', 'evolve', 'venture', 'council', 'showcase', 'ship'].includes(command)) {
+      const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
+      const action = positionals[0] ?? (command === 'council' ? 'decide' : 'run');
+      const valid = { spark: 'run', evolve: 'run', venture: 'run', council: 'decide', showcase: 'create', ship: 'plan' };
+      if (action !== valid[command]) throw invalidInput('FM_PRIMARY_JOURNEY_ACTION_INVALID', `${command} supports ${valid[command]}.`);
+      const journeys = await import('./primary-journeys.mjs');
+      const runners = { spark: journeys.runSpark, evolve: journeys.runEvolve, venture: journeys.runVenture, council: journeys.runCouncil, showcase: journeys.runShowcase, ship: journeys.runShip };
+      data = await runners[command]({ workspace, goal: options.goal, options });
     } else if (command === 'innovation') {
       const action = positionals[0] ?? 'portfolio';
       if (action !== 'portfolio') throw invalidInput('FM_INNOVATION_ACTION_INVALID', 'Innovation supports portfolio.');
@@ -325,8 +339,14 @@ export async function runCli(argv, context = {}) {
       const { runDiscoveryLoop } = await import('./product-ops-lab.mjs');
       data = await runDiscoveryLoop({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), goal: options.goal });
     } else if (command === 'portfolio') {
-      const { createPortfolioCockpit } = await import('./product-ops-lab.mjs');
-      data = await createPortfolioCockpit({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()) });
+      const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
+      if (positionals[0] === 'plan') {
+        const { runPortfolio } = await import('./primary-journeys.mjs');
+        data = await runPortfolio({ workspace, goal: options.goal });
+      } else {
+        const { createPortfolioCockpit } = await import('./product-ops-lab.mjs');
+        data = await createPortfolioCockpit({ workspace });
+      }
     } else if (command === 'product') {
       const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
       const action = positionals[0] ?? 'scan';

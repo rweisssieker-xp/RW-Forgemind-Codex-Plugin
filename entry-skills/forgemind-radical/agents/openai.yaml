@@ -1,6 +1,0 @@
-interface:
-  display_name: "Radical"
-  short_description: "Replace a workflow with a radical 10x AI product."
-  default_prompt: "Use $forgemind-radical to design a radical 10x AI product for this app."
-policy:
-  allow_implicit_invocation: false

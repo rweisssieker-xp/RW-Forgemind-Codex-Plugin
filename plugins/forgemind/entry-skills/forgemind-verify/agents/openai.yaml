@@ -1,6 +1,0 @@
-interface:
-  display_name: "Verify"
-  short_description: "Prove quality, safety, and release readiness."
-  default_prompt: "Use $forgemind-verify to prove this change is ready to ship."
-policy:
-  allow_implicit_invocation: false

@@ -49,7 +49,7 @@ This is expected for a Marketplace installation: Codex loads the ForgeMind skill
 node <installed-plugin-root>/bin/forgemind.mjs product launch --goal "<outcome>" --json
 ```
 
-`$forgemind-product` uses this portable runner path as its standard fallback. A global `forgemind` command is optional.
+The primary journeys use this portable runner path as their standard fallback. A global `forgemind` command is optional.
 
 ## Upgrade and downgrade
 

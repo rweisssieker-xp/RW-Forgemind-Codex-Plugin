@@ -80,7 +80,7 @@ export async function getLeapStatus({ workspace }) {
 export async function continueLeap({ workspace }) {
   const state = await getLeapStatus({ workspace });
   if (state.status === 'missing') return state;
-  return { ...state, status: 'ready-for-autonomous-delivery', nextAction: next(state.leap), handoff: '$forgemind-complete', errors: [] };
+  return { ...state, status: 'ready-for-autonomous-delivery', nextAction: next(state.leap), handoff: '$forgemind-ship', errors: [] };
 }
 
 function summarizeBet(idea) {

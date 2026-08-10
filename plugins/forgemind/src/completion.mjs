@@ -3,10 +3,11 @@ import path from 'node:path';
 
 import { ForgeMindError } from './errors.mjs';
 import { writeJsonAtomic } from './io.mjs';
-import { assertContained, resolveWorkspace } from './paths.mjs';
+import { resolveWorkspace } from './paths.mjs';
 import { inspectProject } from './project.mjs';
+import { artifactStatePath } from './artifact-store.mjs';
 
-const RELATIVE_PATH = ['.codex-orchestrator', 'completion', 'latest.json'];
+const RELATIVE_PATH = ['completion', 'latest.json'];
 
 export async function createCompletionContract({ workspace, goal, acceptance = [] }) {
   const root = await resolveWorkspace(workspace);
@@ -30,14 +31,14 @@ export async function createCompletionContract({ workspace, goal, acceptance = [
     artifactPath: '.codex-orchestrator/completion/latest.json',
     errors: [],
   };
-  await writeJsonAtomic(assertContained(root, path.join(root, ...RELATIVE_PATH)), contract);
+  await writeJsonAtomic(artifactStatePath(root, ...RELATIVE_PATH), contract);
   return contract;
 }
 
 export async function getCompletionContract({ workspace }) {
   const root = await resolveWorkspace(workspace);
   try {
-    const contract = JSON.parse(await readFile(path.join(root, ...RELATIVE_PATH), 'utf8'));
+    const contract = JSON.parse(await readFile(artifactStatePath(root, ...RELATIVE_PATH), 'utf8'));
     const open = contract.definitionOfDone.filter((item) => item.state !== 'satisfied');
     return { ...contract, openCriteria: open, nextAction: open.length ? `Continue with: ${open[0].criterion}` : 'Review final evidence and close the completion contract.' };
   } catch (error) {

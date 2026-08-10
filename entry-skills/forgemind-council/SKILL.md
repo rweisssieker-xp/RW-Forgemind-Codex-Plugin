@@ -5,4 +5,4 @@ description: "Use when a product, technical, customer, risk, and contrarian pers
 
 # Council
 
-Run a structured decision round with Product, Customer Advocate, Technical Pragmatist, Risk Owner, and Contrarian perspectives. Separate facts, assumptions, disagreements, decision, dissent, owner, metric, kill condition, and next action. Do not invent consensus.
+Run `node <plugin-root>/bin/forgemind.mjs council decide --goal "<outcome>" --artifacts local --json`. It produces Product, Customer, Technical, Risk, and Contrarian perspectives. Separate facts, assumptions, disagreements, decision, dissent, owner, metric, kill condition, and next action. Do not invent consensus.

@@ -1,396 +1,88 @@
 # ForgeMind
 
-ForgeMind is the evidence-first delivery system for Codex, published by [Aivana GmbH](https://aivana-gmbh.ai/): autonomous execution with verifiable proof, safe escalation, and release-ready decisions. Aivana builds AI-supported solutions for organizing, tracking, and sharing work; ForgeMind applies that product discipline to local-first software discovery and delivery.
+ForgeMind is an evidence-first product innovation and delivery plugin for Codex, published by [Aivana GmbH](https://aivana-gmbh.ai/). It turns ideas and existing applications into disruptive, market-aware, testable MVPs while keeping a clear boundary between facts, assumptions, and release proof.
 
-## Start with the journey hierarchy
+## The seven starting points
 
-| Path | Use it for | What happens |
+| Start | Prompt | Result |
 | --- | --- | --- |
-| `$forgemind-guide` | An unclear goal or uncertainty about the right path | Select the smallest sufficient journey |
-| `$forgemind-leap` | A new idea or existing app needs autonomous, disruptive MVP delivery | Analyze → select → business case → implement → prove |
-| `$forgemind-spark` | Brainstorming, design thinking, problem-solving, story, or pitch | Create a decision-ready creative direction |
-| `$forgemind-product` | One idea or existing app through a measurable product bet | Scan → validate → build → evidence → release decision |
-| `$forgemind-explore` | Existing apps, market opportunities, disruptive ideas, MVP choice | Understand → research → portfolio → test plan → measurable MVP |
-| `$forgemind-radical` | Radical 10x AI products, workflow elimination, Vibe Build | Replace interaction → select paradigm → build-ready agent blueprint |
-| `$forgemind-plan` | A selected product bet or feature | Scope → architecture → acceptance → experiment → delivery sequence |
-| `$forgemind-build` | A clear feature, fix, or delivery outcome | Implement → test → review → report; YOLO remains available for a bounded MVP |
-| `$forgemind-complete` | A feature or app improvement that must be fully finished | Continue → integrate → test → close every achievable acceptance criterion |
-| `$forgemind-verify` | Quality, tester evidence, security, or release readiness | Verify → assess risks → prove → Go/No-Go |
-| `$forgemind-learn` | Outcomes, feedback, and experiments | Retain evidence → improve future routing and product bets |
+| Compass | `$forgemind-compass Help me choose the right path for …` | The smallest safe journey. |
+| Spark | `$forgemind-spark Generate disruptive AI directions for …` | Five radical, measurable directions. |
+| Evolve | `$forgemind-evolve Transform this existing app around …` | Repository-aware product transformation and MVP bet. |
+| Venture | `$forgemind-venture Validate the market chance and business case for …` | Evidence-labelled market, USP, and financial scenarios. |
+| Council | `$forgemind-council Decide whether we should …` | One decision with visible dissent, metric, and kill condition. |
+| Ship | `$forgemind-ship Implement and prove …` | Delivery contract, UX test surface, and release path. |
+| Leap | `$forgemind-leap Autonomously turn this app or idea into a disruptive MVP: …` | Developer automode from idea/app to bounded MVP. |
 
-The Delivery Engine, routing, and more than sixty specialist modules work underneath these eleven journeys. See [the journey hierarchy](docs/HIERARCHY.md). A fast MVP request activates the bounded YOLO path inside Build.
+## Developer automode
 
-For the most autonomous and disruptive start, use `$forgemind-leap`: it analyzes a new idea or existing app, creates five AI-central workflow replacements, ranks market chance and an assumption-labelled business case, selects a reversible MVP with a contrarian and kill condition, then hands it straight to Complete/YOLO implementation. It asks no routine questions and stops only at a hard safety or authority boundary.
-
-For one continuous idea-to-release session, use explicit `$launch-mvp`: it creates the market/MVP brief and tester plan, then drives scoped delivery, verification, and the release decision through stop gates.
-
-## Radical Product Engine
-
-Use `$forgemind-radical` to **eliminate a workflow**, create a **10x AI product**, **make the UI disappear**, or produce a **Vibe Build**. ForgeMind first distinguishes repository facts from assumptions, then creates five AI-central interaction replacements and one build-ready MVP.
+Use **Leap** for fast autonomous MVP work:
 
 ```text
-forgemind radical analyze --goal "Eliminate manual approval follow-up" --artifacts local --json
-forgemind radical select --id outcome-operator --artifacts local --json
-forgemind radical blueprint --artifacts local --json
-forgemind radical shadow-mode --artifacts local --json
+$forgemind-leap Analyze this existing app, select the strongest disruptive AI opportunity, and implement the tested, reversible MVP autonomously. Do not ask routine questions; pause only for safety, production, legal, or cost decisions.
 ```
+
+Leap analyzes the repository, creates radical alternatives, calculates an evidence-labelled opportunity and business case, selects a reversible bet with a kill condition, and hands delivery to the completion path. It never claims that an assumption is market evidence.
+
+## What makes it different
+
+- **Disruption before feature lists:** AI must eliminate or replace a user interaction, not merely decorate it.
+- **Existing-app first:** product bets start from the actual repository and its constraints.
+- **Market and business case:** market chance, sources, financial scenarios, sensitivity, and validation needs are explicit.
+- **Kill conditions:** every material bet has a measurable reason to stop.
+- **Fast with guardrails:** YOLO-style delivery continues autonomously until a genuine hard stop.
+- **Evidence-native:** decisions, tests, risks, dissent, and release claims are visibly separated from assumptions.
+- **Clean distribution:** normal use never writes generated state into the installed plugin.
 
 ## Clean artifact storage
 
-ForgeMind keeps the analyzed repository clean by default. Generated exploration, Radical, QA, finance, and planning state is stored locally at `~/.cache/forgemind/workspaces/<stable-project-id>/.codex-orchestrator/`; the repository remains the source for inspection, implementation, tests, and project signals.
-
-- `--artifacts local` is the default and is suitable for resumable work.
-- `--artifacts workspace` is an explicit opt-in for versioned, repository-local `.codex-orchestrator/` state.
-- `--artifacts none` creates one-shot JSON only and removes temporary state when the command ends.
-- `--artifact-dir <absolute-path>` selects an explicit external artifact destination.
-
-Use the same mode or explicit artifact directory for commands that consume prior ForgeMind output. Every CLI JSON response includes `artifactMode` and `artifactPath`.
-
-ForgeMind separates generated working state from durable project documentation:
-
-- Detailed, machine-readable market cases, financial scenarios, scans, evidence, temporary plans, and resumable workflow state remain external by default.
-- `experience market-case` (and `experience canvas`) publishes `docs/forgemind/market-opportunity.md`; `finance` publishes `docs/forgemind/financial-model.md`; `product scan` publishes `docs/forgemind/product-bet.md` in the app project. These concise Markdown records are intended to be reviewed and versioned with the app.
-- `--artifacts none` persists neither cache state nor project documents; use it for truly one-shot JSON.
-- Nothing is ever written into the installed ForgeMind plugin directory during normal use.
-
-## Product OS: one prompt to a measurable product bet
-
-Use the continuous, resumable Product OS when you want ForgeMind to turn an existing app or new idea into a measured, release-ready bet rather than a collection of suggestions:
+By default, generated ForgeMind state goes to:
 
 ```text
-forgemind product launch --goal "Make approvals disappear safely" --mode guided --json
-forgemind product scan --json
-forgemind product action --title "Prototype outcome operator" --owner product --metric "task completion" --json
-forgemind product measure --id <action-id> --outcome iterate --evidence "test-run-42" --json
-forgemind product evidence --json
-forgemind product simulate --json
+~/.cache/forgemind/workspaces/<stable-project-id>/.codex-orchestrator/
 ```
 
-Product OS adds a stable run manifest, a closed-loop action ledger, an evidence graph with falsifiers, a repository-aware autonomous scan, a bounded release simulator, and a benchmark that checks whether the project has enough evidence to claim progress. It never treats an unmeasured recommendation as a proven result.
+The target app remains the source for inspection, implementation, tests, and signals. Durable, human-readable decisions are written only to `docs/forgemind/` in that target app. Nothing is written to the installed plugin directory.
 
-### CLI availability in a distributed Marketplace plugin
+- `--artifacts local` is the default.
+- `--artifacts workspace` opts into repository-local generated state.
+- `--artifacts none` returns one-shot JSON without persistence.
+- `--artifact-dir <absolute-path>` selects an explicit external artifact root.
 
-`$forgemind-product` is the preferred entry point. Marketplace installation provides skills to Codex; it does **not** automatically install a global `forgemind` command in the user's shell. If `forgemind` is not found, invoke the bundled runner from the installed plugin location:
+Every JSON response includes `artifactMode` and absolute `artifactPath`.
+
+## Portable CLI
+
+Marketplace installation makes the skills available in Codex; it does not require a global shell command. The portable runner is:
 
 ```text
-node <plugin-root>/bin/forgemind.mjs product launch --goal "<outcome>" --json
+node <plugin-root>/bin/forgemind.mjs leap run --goal "Eliminate manual case triage" --artifacts local --json
+node <plugin-root>/bin/forgemind.mjs venture run --goal "Validate an AI triage copilot" --artifacts local --json
+node <plugin-root>/bin/forgemind.mjs ship plan --goal "Release a flagged, reversible MVP" --artifacts local --json
 ```
 
-The Product skill uses this portable fallback automatically. A global command is optional convenience, never a requirement.
-
-The engine designs for Outcome Operator, Invisible Workflow Compiler, Product Digital Twin, Self-Deleting Interface, and Autonomous Experiment Cell patterns. It evolves autonomy from Observe → Suggest → Approve → Bounded Autopilot; it never silently crosses permission, cost, reversibility, production, or high-stakes boundaries.
-
-## AI-Native Execution Layer
-
-ForgeMind also ships an Outcome Operator contract, workflow observer, experiment autopilot, provider registry, AI-native refactor portfolio, customer truth loop, autonomy-readiness score, and proof-carrying demo generator. These are local-first artifacts and adapter contracts; no model, credential, or external app is contacted implicitly.
-
-## Trust Fabric: Nine Disruptive USPs
-
-`forgemind forge help` exposes nine integrated capabilities: Agent Trust Protocol, Strategy-to-Code Compiler, Engineering Genome, Delivery Flight Recorder, Parallel Future Tournament, Self-Shrinking Software, Autonomous Product Loop, Evidence Escrow, and Federated Learning Network. They share sealed local records, secret redaction, deterministic CLI contracts, and explicit failure states.
-
-## Why ForgeMind
-
-- **Proof before promise:** claims of completion are backed by test, risk, traceability, rollback, and delivery evidence.
-- **Autopilot with a brake:** autonomous work proceeds end to end but stops before destructive, secret-bearing, external, or high-stakes actions.
-- **Cost-aware routing:** the router keeps only the routing and autopilot entry points implicit, then selects specialists explicitly to minimize unnecessary context.
-- **One release decision:** readiness converts verification, gaps, risks, proof, and rollback context into a clear Go/No-Go outcome.
-- **Learn without leaking:** federation uses k-suppressed aggregates and excludes raw prompts, source, paths, and identities.
-- **Vendor-neutral trust:** portable contracts and attestations let humans and different agents share the same evidence model.
-- **Reproducible collaboration:** sealed records, flight replay, versioned artifacts, and outcome memory make work inspectable and repeatable.
-- **Strategy stays connected to delivery:** USP experiments, acceptance criteria, implementation, and verification remain traceable through the same workflow.
-- **Creativity becomes delivery:** structured ideation, human-centered discovery, lateral solutions, opportunity design, narrative, and presentation flow into measurable MVP contracts.
-- **Discovery compounds:** hypotheses become local experiments with evidence-backed pivot, patch, persevere, or stop decisions.
-- **Work resumes cleanly:** checkpoints preserve the local Git state, decisions, and next action; visual QA seals screenshot evidence locally.
-- **MVPs face real tests early:** each selected concept gets target-user, functional, accessibility, and adversarial test coverage; results automatically lead to scale, iterate, or stop.
-- **Experience evidence, not UI theater:** every user-facing change can connect decisive user tasks, state coverage, accessibility semantics, browser behavior, responsive rendering, visual baselines, and recovery paths to the same release evidence.
-- **Kill conditions prevent feature theater:** success, iteration, and stop decisions are defined before delivery rather than rationalized afterwards.
-- **Fast without blind spots:** YOLO keeps a narrow MVP moving while preserving test, risk, rollback, and release boundaries.
-- **Existing apps get product-aware innovation:** repository evidence and current constraints shape opportunities instead of generic idea lists.
-- **Innovation portfolio, not an idea dump:** ten app-aware bets cover workflow elimination, intelligence, trust, learning, integrations, monetization, and autonomous work; each has a moat, test, and kill condition.
-- **Opportunity before output:** market chance and an explicit, assumption-labelled business case connect pain, reach, price, margin, cost, ROI, and break-even to every material product bet.
-- **Counterfactual experience design:** an Experience Lab forecasts UX failures, compares safe flow variants, optimizes task time, detects design drift, proposes review-only test repairs, and turns only evidence into a trustworthy demo.
-- **Evidence-connected opportunity operations:** cited research, customer signals, privacy-minimized telemetry, financial scenarios, and a transparent portfolio cockpit turn idea selection into a continuous discovery loop.
-- **Portable GUI-proof stack:** ForgeMind detects the smallest compatible GUI test surface, records actual test commands, accepts perceptual-regression reports, and stages—not silently applies—test repairs.
-
-## Start Here
-
-Choose one visible path; ForgeMind routes to the smallest sufficient specialist.
-
-- **Ship a feature:** plan, implement, test, and retain delivery evidence.
-- **Ship a fast MVP:** say “YOLO” or ask for a fast MVP; ForgeMind takes the direct build path while retaining hard safety boundaries.
-- **Fix a bug:** reproduce, diagnose, fix, verify, and record the outcome.
-- **Prepare a release:** assess gaps and risks, verify proof, plan rollback, and make a Go/No-Go decision.
-- **Test an MVP:** create a target-user, functional, accessibility, and trust test plan before scaling it.
-- **Launch an idea end to end:** use `$launch-mvp` for market thesis → MVP → testers → build → verification → Go/No-Go.
-- **Maximize product advantage:** use `$forgemind-explore` or `forgemind innovation portfolio --goal "<outcome>"` to rank radical but testable product bets before coding.
-- **Replace a workflow, not a screen:** ask `$forgemind-explore` to create a radical 10x AI/Vibe Build, then run `forgemind radical analyze --goal "<outcome>"` for five interaction-replacement bets and a build-ready agent blueprint.
-- **Validate a GUI innovation:** use `forgemind experience canvas --goal "<outcome>"` for a market-aware UX tournament, then `$forgemind-verify` to retain experience evidence.
-- **Build a data-backed product case:** import sources with `forgemind research --input sources.json`, calculate scenarios with `forgemind finance`, then use `forgemind discovery-loop` and `forgemind portfolio` to decide what to validate next.
-- **Bring in product behavior:** use `forgemind telemetry --input events.json --source product-export` to add privacy-minimized event evidence, then rerun `forgemind discovery-loop`.
-- **Prove a GUI change:** use `forgemind ui-test plan --url http://localhost:3000`, `ui-test run --command "<test-command>"`, and `ui-test perceptual --input visual-report.json` before a visual-quality claim.
-
-Use `$forgemind-guide` for an interactive selection or `$forgemind-learn` after a completed workflow to record opt-in acceptance and correction data without raw prompts or source.
-
-See [docs/TRUST_FABRIC.md](docs/TRUST_FABRIC.md) for commands, team adoption, and precise safety boundaries.
-
-## Eleven Primary Journeys
-
-ForgeMind exposes exactly eleven Marketplace journeys for individual and team use on Windows, macOS, and Linux:
-
-| Journey | Start here | Outcome |
-| --- | --- | --- |
-| Guide | `$forgemind-guide` | Select the smallest sufficient path and its safety boundary. |
-| Leap | `$forgemind-leap` | Autonomously turn an app or idea into a disruptive, market-aware, tested MVP. |
-| Spark | `$forgemind-spark` | Turn a challenge into a validated creative direction, narrative, or pitch. |
-| Product | `$forgemind-product` | Run a measurable, resumable product bet. |
-| Explore | `$forgemind-explore` | Inspect a new or existing app and rank evidence-labelled opportunities. |
-| Radical | `$forgemind-radical` | Create five 10x AI workflow replacements and a build-ready blueprint. |
-| Plan | `$forgemind-plan` | Turn the selected opportunity into an MVP scope, test plan, and stop gates. |
-| Build | `$forgemind-build` | Implement a bounded outcome, including the always-available YOLO path. |
-| Complete | `$forgemind-complete` | Finish an agreed outcome end to end; continue through safe independent work until its Definition of Done is met. |
-| Verify | `$forgemind-verify` | Produce tester, risk, verification, rollback, and Go/No-Go evidence. |
-| Learn | `$forgemind-learn` | Record opt-in outcomes and improve future project-specific decisions. |
-
-Run `node bin/forgemind.mjs help` for the portable CLI. The root `scripts/*.ps1` wrappers are source-maintainer compatibility tools; they are not part of the installed Core plugin.
-
-Installation, upgrade, downgrade, rollback, and uninstall are documented in [docs/INSTALL.md](docs/INSTALL.md). Public and team use is governed by the [MIT License](LICENSE), [Privacy Policy](PRIVACY.md), [Terms](TERMS.md), [Security Policy](SECURITY.md), [Support Policy](SUPPORT.md), [Contributing Guide](CONTRIBUTING.md), and [Code of Conduct](CODE_OF_CONDUCT.md).
-
-## What It Adds
-
-- Delivery Orchestrator for routing coding work.
-- Workflow Init and Workflow Status for governed phase control.
-- Workflow Menu and specialist role skills for Product Owner, Architect, Senior Developer, and QA.
-- PRD, Epic/Story, Scrum Master, Story Status, and Acceptance Criteria builders.
-- ForgeMind product artifacts for `docs/forgemind/prd.md`, `docs/forgemind/epics.md`, `docs/forgemind/stories/`, `docs/forgemind/acceptance/`, and `.codex-orchestrator/workflow-status.md`.
-- Autonomous Orchestrator for inspect -> decide -> act -> verify -> learn autopilot execution.
-- Innovation First Autopilot for app-structure-first analysis and maximum AI/KI USP generation before build planning.
-- Innovation Portfolio for ten ranked, project-aware bets with evidence basis, moat, monetization, MVP, experiment, and kill condition.
-- Delivery Acceleration mode for product-aware end-to-end delivery.
-- USP AI Strategist for practical AI/KI product advantages.
-- Specialist agent profiles for product, architecture, development, QA, security, USP, and release.
-- Stack detection, project profiling, verification reports, and memory templates.
-- Learning loop for mistakes, preferences, patterns, feedback, learning scores, and self-update proposals.
-- Gap Scanner for missing release, quality, docs, CI, packaging, traceability, and runtime evidence.
-- Release Readiness Score for a 0-100 handoff/release decision.
-- Traceability Mapper for PRD/story/acceptance/code/verification evidence.
-- Skill Router with confidence, alternatives, risk, and next action.
-- Workflow Graph for the full ForgeMind state machine.
-- USP Backlog and Outcome Memory for product experiments and route effectiveness.
-- Runtime Discovery Test for installed Codex plugin discovery.
-- Command Center dashboard for gaps, readiness, verification, traceability, USP backlog, and memory.
-- Learning To Skill Patch for turning repeated failures into concrete ForgeMind self-update proposals.
-- Risk Radar for security, dependency, migration, generated-file, release, and handoff risk.
-- Rollback Planner for recovery steps before release or risky merge.
-- Verification Registry for known-good commands and confidence.
-- Decision Log for architecture, product, release, and workflow decisions.
-- PR Summary Builder for handoff summaries from evidence.
-- Differentiation Matrix for evidence-based capability and market positioning.
-- Max USP mode for AI/KI differentiation, monetization, MVP leverage, trust, and "do not build" warnings.
-- Prompt library and workflow documentation.
-- Nine-capability Trust Fabric for portable agent contracts, executable strategy, learned routing, tamper-evident history, future selection, reversible simplification, measured product autonomy, evidence-gated acceptance, and aggregate cross-team learning.
-- Creative Intelligence for structured ideation, human-centered design, systems diagnosis, lateral solutions, opportunity design, product narrative, and presentation architecture.
-- Innovation Delivery Lab for outcome contracts, counterfactual route selection, change budgets, proof-carrying PRs, expiring knowledge, and privacy-preserving team learning.
-- Discovery Operations, Checkpoint Resume, and Visual QA for experiment evidence, resumable handoffs, and screenshot-based release proof.
-- MVP Test Lab for decisive target-user, functional, accessibility, and adversarial testing with scale, iterate, or stop rules.
-
-## Internal Playbooks
-
-The Marketplace intentionally exposes only the nine journeys above. Thirteen concise internal playbooks provide deeper guidance only when needed; Radical is the explicit entry point for the workflow-elimination playbook. They are not additional starting points.
-
-- `delivery-orchestrator`: routes work through discovery, planning, implementation, QA, and delivery.
-- `workflow-init`: initializes project profile, memory, verification baseline, and next action.
-- `workflow-status`: reports current phase, mode, blockers, verification, and next action.
-- `skill-router`: recommends the next ForgeMind skill with confidence and alternatives.
-- `workflow-graph`: generates or explains the full ForgeMind workflow graph.
-- `workflow-menu`: recommends specialist roles.
-- `prd-builder`: creates product requirements documents.
-- `epic-story-builder`: converts scope into epics, stories, tasks, and order.
-- `work-planning`: prepares stories for implementation.
-- `story-status`: reports story, epic, backlog, or feature status.
-- `acceptance-criteria-builder`: creates acceptance criteria, tests, and definition of done.
-- `mvp-test-lab`: plans a multi-perspective MVP test and evidence-gated product decision.
-- `launch-mvp`: runs a resumable one-session idea-to-release MVP workflow with hard stop gates and evidence per stage.
-- `tdd-builder`: red-green-refactor workflow where practical.
-- `finish-branch`: final verification, release notes, changed-file summary, and handoff.
-- `gap-scanner`: scans for missing release, quality, docs, CI, packaging, traceability, and runtime work.
-- `release-readiness-score`: scores release readiness from 0-100 with blockers and evidence.
-- `risk-radar`: detects implementation, security, release, dependency, and handoff risk.
-- `rollback-planner`: creates rollback and recovery plans.
-- `pr-summary-builder`: generates PR or handoff summaries from evidence.
-- `traceability-mapper`: maps product intent to changed files and verification.
-- `runtime-discovery-test`: checks installed plugin discovery through Codex cache, marketplace, and config.
-- `command-center`: refreshes the dashboard with all ForgeMind evidence.
-- `autonomous-orchestrator`: handles work end to end with automatic subskill selection and risk escalation.
-- `innovation-first-autopilot`: reads the current app structure first, then generates radical AI/KI ideas and maximum USP proposals before choosing an MVP.
-- `delivery-acceleration-mode`: full project intelligence, product strategy, architecture, build, verify, review, and memory loop.
-- `project-intelligence`: detects stack, commands, architecture, conventions, and risk zones.
-- `project-memory`: reads and updates durable project memory.
-- `learning-loop`: turns completed work and failures into durable learning.
-- `outcome-memory`: records actual outcomes and routing effectiveness.
-- `verification-registry`: stores known-good commands and confidence.
-- `decision-log`: records decisions with rationale and review date.
-- `learning-to-skill-patch`: converts repeated failures into concrete self-update proposals.
-- `user-feedback-capture`: records user taste and corrections as preferences or mistakes.
-- `pattern-library`: captures reusable implementation and USP patterns.
-- `usp-backlog`: stores scored AI/KI USP ideas, experiments, status, and evidence.
-- `differentiation-matrix`: compares ForgeMind capabilities with relevant market baselines and alternatives.
-- `usp-ai-strategist`: generates practical USP, AI, and KI product advantages.
-- `radical-vibe-builder`: creates radical AI/KI 10x feature ideas and build-ready vibe-coding MVPs.
-- `app-evolution-builder`: reviews code, suggests optimizations, generates 6 feasible feature ideas, implements one, and verifies it.
-- `implementation-plan`: turns scope into executable tasks and verification.
-- `yolo-feature`: autonomous end-to-end feature mode with guardrails and risk modes.
-- `structured-feature`: lightweight feature planning and execution.
-- `systematic-debugging`: evidence-first bug investigation.
-- `verification-gate`: completion checks before reporting success.
-- `code-review-gate`: review stance focused on bugs, regressions, and missing tests.
-- `security-reviewer`: checks auth, data, secrets, dependency, and AI safety risks.
-- `refactorer`: behavior-preserving cleanup tied to the current task.
-- `agent-trust-protocol`: normalizes agent evidence and issues hard-gated trust attestations.
-- `strategy-to-code-compiler`: compiles strategy and detects rule-level delivery drift.
-- `engineering-genome`: learns transparent route recommendations from measured cohorts.
-- `delivery-flight-recorder`: verifies and replays the tamper-evident action chain.
-- `parallel-future-tournament`: compares safe candidates with scoring and a Pareto frontier.
-- `self-shrinking-software`: proposes reversible removal experiments without source mutation.
-- `autonomous-product-loop`: advances evidence-gated experiments to scale, iterate, or rollback.
-- `evidence-escrow`: holds acceptance until proof, milestones, and approvals pass.
-- `federated-learning-network`: exports and pools k-suppressed aggregate outcomes.
-
-## Specialist Profiles
-
-Profiles live in `agents/`:
-
-- Orchestration Flow: Delivery Orchestrator
-- Product Scope: `product-owner.md`
-- Architecture Review: `architect.md`
-- Delivery Build: `senior-developer.md`
-- Quality Check: `qa-engineer.md`
-- Work Planning: Scrum Master
-- Security Review: `security-engineer.md`
-- Value Signals: `usp-ai-strategist.md`
-- Innovation Design: Innovation First Autopilot
-- Radical Design: Radical Vibe Builder
-- Release Delivery: `release-manager.md`
-
-## Useful Prompts
+From a source checkout, the equivalent maintainer command is `node bin/forgemind.mjs`. The legacy `launch-mvp` CLI remains available for a resumable, staged MVP launch and tester-evidence loop; new work should start through Leap or Ship.
 
 ```text
-ForgeMind Help: show commands, modes, and when to use which workflow.
-Workflow Init: initialize ForgeMind for this project.
-Workflow Status: show current phase, mode, blockers, verification, and next action.
-Skill Router: recommend the best ForgeMind skill with confidence, alternatives, risk, and next action.
-Workflow Graph: show the ForgeMind workflow graph and next gate.
-Workflow Menu: recommend the best ForgeMind specialist for this task.
-PRD Builder: create a product requirements document for this feature.
-Epic Story Builder: convert this PRD or feature into epics, user stories, tasks, and implementation order.
-Acceptance Criteria Builder: create acceptance criteria, test cases, definition of done, and verification checklist.
-Delivery Orchestrator: route this coding task.
-ForgeMind Autopilot: inspect, route, decide, act, verify, learn, and report.
-Innovation First Autopilot: read the current app structure first, then generate maximum AI/KI USPs and radical ideas before choosing the best MVP.
-Delivery Acceleration mode: inspect this repo, plan, implement, verify, and review.
-YOLO feature: implement this end to end with ForgeMind guardrails.
-USP Strategist: find 10 practical AI/KI USPs and recommend the first MVP.
-Radical Vibe Builder: generate 5 radical AI/KI features and a build-ready future MVP.
-App Evolution Builder: review, propose 6 features, implement the best one, and test it.
-Learning Loop: record what worked, what failed, and what ForgeMind should do next time.
-Gap Scanner: scan this branch for missing release, quality, docs, CI, packaging, traceability, and runtime work.
-Release Readiness Score: score this branch from 0-100 and list blockers.
-Traceability Mapper: connect this implementation to PRD, story, acceptance criteria, changed files, and verification.
-Runtime Discovery Test: check whether ForgeMind is installed where Codex can discover it.
-Command Center: refresh the ForgeMind dashboard.
-USP Backlog: store this AI/KI idea with score, experiment, status, and evidence.
-Outcome Memory: record actual outcome and route effectiveness.
-Learning To Skill Patch: propose ForgeMind skill updates from these failures.
-Security Reviewer: check auth, secrets, data exposure, dependencies, and AI safety risks.
-Release Manager: prepare readiness, verification evidence, and rollback notes.
-Trust Fabric: show all nine forge capabilities and recommend the right one for this outcome.
+node bin/forgemind.mjs launch-mvp start --goal "Validate a reversible MVP" --json
+node bin/forgemind.mjs testing plan --goal "Validate a reversible MVP" --json
+node bin/forgemind.mjs testing evaluate --json
 ```
 
-More prompts are in `prompts/README.md`.
+The tester decision is explicit: scale, iterate, or stop. Target-user, functional, accessibility, and adversarial findings are evidence—not a substitute for the seven primary journeys.
 
-## Source-Maintainer Compatibility Scripts
-
-These PowerShell wrappers exist only in a source checkout. Installed Marketplace users should use the nine journeys or the bundled `node <plugin-root>/bin/forgemind.mjs` runner instead.
-
-```powershell
-.\scripts\orchestrator-status.ps1
-.\scripts\detect-stack.ps1
-.\scripts\write-project-profile.ps1 -WithMemory -WithArtifacts
-.\scripts\init-artifacts.ps1
-.\scripts\verify-workspace.ps1
-.\scripts\verify-workspace.ps1 -Run
-.\scripts\gap-scan.ps1
-.\scripts\release-readiness-score.ps1
-.\scripts\risk-radar.ps1
-.\scripts\generate-rollback-plan.ps1 -Change "My change"
-.\scripts\generate-pr-summary.ps1 -Title "My change"
-.\scripts\generate-workflow-graph.ps1
-.\scripts\runtime-discovery-test.ps1
-.\scripts\add-traceability.ps1 -Feature "My Feature" -Story "ST-1" -Acceptance "Acceptance summary"
-.\scripts\update-usp-backlog.ps1 -Title "AI Feature" -Score 82 -Experiment "Smoke test"
-.\scripts\register-verification.ps1 -Command "npm test" -Category test
-.\scripts\record-decision.ps1 -Decision "Use X" -Rationale "Because Y"
-.\scripts\validate-plugin.ps1
-.\scripts\test-forgemind.ps1
-.\scripts\generate-dashboard.ps1
-.\scripts\record-learning.ps1 -Task "My Feature" -Outcome success -MemoryUsed -Note "Reusable pattern found"
-.\scripts\init-global-memory.ps1
-.\scripts\bump-version.ps1 -Version 0.7.0
-.\scripts\init-workflow.ps1 "My Feature"
-```
-
-## USP Templates
-
-Templates live in `templates/usp/`:
-
-- SaaS
-- Healthcare
-- B2B Operations
-- Developer Tools
-- Marketplace
-- CRM/Sales
-
-## Project Memory
-
-`write-project-profile.ps1 -WithMemory -WithArtifacts` creates:
-
-- `.codex-orchestrator/project.md`
-- `.codex-orchestrator/memory/decisions.md`
-- `.codex-orchestrator/memory/conventions.md`
-- `.codex-orchestrator/memory/risk-zones.md`
-- `.codex-orchestrator/memory/verification.md`
-- `.codex-orchestrator/memory/usp-ideas.md`
-- `.codex-orchestrator/memory/preferences.md`
-- `.codex-orchestrator/memory/mistakes.md`
-- `.codex-orchestrator/memory/self-update-proposals.md`
-- `.codex-orchestrator/patterns/`
-- `docs/forgemind/prd.md`
-- `docs/forgemind/epics.md`
-- `docs/forgemind/stories/_story-template.md`
-- `docs/forgemind/acceptance/_acceptance-template.md`
-- `.codex-orchestrator/workflow-status.md`
-- `.codex-orchestrator/workflow-graph.md`
-- `docs/forgemind/traceability.md`
-- `docs/forgemind/release-readiness.md`
-- `docs/forgemind/rollback-plan.md`
-- `docs/forgemind/differentiation-matrix.md`
-- `.codex-orchestrator/memory/usp-backlog.md`
-- `.codex-orchestrator/memory/outcome-memory.md`
-- `.codex-orchestrator/memory/verification-registry.md`
-
-## Installation
-
-Install directly from GitHub with `codex plugin marketplace add rweisssieker-xp/RW-Forgemind-Codex-Plugin`, then `codex plugin add forgemind@forgemind-marketplace`. The repository ships a lean Core runtime snapshot at `plugins/forgemind`; add `forgemind-trust-fabric@forgemind-marketplace` for the optional advanced workflows. Packaging and lifecycle tooling remain in the checksum-protected release archives.
-
-See `docs/INSTALL.md` for reload checks and `docs/WORKFLOWS.md` for operating workflows.
-
-For the complete user manual, see `docs/HANDBOOK.md`.
-
-## Dashboard
-
-After generating a project profile, memory, or verification report, run:
+## Install from GitHub
 
 ```text
-node bin/forgemind.mjs dashboard
+codex plugin marketplace add rweisssieker-xp/RW-Forgemind-Codex-Plugin --ref main
+codex plugin add forgemind@forgemind-marketplace
 ```
 
-The dashboard is written to `.codex-orchestrator/dashboard/index.html` and includes project profile, verification, learning log, memory, and patterns.
+To update an existing installation, refresh the marketplace checkout and reinstall:
+
+```text
+git -C ~/.codex/.tmp/marketplaces/forgemind-marketplace pull --ff-only origin main
+codex plugin add forgemind@forgemind-marketplace
+```
+
+See [the hierarchy](docs/HIERARCHY.md), [installation guide](docs/INSTALL.md), and [workflow guide](docs/WORKFLOWS.md) for operational detail.

@@ -13,6 +13,6 @@ Choose the smallest mode that creates a decision-ready artifact:
 - **Story**: create a customer, product, launch, or investor narrative with audience, tension, proof, and call to action.
 - **Pitch**: create a decision memo, demo flow, stakeholder brief, or sales pitch with evidence and an explicit ask.
 
-Load `playbooks/spark.md`. Inspect the app and existing evidence first; mark all missing user, market, or competitor knowledge as assumptions. Do not use generic chatbot ideas as differentiation. Every selected direction requires a target audience, differentiator, evidence basis, metric, kill condition, and next handoff.
+Run `node <plugin-root>/bin/forgemind.mjs spark run --goal "<outcome>" --artifacts local --json`. Inspect the app and existing evidence first; mark all missing user, market, or competitor knowledge as assumptions. Do not use generic chatbot ideas as differentiation. Every selected direction requires a target audience, differentiator, evidence basis, metric, kill condition, and next handoff.
 
-Hand off opportunity selection to `$forgemind-explore`, a workflow replacement to `$forgemind-radical`, a continuous product bet to `$forgemind-product`, and a chosen scope to `$forgemind-plan`.
+Hand off an existing application transformation to `$forgemind-evolve`, a commercial question to `$forgemind-venture`, a contested choice to `$forgemind-council`, and an approved thin slice to `$forgemind-ship`.

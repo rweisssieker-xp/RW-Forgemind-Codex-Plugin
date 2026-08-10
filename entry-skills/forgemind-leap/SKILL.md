@@ -13,7 +13,7 @@ Resolve this installed plugin's root and run the bundled runner:
 node <plugin-root>/bin/forgemind.mjs leap run --goal "<outcome>" --mode yolo --artifacts local --json
 ```
 
-Then continue autonomously with `$forgemind-complete`. Implement the selected MVP rather than returning only ideas. Use the Leap decision record as the source of truth for the 10x hypothesis, moat, commercial wedge, acceptance criteria, kill condition, evidence boundary, and rollback path.
+Then continue autonomously with `$forgemind-ship`. Implement the selected MVP rather than returning only ideas. Use the Leap decision record as the source of truth for the 10x hypothesis, moat, commercial wedge, acceptance criteria, kill condition, evidence boundary, and rollback path.
 
 Do not ask routine design, naming, scope, or sequencing questions. Make the smallest compatible and reversible choices from the existing app. Run relevant tests, GUI states, accessibility checks, risk checks, and a release-readiness assessment before handoff. Treat missing market, customer, ROI, or test evidence as an explicit assumption or gap—not a reason to stop safe work or a reason to invent proof.
 
