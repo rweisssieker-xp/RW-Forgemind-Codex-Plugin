@@ -12,6 +12,23 @@ import { planUiTesting } from './product-ops-lab.mjs';
 import { resolveWorkspace } from './paths.mjs';
 import { deriveProjectProfile, deriveVentureContext } from './project-profile.mjs';
 
+export async function runCompass({ workspace, goal }) {
+  const root = await resolveWorkspace(workspace);
+  const { outcome, goalSource } = resolveGoal(goal, 'compass');
+  const projectProfile = await deriveProjectProfile({ workspace: root });
+  const recommendedJourney = compassJourney(outcome);
+  const result = {
+    schemaVersion: 1, status: 'passed', generatedAt: new Date().toISOString(), goal: outcome, goalSource, projectProfile,
+    recommendedJourney, handoff: `$forgemind-${recommendedJourney}`,
+    rationale: `Compass selected ${recommendedJourney} from the stated outcome and the project profile; this is routing guidance, not a claim about customer demand.`,
+    nextAction: `Continue with $forgemind-${recommendedJourney} using the same outcome.`,
+    claimBoundary: 'Compass is a local routing recommendation. Any customer, market, pricing, or outcome claim remains evidence-labelled in the selected journey.',
+    artifactPath: '.codex-orchestrator/primary/compass-latest.json', errors: [],
+  };
+  await save(root, 'compass-latest.json', result);
+  return result;
+}
+
 export async function runSpark({ workspace, goal }) {
   const root = await resolveWorkspace(workspace);
   const { outcome, goalSource } = resolveGoal(goal, 'spark');
@@ -112,6 +129,7 @@ function resolveGoal(goal, journey) {
   return { outcome: ZERO_INPUT_DEFAULTS[journey], goalSource: 'zero-input-default' };
 }
 const ZERO_INPUT_DEFAULTS = {
+  compass: 'Choose the strongest safe ForgeMind journey for the current project and its highest-value unresolved outcome.',
   spark: 'Discover five radical AI product opportunities that eliminate the highest-friction workflow in this project.',
   evolve: 'Radically transform the highest-friction workflow in this existing application with an AI-central, reversible MVP.',
   venture: 'Validate the strongest available product opportunity with market evidence, USP differentiation, and a transparent business case.',
@@ -120,4 +138,13 @@ const ZERO_INPUT_DEFAULTS = {
   showcase: 'Create a truthful, proof-carrying narrative for the strongest available product opportunity.',
   ship: 'Implement and verify the smallest reversible MVP with the greatest measurable user impact.',
 };
+function compassJourney(goal) {
+  const value = String(goal).toLowerCase();
+  if (/market|price|pricing|business case|venture|segment|competitor|demand/.test(value)) return 'venture';
+  if (/implement|build|fix|test|release|ship|deploy/.test(value)) return 'ship';
+  if (/existing app|existing application|improve|transform|refactor/.test(value)) return 'evolve';
+  if (/idea|brainstorm|radical|innovative|disruptive/.test(value)) return 'spark';
+  if (/decide|decision|choose|trade-?off|risk/.test(value)) return 'council';
+  return 'leap';
+}
 async function save(workspace, name, value) { await writeJsonAtomic(artifactStatePath(workspace, 'primary', name), value); }

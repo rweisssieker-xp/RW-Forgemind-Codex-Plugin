@@ -59,6 +59,7 @@ Marketplace installation makes the skills available in Codex; it does not requir
 
 ```text
 node <plugin-root>/bin/forgemind.mjs leap run --goal "Eliminate manual case triage" --artifacts workspace --json
+node <plugin-root>/bin/forgemind.mjs compass run --goal "Choose the right ForgeMind journey" --artifacts workspace --json
 node <plugin-root>/bin/forgemind.mjs venture run --goal "Validate an AI triage copilot" --artifacts workspace --json
 node <plugin-root>/bin/forgemind.mjs ship plan --goal "Release a flagged, reversible MVP" --artifacts workspace --json
 ```

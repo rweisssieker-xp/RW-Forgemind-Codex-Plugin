@@ -35,3 +35,13 @@ test('an unknown command is invalid input with exit code 2', async () => {
   assert.equal(stdout.text(), '');
   assert.match(stderr.text(), /Unknown command: not-a-command/);
 });
+
+test('Compass has a portable CLI entrypoint and routes an explicit goal', async () => {
+  const stdout = outputBuffer();
+  const result = await runCli(['compass', '--workspace', process.cwd(), '--goal', 'validate a market opportunity and pricing', '--artifacts', 'none', '--json'], { stdout: stdout.stream, stderr: outputBuffer().stream });
+
+  assert.equal(result.exitCode, 0);
+  assert.equal(result.data.recommendedJourney, 'venture');
+  assert.equal(result.data.handoff, '$forgemind-venture');
+  assert.equal(result.data.goalSource, 'user');
+});

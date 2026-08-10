@@ -20,6 +20,7 @@ const PRIMARY_COMMANDS = [
   'outcome',
   'route',
   'signals',
+  'compass',
   'innovation',
   'leap',
   'spark',
@@ -241,6 +242,11 @@ export async function runCli(argv, context = {}) {
           ? await saveUspRecords({ workspace, records: createUspRecords(clusters) })
           : { schemaVersion: 1, status: 'passed', clusters, errors: [] };
       }
+    } else if (command === 'compass') {
+      const action = positionals[0] ?? 'run';
+      if (action !== 'run') throw invalidInput('FM_COMPASS_ACTION_INVALID', 'Compass supports run.');
+      const { runCompass } = await import('./primary-journeys.mjs');
+      data = await runCompass({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), goal: options.goal });
     } else if (command === 'leap') {
       const action = positionals[0] ?? 'run';
       const { continueLeap, getLeapStatus, runLeap } = await import('./leap.mjs');

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.33.2
+
+- Added the missing portable `compass run` CLI endpoint and documented the bundled runner so Marketplace users never need a global `forgemind` command.
+
 ## 1.33.1
 
 - Extended Venture profiling beyond operations projects with commerce and learning product models; all domains continue to fall back to repository-specific, evidence-labelled hypotheses rather than market facts.

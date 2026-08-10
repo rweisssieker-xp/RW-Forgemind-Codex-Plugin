@@ -9,6 +9,6 @@ When invoked without user text, load `playbooks/zero-input-defaults.md` and exec
 
 Inspect the existing application before proposing changes. Identify the current user job, needless steps, durable constraints, and the decisive outcome. Then run:
 
-`node <plugin-root>/bin/forgemind.mjs evolve run --goal "<outcome>" --artifacts local --json`
+`node <plugin-root>/bin/forgemind.mjs evolve run --goal "<outcome>" --artifacts workspace --json`
 
 Return five radical AI-central options, one selected reversible thin slice, a kill condition, and a handoff to Council and Ship. Treat repository context as project evidence, not as customer demand.

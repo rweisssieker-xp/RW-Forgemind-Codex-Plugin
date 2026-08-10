@@ -12,7 +12,7 @@ Leap is ForgeMind's autonomous product-disruption journey. It converts an outcom
 Resolve this installed plugin's root and run the bundled runner:
 
 ```text
-node <plugin-root>/bin/forgemind.mjs leap run --goal "<outcome>" --mode yolo --artifacts local --json
+node <plugin-root>/bin/forgemind.mjs leap run --goal "<outcome>" --mode yolo --artifacts workspace --json
 ```
 
 Then continue autonomously with `$forgemind-ship`. Implement the selected MVP rather than returning only ideas. Use the Leap decision record as the source of truth for the 10x hypothesis, moat, commercial wedge, acceptance criteria, kill condition, evidence boundary, and rollback path.
