@@ -40,7 +40,7 @@ Ship creates an implementation contract, user-experience state coverage, and ver
 
 `$forgemind-leap Turn this app or idea into a disruptive, tested MVP: <outcome>.`
 
-Leap joins app analysis, radical product selection, market and business-case assumptions, kill conditions, tester expectations, and the Ship handoff. Use `leap status` or `leap continue` after an interruption.
+Leap joins app analysis, radical product selection, market and business-case assumptions, kill conditions, tester expectations, and the Ship handoff. In YOLO mode, its Hero Loop controls the mission through four evidence-gated packets: `implement-thin-slice`, `functional-proof`, `experience-proof`, and `risk-and-release`. It continues routine work autonomously, retries failed packets within its repair budget, and stops only at a defined hard stop, exhausted repair budget, or evidence gate. Use `leap status`, `leap continue`, or `leap advance --packet <id> --outcome passed|failed --evidence <reference>` after an interruption.
 
 ## One-Session MVP Launch compatibility
 

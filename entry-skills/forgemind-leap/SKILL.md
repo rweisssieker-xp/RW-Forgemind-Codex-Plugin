@@ -17,6 +17,18 @@ node <plugin-root>/bin/forgemind.mjs leap run --goal "<outcome>" --mode yolo --a
 
 Then continue autonomously with `$forgemind-ship`. Implement the selected MVP rather than returning only ideas. Use the Leap decision record as the source of truth for the 10x hypothesis, moat, commercial wedge, acceptance criteria, kill condition, evidence boundary, and rollback path.
 
+## YOLO Hero Loop
+
+In YOLO mode, act as the persistent mission controller: autonomously execute the current ready packet, collect real evidence, and advance the mission. Do not stop after planning or hand off routine work back to the user.
+
+The ordered packets are: `implement-thin-slice`, `functional-proof`, `experience-proof`, and `risk-and-release`. After each real result, persist progress with:
+
+```text
+node <plugin-root>/bin/forgemind.mjs leap advance --packet "<packet-id>" --outcome passed --evidence "<test-or-review-reference>" --artifacts workspace --json
+```
+
+For a failed check, diagnose and repair autonomously, then record `--outcome failed` with the real failure evidence. The Hero Loop retries the current packet up to its repair budget and only escalates after that budget, a stated hard stop, or an explicit evidence gate. Never mark a packet complete without real test, review, GUI, accessibility, risk, or readiness evidence.
+
 Do not ask routine design, naming, scope, or sequencing questions. Make the smallest compatible and reversible choices from the existing app. Run relevant tests, GUI states, accessibility checks, risk checks, and a release-readiness assessment before handoff. Treat missing market, customer, ROI, or test evidence as an explicit assumption or gap—not a reason to stop safe work or a reason to invent proof.
 
 Stop only before secrets or credentials, production access, data deletion, irreversible migrations, external spend, legal or compliance commitments, or high-stakes decisions. State the exact boundary, complete all independent work, and request only the minimum decision needed to proceed.

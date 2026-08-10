@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.34.0
+
+- Added the YOLO Hero Loop: ordered, evidence-gated autonomous work packets with real-evidence requirements, bounded repair retries, resumable progress, and hard-stop escalation.
+
 ## 1.33.2
 
 - Added the missing portable `compass run` CLI endpoint and documented the bundled runner so Marketplace users never need a global `forgemind` command.

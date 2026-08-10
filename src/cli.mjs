@@ -249,12 +249,13 @@ export async function runCli(argv, context = {}) {
       data = await runCompass({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), goal: options.goal });
     } else if (command === 'leap') {
       const action = positionals[0] ?? 'run';
-      const { continueLeap, getLeapStatus, runLeap } = await import('./leap.mjs');
+      const { advanceLeap, continueLeap, getLeapStatus, runLeap } = await import('./leap.mjs');
       const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
       if (action === 'run') data = await runLeap({ workspace, goal: options.goal, mode: options.mode, autonomy: parseJson(options.autonomy, 'FM_LEAP_AUTONOMY_INVALID') });
       else if (action === 'continue') data = await continueLeap({ workspace });
       else if (action === 'status') data = await getLeapStatus({ workspace });
-      else throw invalidInput('FM_LEAP_ACTION_INVALID', 'Leap supports run, continue, and status.');
+      else if (action === 'advance') data = await advanceLeap({ workspace, packet: options.packet, outcome: options.outcome, evidence: splitList(options.evidence) });
+      else throw invalidInput('FM_LEAP_ACTION_INVALID', 'Leap supports run, continue, status, and advance.');
     } else if (['spark', 'evolve', 'venture', 'council', 'showcase', 'ship'].includes(command)) {
       const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
       const action = positionals[0] ?? (command === 'council' ? 'decide' : 'run');

@@ -9,6 +9,7 @@ import { createInnovationPortfolio } from './innovation-portfolio.mjs';
 import { createRadicalBlueprint, createRadicalPortfolio, createShadowModePlan } from './radical-product.mjs';
 import { markdownTable, publishProjectDocument } from './project-documents.mjs';
 import { deriveProjectProfile } from './project-profile.mjs';
+import { invalidInput } from './errors.mjs';
 
 const HARD_STOPS = ['secrets-or-credentials', 'production-access', 'data-deletion', 'irreversible-migration', 'external-spend', 'legal-or-compliance-commitment', 'high-stakes-decision'];
 
@@ -65,8 +66,9 @@ export async function runLeap({ workspace, goal, mode = 'yolo', autonomy = {} })
     completionContract,
     testerPlan: { panels: ['target-user', 'functional', 'accessibility', 'adversarial'], successRule: '4 of 5 qualified target users complete the core task and no critical finding remains.', decision: 'collect-evidence-before-scale' },
     uxBaseline: { states: ['loading', 'empty', 'error', 'success', 'keyboard', 'narrow-viewport', 'recovery'], rule: 'Capture browser and accessibility evidence for changed decisive tasks before release.' },
+    heroLoop: createHeroLoop(selectedMode, autonomy),
     phases: [{ id: 'select', state: 'completed' }, { id: 'implement', state: 'ready' }, { id: 'verify', state: 'blocked-by-evidence' }, { id: 'release', state: 'blocked-by-evidence' }],
-    nextAction: 'Continue autonomously with $forgemind-complete. Implement the selected reversible MVP, verify it, and report only at a hard stop or final handoff.',
+    nextAction: 'Hero Loop: implement the first ready work packet autonomously, record real evidence, repair failures within the packet budget, and report only at a hard stop or final handoff.',
     artifactPath: '.codex-orchestrator/leap/latest.json',
     errors: [],
   };
@@ -85,7 +87,29 @@ export async function getLeapStatus({ workspace }) {
 export async function continueLeap({ workspace }) {
   const state = await getLeapStatus({ workspace });
   if (state.status === 'missing') return state;
-  return { ...state, status: 'ready-for-autonomous-delivery', nextAction: next(state.leap), handoff: '$forgemind-ship', errors: [] };
+  const nextPacket = readyPacket(state.leap.heroLoop);
+  return { ...state, status: 'ready-for-autonomous-delivery', nextPacket, nextAction: nextPacket ? `Hero Loop: ${nextPacket.instruction}` : next(state.leap), handoff: '$forgemind-ship', errors: [] };
+}
+
+export async function advanceLeap({ workspace, packet, outcome, evidence = [] }) {
+  const root = await resolveWorkspace(workspace);
+  const state = await getLeapStatus({ workspace: root });
+  if (state.status === 'missing') return state;
+  const record = state.leap; const heroLoop = record.heroLoop;
+  if (!heroLoop?.enabled) throw invalidInput('FM_LEAP_HERO_DISABLED', 'Hero Loop is available only for YOLO mode.');
+  const current = readyPacket(heroLoop);
+  if (!current || current.id !== packet) throw invalidInput('FM_LEAP_PACKET_ORDER', `Expected ready packet: ${current?.id ?? 'none'}.`);
+  const normalizedEvidence = Array.isArray(evidence) ? evidence.map(String).filter(Boolean) : [];
+  const result = String(outcome ?? '').toLowerCase();
+  if (!['passed', 'failed'].includes(result)) throw invalidInput('FM_LEAP_OUTCOME_INVALID', '--outcome must be passed or failed.');
+  if (!normalizedEvidence.length) throw invalidInput('FM_LEAP_EVIDENCE_REQUIRED', 'Hero Loop advancement requires at least one real evidence reference.');
+  if (result === 'passed') { current.state = 'completed'; current.completedAt = new Date().toISOString(); current.evidence = normalizedEvidence; unlockNext(heroLoop); }
+  else { current.attempts += 1; current.failures.push({ at: new Date().toISOString(), evidence: normalizedEvidence }); if (current.attempts >= heroLoop.maxRepairAttempts) { current.state = 'blocked'; heroLoop.status = 'hard-stop'; heroLoop.blocker = `Repair budget exhausted for ${current.id}; provide a human decision or narrower scope.`; } else { current.state = 'ready'; heroLoop.status = 'repairing'; heroLoop.lastRecovery = `Repair ${current.id} using the recorded failed evidence before advancing.`; } }
+  const nextPacket = readyPacket(heroLoop);
+  if (!nextPacket && !heroLoop.blocker) heroLoop.status = 'evidence-gate';
+  record.updatedAt = new Date().toISOString();
+  await writeJsonAtomic(artifactStatePath(root, 'leap', 'latest.json'), record);
+  return { schemaVersion: 1, status: heroLoop.status === 'hard-stop' ? 'blocked' : 'ready-for-autonomous-delivery', heroLoop, nextPacket, nextAction: heroLoop.status === 'repairing' ? heroLoop.lastRecovery : nextPacket ? `Hero Loop: ${nextPacket.instruction}` : 'Collect the remaining human validation and release evidence before scaling.', errors: [] };
 }
 
 function summarizeBet(idea) {
@@ -95,6 +119,21 @@ function summarizeBet(idea) {
 function summarizeCommercialWedge(candidate) {
   return { id: candidate.id, title: candidate.title, thesis: candidate.thesis, monetization: candidate.monetization, moat: candidate.moat, killCondition: candidate.killCondition, evidenceBasis: candidate.evidenceBasis, score: candidate.score };
 }
+
+function createHeroLoop(mode, autonomy) {
+  const enabled = mode === 'yolo';
+  const packets = [
+    packet('implement-thin-slice', 'Implement the selected reversible thin slice behind the required flag or recovery path.', 'The selected workflow replacement is implemented and reversible.'),
+    packet('functional-proof', 'Run the smallest relevant automated and unhappy-path checks; repair failures before moving on.', 'Relevant functional checks have recorded results.'),
+    packet('experience-proof', 'Verify decisive GUI states, keyboard path, narrow viewport, and accessibility evidence.', 'Critical experience states have recorded evidence or explicit gaps.'),
+    packet('risk-and-release', 'Run risk and readiness checks, document rollback, and prepare the bounded release handoff.', 'Release readiness and rollback evidence are recorded.'),
+  ];
+  if (enabled) packets[0].state = 'ready';
+  return { enabled, status: enabled ? 'active' : 'guided', maxRepairAttempts: finite(autonomy.maxRepairAttempts, 2), packets };
+}
+function packet(id, instruction, acceptance) { return { id, instruction, acceptance, state: 'pending', attempts: 0, evidence: [], failures: [] }; }
+function readyPacket(heroLoop) { return heroLoop?.packets?.find((item) => item.state === 'ready') ?? null; }
+function unlockNext(heroLoop) { const pending = heroLoop.packets.find((item) => item.state === 'pending'); if (pending) pending.state = 'ready'; else heroLoop.status = 'evidence-gate'; }
 
 function renderDecision(record) {
   const selected = record.selectedBet;

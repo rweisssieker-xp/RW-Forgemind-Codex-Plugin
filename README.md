@@ -24,7 +24,7 @@ Use **Leap** for fast autonomous MVP work:
 $forgemind-leap Analyze this existing app, select the strongest disruptive AI opportunity, and implement the tested, reversible MVP autonomously. Do not ask routine questions; pause only for safety, production, legal, or cost decisions.
 ```
 
-Leap analyzes the repository, creates radical alternatives, calculates an evidence-labelled opportunity and business case, selects a reversible bet with a kill condition, and hands delivery to the completion path. It never claims that an assumption is market evidence.
+Leap analyzes the repository, creates radical alternatives, calculates an evidence-labelled opportunity and business case, selects a reversible bet with a kill condition, and drives delivery through a YOLO Hero Loop. The loop advances implementation, functional proof, experience proof, and risk/release readiness as evidence-gated work packets; it retries bounded failures autonomously and never claims that an assumption is market evidence.
 
 ## What makes it different
 
