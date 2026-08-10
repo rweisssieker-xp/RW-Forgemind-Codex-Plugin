@@ -6,30 +6,30 @@ import test from 'node:test';
 
 import { runCli } from '../src/cli.mjs';
 
-test('Radical defaults to a stable external artifact root and none leaves the project clean', async () => {
+test('Radical defaults to a stable project-local artifact root and none leaves the project clean', async () => {
   const workspace = await mkdtemp(path.join(tmpdir(), 'forgemind-artifact-policy-'));
   try {
     const first = await runCli(['radical', 'analyze', '--workspace', workspace], { stdout: sink(), stderr: sink() });
     const second = await runCli(['radical', 'analyze', '--workspace', workspace], { stdout: sink(), stderr: sink() });
-    assert.equal(first.data.artifactMode, 'local');
+    assert.equal(first.data.artifactMode, 'workspace');
     assert.equal(first.data.artifactPath, second.data.artifactPath);
-    assert.match(first.data.artifactPath, /[\\/]\.cache[\\/]forgemind[\\/]workspaces[\\/]/);
-    await assert.rejects(access(path.join(workspace, '.codex-orchestrator')));
+    assert.ok(first.data.artifactPath.startsWith(path.join(workspace, '.codex-orchestrator')));
+    await access(path.join(workspace, '.codex-orchestrator'));
 
     const completion = await runCli(['complete', '--workspace', workspace, '--goal', 'keep every generated artifact external'], { stdout: sink(), stderr: sink() });
-    assert.equal(completion.data.artifactMode, 'local');
-    await assert.rejects(access(path.join(workspace, '.codex-orchestrator')));
+    assert.equal(completion.data.artifactMode, 'workspace');
+    await access(path.join(workspace, '.codex-orchestrator'));
 
     const ephemeral = await runCli(['radical', 'analyze', '--workspace', workspace, '--artifacts', 'none'], { stdout: sink(), stderr: sink() });
     assert.equal(ephemeral.data.artifactMode, 'none');
     assert.equal(ephemeral.data.artifactPath, null);
-    await assert.rejects(access(path.join(workspace, '.codex-orchestrator')));
+    await access(path.join(workspace, '.codex-orchestrator'));
   } finally {
     await rm(workspace, { recursive: true, force: true });
   }
 });
 
-test('decision records are published in the app project while generated state remains external', async () => {
+test('decision records and generated state stay in the app project by default', async () => {
   const workspace = await mkdtemp(path.join(tmpdir(), 'forgemind-decision-documents-'));
   try {
     const context = { stdout: sink(), stderr: sink() };
@@ -43,11 +43,11 @@ test('decision records are published in the app project while generated state re
     assert.match(await readFile(path.join(workspace, 'docs', 'forgemind', 'market-opportunity.md'), 'utf8'), /Market chance/);
     assert.match(await readFile(path.join(workspace, 'docs', 'forgemind', 'financial-model.md'), 'utf8'), /Scenarios/);
     assert.match(await readFile(path.join(workspace, 'docs', 'forgemind', 'product-bet.md'), 'utf8'), /Recommended bet/);
-    await assert.rejects(access(path.join(workspace, '.codex-orchestrator')));
+    await access(path.join(workspace, '.codex-orchestrator'));
 
     const oneShot = await runCli(['finance', '--workspace', workspace, '--artifacts', 'none'], context);
     assert.deepEqual(oneShot.data.projectDocuments, []);
-    await assert.rejects(access(path.join(workspace, '.codex-orchestrator')));
+    await access(path.join(workspace, '.codex-orchestrator'));
   } finally {
     await rm(workspace, { recursive: true, force: true });
   }

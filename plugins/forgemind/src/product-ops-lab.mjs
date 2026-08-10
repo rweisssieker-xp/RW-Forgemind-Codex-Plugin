@@ -24,20 +24,20 @@ export async function recordResearch({ workspace, input, source = 'manual-resear
     title: required(entry.title, 'title'), url: required(entry.url, 'url'), claim: required(entry.claim, 'claim'),
     publishedAt: entry.publishedAt ?? null, retrievedAt: entry.retrievedAt ?? new Date().toISOString(),
     source: entry.source ?? source, evidenceType: entry.evidenceType ?? 'secondary', confidence: bounded(entry.confidence, 0.5),
-    limitations: array(entry.limitations),
+    limitations: array(entry.limitations), commercial: object(entry.commercial),
   }));
   const result = { schemaVersion: 1, status: 'recorded', importedAt: new Date().toISOString(), records, claimBoundary: 'Imported sources support only their stated claims; validate customer fit and current relevance before deciding.', errors: [] };
   await save(root, 'research-latest.json', result);
   return result;
 }
 
-export async function createFinancialModel({ workspace, options = {} }) {
+export async function createFinancialModel({ workspace, options = {}, projectProfile = null }) {
   const root = await resolveWorkspace(workspace);
-  const base = assumptions(options);
+  const { values: base, sources: assumptionSources } = assumptions(options, projectProfile);
   const scenarios = [
     ['conservative', 0.65, 1.25, 1.3], ['base', 1, 1, 1], ['upside', 1.35, 0.85, 0.8],
   ].map(([name, revenueFactor, churnFactor, cacFactor]) => scenario(name, base, revenueFactor, churnFactor, cacFactor));
-  const result = { schemaVersion: 1, status: 'passed', generatedAt: new Date().toISOString(), assumptions: base, scenarios, decisionRule: 'Proceed only if the conservative scenario reaches contribution-positive acquisition inside the available runway.', claimBoundary: 'Financial outputs are scenario calculations from explicit assumptions, not forecasts or investment advice.', errors: [] };
+  const result = { schemaVersion: 1, status: 'passed', generatedAt: new Date().toISOString(), assumptions: base, assumptionSources, scenarios, decisionRule: 'Proceed only if the conservative scenario reaches contribution-positive acquisition inside the available runway.', claimBoundary: 'Financial outputs are scenario calculations from explicit assumptions, not forecasts or investment advice.', errors: [] };
   const document = await publishProjectDocument({ workspace: root, name: 'financial-model.md', title: 'Financial Model', body: renderFinancialModel(result) });
   if (document) result.projectDocuments = ['docs/forgemind/financial-model.md'];
   await save(root, 'financial-model-latest.json', result);
@@ -46,7 +46,8 @@ export async function createFinancialModel({ workspace, options = {} }) {
 
 function renderFinancialModel(result) {
   const scenarioRows = result.scenarios.map((item) => ({ scenario: item.name, annualRevenue: item.annualRevenue, grossProfit: item.grossProfit, twelveMonthNet: item.twelveMonthNet, ltvToCac: item.ltvToCac ?? 'n/a', viabilityScore: item.viabilityScore }));
-  return `## Decision rule\n\n${result.decisionRule}\n\n## Scenarios\n\n${markdownTable(scenarioRows)}\n\n## Assumptions\n\n\`\`\`json\n${JSON.stringify(result.assumptions, null, 2)}\n\`\`\`\n\n## Boundary\n\n${result.claimBoundary}`;
+  const sources = Object.entries(result.assumptionSources).map(([field, item]) => ({ field, value: item.value, source: item.source, evidence: item.evidence }));
+  return `## Decision rule\n\n${result.decisionRule}\n\n## Scenarios\n\n${markdownTable(scenarioRows)}\n\n## Assumption sources\n\n${markdownTable(sources)}\n\n## Assumptions\n\n\`\`\`json\n${JSON.stringify(result.assumptions, null, 2)}\n\`\`\`\n\n## Boundary\n\n${result.claimBoundary}`;
 }
 
 export async function recordTelemetry({ workspace, input, source = 'manual-export' }) {
@@ -120,7 +121,17 @@ export async function stageTestRepair({ workspace, failure, replacement }) {
   await save(root, 'staged-test-repair-latest.json', result); return result;
 }
 
-function assumptions(o) { return { addressableAccounts: numeric(o['market-size'], 1000), monthlyPrice: numeric(o.price, 50), grossMarginPercent: numeric(o['gross-margin'], 75), monthlyChurnPercent: numeric(o.churn, 3), customerAcquisitionCost: numeric(o.cac, 400), salesCycleMonths: numeric(o['sales-cycle'], 2), buildCost: numeric(o['build-cost'], 25000), monthlyRunCost: numeric(o['monthly-cost'], 1500), monthlyNewCustomers: numeric(o['new-customers'], 8), startingCustomers: numeric(o['starting-customers'], 0) }; }
+function assumptions(o, profile) {
+  const mappings = { addressableAccounts: 'market-size', monthlyPrice: 'price', grossMarginPercent: 'gross-margin', monthlyChurnPercent: 'churn', customerAcquisitionCost: 'cac', salesCycleMonths: 'sales-cycle', buildCost: 'build-cost', monthlyRunCost: 'monthly-cost', monthlyNewCustomers: 'new-customers', startingCustomers: 'starting-customers' };
+  const values = {}; const sources = {};
+  for (const [key, option] of Object.entries(mappings)) {
+    const explicit = Number(o[option]); const derived = profile?.commercialAssumptions?.[key];
+    if (Number.isFinite(explicit)) { values[key] = Math.max(0, explicit); sources[key] = { value: values[key], source: 'cli', evidence: 'observed', input: `--${option}` }; }
+    else if (derived && Number.isFinite(Number(derived.value))) { values[key] = Math.max(0, Number(derived.value)); sources[key] = { value: values[key], source: derived.evidence === 'observed' ? 'project-evidence' : derived.evidence === 'inferred' ? 'project-inference' : 'assumption', evidence: derived.evidence, inputs: derived.sources }; }
+    else { values[key] = numeric(undefined, 0); sources[key] = { value: values[key], source: 'assumption', evidence: 'missing', inputs: ['no project or CLI value'] }; }
+  }
+  return { values, sources };
+}
 function scenario(name, a, revenueFactor, churnFactor, cacFactor) {
   const acquired = a.monthlyNewCustomers * 12 * revenueFactor;
   const churned = (a.startingCustomers + acquired / 2) * (a.monthlyChurnPercent / 100) * 12 * churnFactor;

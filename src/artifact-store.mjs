@@ -1,6 +1,5 @@
-import { createHash } from 'node:crypto';
 import { mkdtemp, rm } from 'node:fs/promises';
-import { homedir, tmpdir } from 'node:os';
+import { tmpdir } from 'node:os';
 import path from 'node:path';
 
 import { ForgeMindError } from './errors.mjs';
@@ -8,7 +7,7 @@ import { assertContained, clearArtifactRedirection, resolveWorkspace, setArtifac
 
 let active = null;
 
-export async function activateArtifactStore({ workspace, mode = 'local', artifactDir } = {}) {
+export async function activateArtifactStore({ workspace, mode = 'workspace', artifactDir } = {}) {
   const projectRoot = await resolveWorkspace(workspace);
   const selectedMode = String(mode ?? 'local').toLowerCase();
   if (!['local', 'workspace', 'none'].includes(selectedMode)) {
@@ -21,19 +20,18 @@ export async function activateArtifactStore({ workspace, mode = 'local', artifac
     throw new ForgeMindError('FM_ARTIFACT_OPTIONS_CONFLICT', '--artifact-dir cannot be combined with --artifacts none.');
   }
 
+  const projectLocal = selectedMode === 'local' ? 'workspace' : selectedMode;
   const basePath = artifactDir
     ? path.resolve(artifactDir)
-    : selectedMode === 'workspace'
+    : projectLocal === 'workspace'
       ? projectRoot
-      : selectedMode === 'local'
-        ? path.join(homedir(), '.cache', 'forgemind', 'workspaces', projectId(projectRoot))
-        : await mkdtemp(path.join(tmpdir(), 'forgemind-'));
+      : await mkdtemp(path.join(tmpdir(), 'forgemind-'));
   active = {
     projectRoot,
-    mode: artifactDir ? 'custom' : selectedMode,
+    mode: artifactDir ? 'custom' : projectLocal,
     basePath,
-    stateRoot: selectedMode === 'workspace' && !artifactDir ? path.join(projectRoot, '.codex-orchestrator') : path.join(basePath, '.codex-orchestrator'),
-    temporary: selectedMode === 'none',
+    stateRoot: projectLocal === 'workspace' && !artifactDir ? path.join(projectRoot, '.codex-orchestrator') : path.join(basePath, '.codex-orchestrator'),
+    temporary: projectLocal === 'none',
   };
   setArtifactRedirection(active.projectRoot, active.stateRoot);
   return metadata();
@@ -70,9 +68,4 @@ export function addArtifactMetadata(data) {
 
 function metadata() {
   return active ? { artifactMode: active.mode, artifactPath: active.temporary ? null : active.stateRoot } : { artifactMode: 'workspace', artifactPath: null };
-}
-
-function projectId(projectRoot) {
-  const normalized = process.platform === 'win32' ? projectRoot.toLowerCase() : projectRoot;
-  return createHash('sha256').update(normalized).digest('hex').slice(0, 20);
 }

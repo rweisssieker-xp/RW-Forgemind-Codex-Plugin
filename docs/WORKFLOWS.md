@@ -22,6 +22,8 @@ Evolve reads repository structure first, identifies the current workflow, create
 
 Venture combines explicit inputs, imported evidence, market chance, conservative/base/upside financial scenarios, and discovery needs. Its output is not an investment forecast.
 
+Venture derives a per-project profile from `package.json`, `README.md`, relevant `docs/forgemind/` records, source and integration signals, and local ForgeMind research, telemetry, and outcomes. It stores the profile at `.codex-orchestrator/project-profile.json`. Each profile field and financial input has an `observed`, `inferred`, `assumption`, or `missing` evidence label. Precedence is: explicit CLI value, structured imported evidence or telemetry, local ForgeMind configuration, then a conservative project-derived assumption. Missing evidence is listed with its effect on validation and scenarios.
+
 ## Council: decide
 
 `$forgemind-council Decide whether to <outcome>.`
@@ -46,4 +48,4 @@ Leap joins app analysis, radical product selection, market and business-case ass
 
 ## Artifact policy
 
-All commands default to `--artifacts local`. Detailed generated state is external; concise reviewed documents are published in the target project under `docs/forgemind/`. `--artifacts workspace` is explicit opt-in; `--artifacts none` leaves no persistent artifacts.
+All commands default to `--artifacts workspace`. Detailed generated state is stored in the target project under `.codex-orchestrator/`; concise reviewed documents are published in the same project under `docs/forgemind/`. `--artifacts local` remains a compatible alias. `--artifacts none` leaves no persistent artifacts. ForgeMind never writes generated state into its installed plugin directory.

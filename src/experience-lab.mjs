@@ -9,22 +9,24 @@ import { artifactStatePath } from './artifact-store.mjs';
 import { inspectProject } from './project.mjs';
 import { listSignals } from './signals.mjs';
 import { publishProjectDocument } from './project-documents.mjs';
+import { deriveProjectProfile, deriveVentureContext } from './project-profile.mjs';
 
-export async function createOpportunityCase({ workspace, goal, options = {} }) {
+export async function createOpportunityCase({ workspace, goal, options = {}, projectProfile = null, ventureContext = null }) {
   const root = await resolveWorkspace(workspace);
-  const profile = await inspectProject(root);
+  const [profile, derivedProfile] = await Promise.all([inspectProject(root), projectProfile ? Promise.resolve(projectProfile) : deriveProjectProfile({ workspace: root })]);
+  const context = ventureContext ?? deriveVentureContext(derivedProfile);
   const signals = await listSignals({ workspace: root });
-  const score = marketChanceScore(options, signals.length, profile.stacks.length);
-  const businessCase = calculateBusinessCase(options);
+  const score = marketChanceScore(options, signals.length, profile.stacks.length, derivedProfile);
+  const businessCase = calculateBusinessCase(options, derivedProfile);
   const result = {
     schemaVersion: 1, status: 'passed', generatedAt: new Date().toISOString(),
     goal: String(goal ?? '').trim() || 'improve a high-friction user task',
     evidence: {
-      basis: signals.length ? 'project-and-external-signals' : 'project-profile-assumptions',
+      basis: signals.length ? 'project-and-imported-signals' : 'project-profile-assumptions',
       signalCount: signals.length,
       note: signals.length ? 'Market chance uses imported signals and explicit assumptions.' : 'No customer signals are present; market chance and business case are illustrative assumptions, not market facts.',
     },
-    marketChance: score,
+    projectProfile: derivedProfile, ventureContext: context, marketChance: score,
     businessCase,
     recommendation: score.total >= 70 && businessCase.twelveMonthNet > 0 ? 'validate-with-qualified-users' : 'refine-assumptions-before-build',
     artifactPath: '.codex-orchestrator/experience/opportunity-case-latest.json', errors: [],
@@ -131,20 +133,29 @@ export async function createTrustworthyDemo({ workspace, title }) {
   return result;
 }
 
-function marketChanceScore(options, signals, stacks) {
-  const dimensions = { pain: number(options.pain, signals ? 75 : 50), frequency: number(options.frequency, signals ? 70 : 45), willingnessToPay: number(options['willingness-to-pay'], 55), reach: number(options.reach, 50), differentiation: number(options.differentiation, 65), feasibility: number(options.feasibility, 65 + Math.min(stacks * 3, 15)), evidence: Math.min(100, 25 + signals * 15) };
+function marketChanceScore(options, signals, stacks, profile) {
+  const categoryBias = { 'enterprise-operations': { reach: 35, feasibility: 62 }, 'creator-saas': { reach: 60, feasibility: 72 }, 'developer-tools': { reach: 48, feasibility: 70 }, 'b2b-software': { reach: 50, feasibility: 65 } }[profile.productCategory.value] ?? { reach: 50, feasibility: 65 };
+  const dimensions = { pain: number(options.pain, signals ? 75 : 50), frequency: number(options.frequency, signals ? 70 : 45), willingnessToPay: number(options['willingness-to-pay'], 55), reach: number(options.reach, categoryBias.reach), differentiation: number(options.differentiation, 65), feasibility: number(options.feasibility, categoryBias.feasibility + Math.min(stacks * 3, 15)), evidence: Math.min(100, 25 + signals * 15) };
   const weights = { pain: 0.2, frequency: 0.15, willingnessToPay: 0.15, reach: 0.1, differentiation: 0.15, feasibility: 0.1, evidence: 0.15 };
   const total = Math.round(Object.entries(weights).reduce((sum, [key, weight]) => sum + dimensions[key] * weight, 0));
-  return { dimensions, total, band: total >= 75 ? 'strong' : total >= 55 ? 'promising' : 'weak', confidence: signals ? 'signal-informed' : 'assumption-led' };
+  return { dimensions, total, band: total >= 75 ? 'strong' : total >= 55 ? 'promising' : 'weak', confidence: signals ? 'signal-informed' : 'assumption-led', evidence: Object.fromEntries(Object.keys(dimensions).map((key) => [key, Number.isFinite(Number(options[key])) ? 'observed' : 'assumption'])) };
 }
 
-function calculateBusinessCase(options) {
-  const assumptions = { addressableAccounts: number(options['market-size'], 1000), penetrationPercent: number(options.penetration, 2), monthlyPrice: number(options.price, 50), grossMarginPercent: number(options['gross-margin'], 75), buildCost: number(options['build-cost'], 25000), monthlyRunCost: number(options['monthly-cost'], 1500) };
+function calculateBusinessCase(options, profile) {
+  const mappings = { addressableAccounts: 'market-size', monthlyPrice: 'price', grossMarginPercent: 'gross-margin', buildCost: 'build-cost', monthlyRunCost: 'monthly-cost' };
+  const assumptionSources = {}; const assumptions = {};
+  for (const [key, flag] of Object.entries(mappings)) {
+    const explicit = Number(options[flag]); const derived = profile.commercialAssumptions[key];
+    assumptions[key] = Number.isFinite(explicit) ? Math.max(0, explicit) : derived.value;
+    assumptionSources[key] = Number.isFinite(explicit) ? { source: 'cli', evidence: 'observed', input: `--${flag}` } : { source: derived.evidence === 'observed' ? 'project-evidence' : derived.evidence === 'inferred' ? 'project-inference' : 'assumption', evidence: derived.evidence, inputs: derived.sources };
+  }
+  assumptions.penetrationPercent = number(options.penetration, 2);
+  assumptionSources.penetrationPercent = Number.isFinite(Number(options.penetration)) ? { source: 'cli', evidence: 'observed', input: '--penetration' } : { source: 'assumption', evidence: 'assumption', inputs: ['no observed penetration evidence'] };
   const annualRevenue = assumptions.addressableAccounts * (assumptions.penetrationPercent / 100) * assumptions.monthlyPrice * 12;
   const grossProfit = annualRevenue * (assumptions.grossMarginPercent / 100);
   const twelveMonthNet = grossProfit - assumptions.buildCost - (assumptions.monthlyRunCost * 12);
   const monthlyContribution = (annualRevenue / 12) * (assumptions.grossMarginPercent / 100) - assumptions.monthlyRunCost;
-  return { assumptions, annualRevenue: round(annualRevenue), grossProfit: round(grossProfit), twelveMonthNet: round(twelveMonthNet), roiPercent: assumptions.buildCost ? round((twelveMonthNet / assumptions.buildCost) * 100) : null, breakEvenMonths: monthlyContribution > 0 ? round(assumptions.buildCost / monthlyContribution) : null, confidence: 'illustrative-until-validated', requiredValidation: ['Confirm buyer segment and reachable accounts.', 'Validate price and willingness to pay.', 'Measure build and operating cost with the selected architecture.'] };
+  return { assumptions, assumptionSources, annualRevenue: round(annualRevenue), grossProfit: round(grossProfit), twelveMonthNet: round(twelveMonthNet), roiPercent: assumptions.buildCost ? round((twelveMonthNet / assumptions.buildCost) * 100) : null, breakEvenMonths: monthlyContribution > 0 ? round(assumptions.buildCost / monthlyContribution) : null, confidence: 'illustrative-until-validated', requiredValidation: ['Confirm buyer segment and reachable accounts.', 'Validate price and willingness to pay.', 'Measure build and operating cost with the selected architecture.'] };
 }
 
 function number(value, fallback) { const parsed = Number(value); return Number.isFinite(parsed) ? Math.max(0, parsed) : fallback; }

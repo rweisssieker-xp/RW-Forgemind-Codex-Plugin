@@ -15,8 +15,9 @@ test('the primary journeys produce decision-ready, evidence-labelled outputs', a
       const result = await runCli([command, action, '--workspace', workspace, '--goal', 'eliminate manual case triage', '--json'], context());
       assert.equal(result.exitCode, 0, `${command} should complete`);
       assert.equal(result.data.status, 'passed');
-      assert.equal(result.data.artifactMode, 'local');
-      assert.match(result.data.artifactPath, /[\\/]\.cache[\\/]forgemind[\\/]/);
+      assert.equal(result.data.artifactMode, 'workspace');
+      assert.ok(result.data.artifactPath.startsWith(path.join(workspace, '.codex-orchestrator')));
+      assert.ok(result.data.projectProfile, `${command} should use the shared project profile`);
     }
     const venture = await runCli(['venture', 'run', '--workspace', workspace, '--goal', 'case triage', '--json'], context());
     assert.match(venture.data.claimBoundary, /not market facts/i);

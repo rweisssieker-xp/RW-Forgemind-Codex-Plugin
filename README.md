@@ -34,22 +34,22 @@ Leap analyzes the repository, creates radical alternatives, calculates an eviden
 - **Kill conditions:** every material bet has a measurable reason to stop.
 - **Fast with guardrails:** YOLO-style delivery continues autonomously until a genuine hard stop.
 - **Evidence-native:** decisions, tests, risks, dissent, and release claims are visibly separated from assumptions.
-- **Clean distribution:** normal use never writes generated state into the installed plugin.
+- **Clean distribution:** generated state always stays in the target project, never in the installed plugin.
 
 ## Clean artifact storage
 
-By default, generated ForgeMind state goes to:
+By default, every generated ForgeMind state file goes to the target project:
 
 ```text
-~/.cache/forgemind/workspaces/<stable-project-id>/.codex-orchestrator/
+<target-project>/.codex-orchestrator/
 ```
 
-The target app remains the source for inspection, implementation, tests, and signals. Durable, human-readable decisions are written only to `docs/forgemind/` in that target app. Nothing is written to the installed plugin directory.
+The target app remains the source for inspection, implementation, tests, signals, and generated state. Durable, human-readable decisions are written to `docs/forgemind/` in that same target app. Nothing is written to the installed plugin directory.
 
-- `--artifacts local` is the default.
-- `--artifacts workspace` opts into repository-local generated state.
+- `--artifacts workspace` is the default.
+- `--artifacts local` is a backwards-compatible alias for `workspace`.
 - `--artifacts none` returns one-shot JSON without persistence.
-- `--artifact-dir <absolute-path>` selects an explicit external artifact root.
+- `--artifact-dir <absolute-path>` is an explicit advanced override; it never targets the plugin installation.
 
 Every JSON response includes `artifactMode` and absolute `artifactPath`.
 
@@ -58,9 +58,9 @@ Every JSON response includes `artifactMode` and absolute `artifactPath`.
 Marketplace installation makes the skills available in Codex; it does not require a global shell command. The portable runner is:
 
 ```text
-node <plugin-root>/bin/forgemind.mjs leap run --goal "Eliminate manual case triage" --artifacts local --json
-node <plugin-root>/bin/forgemind.mjs venture run --goal "Validate an AI triage copilot" --artifacts local --json
-node <plugin-root>/bin/forgemind.mjs ship plan --goal "Release a flagged, reversible MVP" --artifacts local --json
+node <plugin-root>/bin/forgemind.mjs leap run --goal "Eliminate manual case triage" --artifacts workspace --json
+node <plugin-root>/bin/forgemind.mjs venture run --goal "Validate an AI triage copilot" --artifacts workspace --json
+node <plugin-root>/bin/forgemind.mjs ship plan --goal "Release a flagged, reversible MVP" --artifacts workspace --json
 ```
 
 From a source checkout, the equivalent maintainer command is `node bin/forgemind.mjs`. The legacy `launch-mvp` CLI remains available for a resumable, staged MVP launch and tester-evidence loop; new work should start through Leap or Ship.

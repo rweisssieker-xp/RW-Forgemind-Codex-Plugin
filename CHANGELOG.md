@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.33.0
+
+- Made generated ForgeMind state project-local by default at `.codex-orchestrator/`; `--artifacts local` is now a compatible alias for `workspace`, and the installed plugin is never used for output state.
+- Added an isolated, evidence-labelled project profile for Venture and all primary journeys, using repository, ForgeMind research, telemetry, outcomes, and local configuration signals.
+- Made Venture pricing, accounts, sales cycle, CAC, churn, build/run cost, go-to-market, and validation hypotheses project-specific with explicit source labels and evidence gaps.
+
 ## [1.32.1] - 2026-08-10
 
 - Strengthened the automatic trigger descriptions for Compass, Evolve, and Ship without changing journey behavior.

@@ -6,7 +6,7 @@ import test from 'node:test';
 
 import { runCli } from '../src/cli.mjs';
 
-test('Leap creates a disruption-first, evidence-labelled MVP contract without project-local state', async () => {
+test('Leap creates a disruption-first, evidence-labelled MVP contract with project-local state', async () => {
   const workspace = await mkdtemp(path.join(tmpdir(), 'forgemind-leap-'));
   try {
     const result = await runCli(['leap', 'run', '--workspace', workspace, '--goal', 'eliminate manual case triage', '--mode', 'yolo', '--json'], context());
@@ -24,9 +24,9 @@ test('Leap creates a disruption-first, evidence-labelled MVP contract without pr
     assert.equal(result.data.completionContract.executionPolicy.continueByDefault, true);
     const resumed = await runCli(['leap', 'continue', '--workspace', workspace, '--json'], context());
     assert.equal(resumed.data.handoff, '$forgemind-ship');
-    assert.equal(result.data.artifactMode, 'local');
-    assert.match(result.data.artifactPath, /[\\/]\.cache[\\/]forgemind[\\/]/);
-    await assert.rejects(access(path.join(workspace, '.codex-orchestrator')));
+    assert.equal(result.data.artifactMode, 'workspace');
+    assert.ok(result.data.artifactPath.startsWith(path.join(workspace, '.codex-orchestrator')));
+    await access(path.join(workspace, '.codex-orchestrator'));
     assert.match(await readFile(path.join(workspace, 'docs', 'forgemind', 'leap-decision.md'), 'utf8'), /Leap Decision/);
   } finally {
     await rm(workspace, { recursive: true, force: true });

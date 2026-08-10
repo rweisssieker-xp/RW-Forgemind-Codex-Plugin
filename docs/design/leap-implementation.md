@@ -23,7 +23,7 @@
 - Produces `runLeap({ workspace, goal, mode }): Promise<LeapRecord>`.
 - Consumes `scanAppIntelligence`, `createInnovationPortfolio`, `createRadicalPortfolio`, `createOpportunityCase`, `createExperienceCanvas`, `createCompletionContract`, and `createRadicalBlueprint`.
 
-- [ ] Write a failing test proving Leap creates five radical alternatives, an automatic selected bet plus contrarian, market/business-case evidence labels, kill condition, rollback boundary, completion contract, and no project-local state under `--artifacts local`.
+- [ ] Write a failing test proving Leap creates five radical alternatives, an automatic selected bet plus contrarian, market/business-case evidence labels, kill condition, rollback boundary, completion contract, and project-local state under `--artifacts workspace`.
 - [ ] Implement `runLeap` using the existing deterministic scores; select the highest combined radical/innovation candidate, retain the next eligible candidate as contrarian, generate a radical blueprint and shadow-mode plan for the selected radical bet, and create a completion contract from the selected MVP outcome.
 - [ ] Persist the complete record at `leap/latest.json` through the active artifact store and publish one concise project decision document when persistence is enabled.
 - [ ] Run `node --test tests/leap.test.mjs`.

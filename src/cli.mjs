@@ -93,7 +93,7 @@ export async function runCli(argv, context = {}) {
     if (!['validate', 'package', 'install', 'uninstall', 'eval', 'legacy'].includes(command)) {
       await activateArtifactStore({
         workspace: options.workspace ?? context.cwd ?? process.cwd(),
-        mode: options.artifacts === true ? 'local' : options.artifacts ?? 'local',
+        mode: options.artifacts === true ? 'workspace' : options.artifacts ?? 'workspace',
         artifactDir: options['artifact-dir'],
       });
       artifactStoreActive = true;

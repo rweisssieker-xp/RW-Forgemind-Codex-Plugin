@@ -8,6 +8,7 @@ import { createOpportunityCase } from './experience-lab.mjs';
 import { createInnovationPortfolio } from './innovation-portfolio.mjs';
 import { createRadicalBlueprint, createRadicalPortfolio, createShadowModePlan } from './radical-product.mjs';
 import { markdownTable, publishProjectDocument } from './project-documents.mjs';
+import { deriveProjectProfile } from './project-profile.mjs';
 
 const HARD_STOPS = ['secrets-or-credentials', 'production-access', 'data-deletion', 'irreversible-migration', 'external-spend', 'legal-or-compliance-commitment', 'high-stakes-decision'];
 
@@ -17,7 +18,8 @@ export async function runLeap({ workspace, goal, mode = 'yolo', autonomy = {} })
   const outcome = requestedGoal || 'Analyze this project and autonomously create the strongest disruptive AI product opportunity as a reversible, tested MVP.';
   const goalSource = requestedGoal ? 'user' : 'zero-input-default';
   const selectedMode = ['yolo', 'guided'].includes(String(mode).toLowerCase()) ? String(mode).toLowerCase() : 'yolo';
-  const [appIntelligence, innovation, radical, opportunity] = await Promise.all([
+  const [projectProfile, appIntelligence, innovation, radical, opportunity] = await Promise.all([
+    deriveProjectProfile({ workspace: root }),
     scanAppIntelligence({ workspace: root }),
     createInnovationPortfolio({ workspace: root, goal: outcome }),
     createRadicalPortfolio({ workspace: root, goal: outcome }),
@@ -40,6 +42,7 @@ export async function runLeap({ workspace, goal, mode = 'yolo', autonomy = {} })
     generatedAt: new Date().toISOString(),
     goal: outcome,
     goalSource,
+    projectProfile,
     mode: selectedMode,
     hardStopBoundary: HARD_STOPS,
     autonomyPolicy: {

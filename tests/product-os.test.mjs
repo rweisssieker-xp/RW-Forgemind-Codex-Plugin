@@ -6,7 +6,7 @@ import test from 'node:test';
 
 import { runCli } from '../src/cli.mjs';
 
-test('Product OS creates a resumable action loop and evidence graph outside the project', async () => {
+test('Product OS creates a resumable action loop and evidence graph in the project', async () => {
   const workspace = await mkdtemp(path.join(tmpdir(), 'forgemind-product-os-'));
   try {
     const launch = await runCli(['product', 'launch', '--workspace', workspace, '--goal', 'eliminate manual handoffs', '--json'], context());
@@ -16,8 +16,8 @@ test('Product OS creates a resumable action loop and evidence graph outside the 
     assert.equal(measured.data.action.outcome, 'iterate');
     const graph = await runCli(['product', 'evidence', '--workspace', workspace, '--json'], context());
     assert.equal(graph.data.nodes.length, 1);
-    assert.equal(graph.data.artifactMode, 'local');
-    assert.match(graph.data.artifactPath, /[\\/]\.cache[\\/]forgemind[\\/]/);
+    assert.equal(graph.data.artifactMode, 'workspace');
+    assert.ok(graph.data.artifactPath.startsWith(path.join(workspace, '.codex-orchestrator')));
   } finally { await rm(workspace, { recursive: true, force: true }); }
 });
 
