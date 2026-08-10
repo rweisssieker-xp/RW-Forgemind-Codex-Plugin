@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.33.1
+
+- Extended Venture profiling beyond operations projects with commerce and learning product models; all domains continue to fall back to repository-specific, evidence-labelled hypotheses rather than market facts.
+
 ## 1.33.0
 
 - Made generated ForgeMind state project-local by default at `.codex-orchestrator/`; `--artifacts local` is now a compatible alias for `workspace`, and the installed plugin is never used for output state.

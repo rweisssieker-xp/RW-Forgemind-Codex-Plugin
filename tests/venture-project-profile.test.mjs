@@ -77,3 +77,21 @@ test('Venture prioritizes structured imported commercial evidence over local con
   assert.equal(explicit.data.financialModel.assumptions.monthlyPrice, 199);
   assert.equal(explicit.data.financialModel.assumptionSources.monthlyPrice.source, 'cli');
 });
+
+test('Venture differentiates non-ITSM projects from their own product and operating signals', async (t) => {
+  const commerce = await fixture('forgemind-commerce-', { name: 'basketly', dependencies: { next: '^15.0.0', stripe: '^17.0.0' } }, '# Basketly\n\nA self-serve storefront and checkout workflow for independent online merchants.', 'export const product = "merchant checkout";');
+  const education = await fixture('forgemind-learning-', { name: 'lessonloop', dependencies: { '@azure/openai': '^1.0.0', express: '^4.0.0' } }, '# LessonLoop\n\nAn AI learning workspace for training managers to create, assign, and measure internal learning programs.', 'export const product = "enterprise learning analytics";');
+  t.after(() => Promise.all([rm(commerce, { recursive: true, force: true }), rm(education, { recursive: true, force: true })]));
+
+  const [left, right] = await Promise.all([
+    runCli(['venture', 'run', '--workspace', commerce, '--goal', 'improve merchant conversion', '--json'], context()),
+    runCli(['venture', 'run', '--workspace', education, '--goal', 'improve learning completion', '--json'], context()),
+  ]);
+
+  assert.notEqual(left.data.projectProfile.productCategory.value, right.data.projectProfile.productCategory.value);
+  assert.notEqual(left.data.financialModel.assumptions.monthlyPrice, right.data.financialModel.assumptions.monthlyPrice);
+  assert.match(left.data.projectProfile.primaryJob.value, /checkout|merchant/i);
+  assert.match(right.data.projectProfile.primaryJob.value, /learning|training/i);
+  assert.equal(left.data.financialModel.assumptionSources.monthlyPrice.evidence, 'inferred');
+  assert.equal(right.data.financialModel.assumptionSources.monthlyPrice.evidence, 'inferred');
+});
