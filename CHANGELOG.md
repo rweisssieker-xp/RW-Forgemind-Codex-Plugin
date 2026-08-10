@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.32.1] - 2026-08-10
+
+- Strengthened the automatic trigger descriptions for Compass, Evolve, and Ship without changing journey behavior.
+- Retained the compact, conditionally loaded zero-input defaults; static package-size estimates are now distinguished from actual loaded skill context.
+
 ## [1.32.0] - 2026-08-10
 
 - Added full zero-input defaults for every primary journey. Bare skill calls now derive and state a project-aware goal; explicit user intent always takes precedence.

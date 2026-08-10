@@ -1,6 +1,6 @@
 ---
 name: forgemind-evolve
-description: Radically improve an existing app through repository-aware AI product transformation.
+description: "Use when an existing app needs a repository-aware, radical AI product transformation rather than incremental feature work."
 ---
 
 # Evolve

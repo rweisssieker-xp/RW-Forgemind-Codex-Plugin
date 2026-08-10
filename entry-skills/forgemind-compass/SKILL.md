@@ -1,6 +1,6 @@
 ---
 name: forgemind-compass
-description: Choose the best ForgeMind starting point for an unclear product, app, or delivery goal.
+description: "Use when a product, app, or delivery goal is unclear and ForgeMind should choose the strongest safe starting path."
 ---
 
 # Compass

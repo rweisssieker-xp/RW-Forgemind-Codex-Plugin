@@ -1,6 +1,6 @@
 ---
 name: forgemind-ship
-description: Turn a selected product bet into bounded implementation, testing, and release evidence.
+description: "Use when a selected product bet or MVP must be implemented, tested, and prepared for a bounded release."
 ---
 
 # Ship
