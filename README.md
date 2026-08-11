@@ -32,7 +32,7 @@ Use `hero run` for the local Mission Control view. It joins the active Hero Loop
 
 - **Disruption before feature lists:** AI must eliminate or replace a user interaction, not merely decorate it.
 - **Existing-app first:** product bets start from the actual repository and its constraints.
-- **Market and business case:** market chance, sources, financial scenarios, sensitivity, and validation needs are explicit.
+- **Evidence-to-Action market engine:** Venture adds source ranking, competitor map, bottom-up reachable-account sizing, willingness-to-pay, buyer journey, regional/regulatory boundary, sensitivity, market memory, and the next highest-decision-value experiments.
 - **Kill conditions:** every material bet has a measurable reason to stop.
 - **Fast with guardrails:** YOLO-style delivery continues autonomously until a genuine hard stop.
 - **Evidence-native:** decisions, tests, risks, dissent, and release claims are visibly separated from assumptions.

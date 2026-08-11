@@ -24,6 +24,8 @@ Venture combines explicit inputs, imported evidence, market chance, conservative
 
 Venture derives a per-project profile from `package.json`, `README.md`, relevant `docs/forgemind/` records, source and integration signals, and local ForgeMind research, telemetry, and outcomes. It applies to every project domain—not only operations software—and stores the profile at `.codex-orchestrator/project-profile.json`. Each profile field and financial input has an `observed`, `inferred`, `assumption`, or `missing` evidence label. Precedence is: explicit CLI value, structured imported evidence or telemetry, local ForgeMind configuration, then a conservative project-derived assumption. Missing evidence is listed with its effect on validation and scenarios.
 
+Venture also stores `.codex-orchestrator/market-intelligence/latest.json`. It ranks imported sources, maps configured competitors, calculates reachable-account scenarios bottom-up, records buyer and pricing hypotheses, highlights regional/regulatory boundaries, sweeps the most sensitive financial parameters, preserves project-local market memory, and proposes the highest-decision-value experiments. These outputs remain scenarios until supported by cited evidence; they are never market facts, forecasts, or legal advice.
+
 ## Council: decide
 
 `$forgemind-council Decide whether to <outcome>.`

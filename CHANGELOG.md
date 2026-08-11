@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.36.0
+
+- Added the evidence-to-action Market Engine to Venture: ranked research, competitor mapping, bottom-up market sizing, willingness-to-pay and buyer hypotheses, regional boundaries, sensitivity sweeps, market memory, and decision-value experiments.
+
 ## 1.35.0
 
 - Added Hero Control, a project-local YOLO mission control record that connects work packets, feature-flag experiments, connector contracts, release gates, and benchmark status without silent external side effects.

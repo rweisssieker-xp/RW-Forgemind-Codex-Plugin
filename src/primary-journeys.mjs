@@ -11,6 +11,7 @@ import { createCompletionContract } from './completion.mjs';
 import { planUiTesting } from './product-ops-lab.mjs';
 import { resolveWorkspace } from './paths.mjs';
 import { deriveProjectProfile, deriveVentureContext } from './project-profile.mjs';
+import { createMarketIntelligence } from './market-intelligence.mjs';
 
 export async function runCompass({ workspace, goal }) {
   const root = await resolveWorkspace(workspace);
@@ -72,8 +73,9 @@ export async function runVenture({ workspace, goal, options = {} }) {
   const [opportunity, financialModel, discoveryLoop] = await Promise.all([
     createOpportunityCase({ workspace: root, goal: outcome, options: { ...options, profileCategory: projectProfile.productCategory.value }, projectProfile, ventureContext }), createFinancialModel({ workspace: root, options, projectProfile }), runDiscoveryLoop({ workspace: root, goal: outcome }),
   ]);
+  const marketIntelligence = await createMarketIntelligence({ workspace: root, projectProfile, financialModel });
   const conservative = financialModel.scenarios.find((item) => item.name === 'conservative');
-  const result = { schemaVersion: 1, status: 'passed', generatedAt: new Date().toISOString(), goal: outcome, goalSource, projectProfile, ventureContext, evidenceGaps: projectProfile.evidenceGaps, opportunity, financialModel, discoveryLoop,
+  const result = { schemaVersion: 1, status: 'passed', generatedAt: new Date().toISOString(), goal: outcome, goalSource, projectProfile, ventureContext, evidenceGaps: projectProfile.evidenceGaps, opportunity, financialModel, marketIntelligence, discoveryLoop,
     recommendation: opportunity.recommendation === 'validate-with-qualified-users' && conservative?.viabilityScore >= 50 ? 'validate' : 'research-first',
     nextAction: 'Import customer or market evidence, then re-run venture before committing material delivery spend.',
     claimBoundary: 'Market scores and financial scenarios are explicit assumptions unless supported by imported sources; they are not market facts, forecasts, or investment advice.', artifactPath: '.codex-orchestrator/primary/venture-latest.json', errors: [] };
