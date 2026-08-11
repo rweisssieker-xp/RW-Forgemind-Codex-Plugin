@@ -11,4 +11,4 @@ Use only for requests such as radical AI product ideas, 10x, eliminate UI, repla
 
 Use `forgemind radical analyze --goal "<outcome>" --json`, then `radical select`, `radical blueprint`, and `radical shadow-mode`. Use `experience market-case`, `finance`, tester evidence, and `$forgemind-complete` after selecting the bet.
 
-Never invent behavior, demand, ROI, permission, or model capability. Never permit secrets, production access, destructive actions, irreversible changes, external spend, legal commitments, or high-stakes decisions without explicit approval.
+Never invent behavior, demand, ROI, permission, or model capability. Never permit secrets, production access, destructive actions, irreversible changes, external spend, or high-stakes decisions without explicit approval.

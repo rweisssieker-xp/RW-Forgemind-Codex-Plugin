@@ -6,7 +6,7 @@ import test from 'node:test';
 const root = path.resolve(import.meta.dirname, '..');
 const repository = 'https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin';
 const requiredDocs = [
-  'LICENSE', 'CHANGELOG.md', 'SECURITY.md', 'SUPPORT.md', 'PRIVACY.md',
+  'CHANGELOG.md', 'SECURITY.md', 'SUPPORT.md', 'PRIVACY.md',
   'TERMS.md', 'CONTRIBUTING.md', 'CODE_OF_CONDUCT.md',
 ];
 
@@ -19,7 +19,6 @@ test('release metadata uses the real project identity and consistent version', a
   assert.equal(manifest.author.url, 'https://aivana-gmbh.ai/');
   assert.doesNotMatch(JSON.stringify(manifest), /example\.com|github\.com\/reinerw(?:["/])/i);
   assert.equal(manifest.version, pkg.version);
-  assert.equal(manifest.license, 'MIT');
 });
 
 test('release package includes community, support, privacy, and terms documents', async () => {

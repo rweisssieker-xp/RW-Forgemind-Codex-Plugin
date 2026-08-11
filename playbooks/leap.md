@@ -22,4 +22,4 @@ Produce a tested, reversible MVP from a new idea or existing app—not an idea l
 
 ## Autonomy boundary
 
-Proceed without routine questions. Pause only for secrets or credentials, production access, data deletion, irreversible migration, external spend, legal/compliance commitment, or a high-stakes decision. At such a boundary, finish every independent action and request the smallest possible decision.
+Proceed without routine questions. Pause only for secrets or credentials, production access, data deletion, irreversible migration, external spend, or a high-stakes decision. At such a boundary, finish every independent action and request the smallest possible decision.

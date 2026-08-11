@@ -6,7 +6,7 @@ ForgeMind uses Semantic Versioning. Use patch for compatible fixes, minor for co
 
 1. Confirm manifest and package versions match.
 2. Update `CHANGELOG.md` with user-visible behavior and migration notes.
-3. Confirm repository, support, security, privacy, terms, license, and icons are accurate. Include screenshots only when the plugin ships an embedded UI.
+3. Confirm repository metadata and icons are accurate. Include screenshots only when the plugin ships an embedded UI.
 4. Use a clean branch with no secrets, personal memory, or unrelated generated files.
 
 ## Portable release gate

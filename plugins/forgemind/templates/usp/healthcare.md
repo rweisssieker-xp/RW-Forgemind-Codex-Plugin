@@ -9,4 +9,4 @@ Look for AI advantages in:
 - guideline-aware checklists
 - audit readiness
 
-Guardrail: clinical, legal, billing, and privacy claims need domain review. Prefer decision support over autonomous decisions.
+Guardrail: clinical and billing claims need domain review. Prefer decision support over autonomous decisions.

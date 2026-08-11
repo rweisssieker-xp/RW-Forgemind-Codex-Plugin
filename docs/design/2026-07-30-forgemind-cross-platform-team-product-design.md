@@ -231,7 +231,6 @@ The package command generates a valid marketplace with source path `./plugins/fo
 
 The repository includes:
 
-- MIT `LICENSE`
 - `CHANGELOG.md`
 - `SECURITY.md`
 - `SUPPORT.md`
@@ -332,7 +331,7 @@ The implementation is complete only when all of the following are evidenced:
 15. The dashboard renders all core evidence without network dependencies.
 16. Six primary workflows are documented and overlapping skills route consistently.
 17. Release metadata contains no placeholder identity or broken repository links.
-18. License, changelog, security, support, privacy, terms, contribution, and conduct documents exist.
+18. Changelog, security, support, privacy, terms, contribution, and conduct documents exist.
 19. Package contents are allowlisted, checksummed, and free of development state and personal memory.
 20. A release audit maps every criterion above to a test, generated artifact, or inspected source file.
 

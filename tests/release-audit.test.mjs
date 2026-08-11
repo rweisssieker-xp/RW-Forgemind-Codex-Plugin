@@ -8,10 +8,10 @@ import { collectReleaseAudit, writeReleaseAudit } from '../scripts/release-audit
 
 const root = path.resolve(import.meta.dirname, '..');
 
-test('release audit maps all 29 criteria to status, result, commands, and evidence', async () => {
+test('release audit maps all 28 criteria to status, result, commands, and evidence', async () => {
   const audit = await collectReleaseAudit({ root });
-  assert.equal(audit.criteria.length, 29);
-  assert.deepEqual(audit.criteria.map((criterion) => criterion.id), Array.from({ length: 29 }, (_, index) => index + 1));
+  assert.equal(audit.criteria.length, 28);
+  assert.deepEqual(audit.criteria.map((criterion) => criterion.id), Array.from({ length: 28 }, (_, index) => index + 1));
   for (const criterion of audit.criteria) {
     assert.match(criterion.status, /^(passed|failed|pending)$/);
     assert.ok(criterion.result);
@@ -31,7 +31,7 @@ test('release audit writes machine-readable and human-readable acceptance eviden
   const output = await mkdtemp(path.join(tmpdir(), 'forgemind-audit-'));
   t.after(() => rm(output, { recursive: true, force: true }));
   const written = await writeReleaseAudit({ root, outputRoot: output });
-  assert.equal(JSON.parse(await readFile(written.jsonPath, 'utf8')).criteria.length, 29);
+  assert.equal(JSON.parse(await readFile(written.jsonPath, 'utf8')).criteria.length, 28);
   const markdown = await readFile(written.markdownPath, 'utf8');
   assert.match(markdown, /Remote three-OS CI/);
   assert.match(markdown, /Public marketplace submission: not claimed/);

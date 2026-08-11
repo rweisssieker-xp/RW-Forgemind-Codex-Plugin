@@ -1,4 +1,4 @@
-import { access, readFile } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -22,7 +22,6 @@ const CRITERIA = [
   ['Offline dashboard renders all core evidence.', ['node --test tests/dashboard.test.mjs'], ['tests/dashboard.test.mjs', 'src/dashboard.mjs'], ['localCi']],
   ['Six primary workflows and overlapping route precedence are consistent.', ['node --test tests/workflow-routing.test.mjs'], ['tests/workflow-routing.test.mjs', 'docs/WORKFLOWS.md'], ['localCi']],
   ['Release metadata has real identity and repository links.', ['node --test tests/release-metadata.test.mjs'], ['tests/release-metadata.test.mjs', '.codex-plugin/plugin.json'], ['sourceValidator']],
-  ['License and all community policy documents exist.', ['node --test tests/release-metadata.test.mjs'], ['LICENSE', 'CHANGELOG.md', 'SECURITY.md', 'SUPPORT.md', 'PRIVACY.md', 'TERMS.md', 'CONTRIBUTING.md', 'CODE_OF_CONDUCT.md'], ['documentation']],
   ['Package is allowlisted, checksummed, and excludes development/personal state.', ['npm run build', 'secret scan'], ['package-allowlist.json', 'dist/plugin/checksums.json', 'tests/package.test.mjs'], ['build', 'packageValidation', 'secretScan']],
   ['Release audit maps all acceptance criteria to authoritative evidence.', ['node --test tests/release-audit.test.mjs', 'node scripts/release-audit.mjs'], ['tests/release-audit.test.mjs', 'docs/release/acceptance-evidence.md'], ['audit']],
   ['Agent Trust Protocol rejects any delivery that fails acceptance, verification, policy, provenance, rollback, or budget gates.', ['node --test tests/forge-trust-strategy.test.mjs'], ['src/forge/trust.mjs', 'tests/forge-trust-strategy.test.mjs', 'schemas/agent-trust-v1.schema.json'], ['localCi']],
@@ -40,7 +39,6 @@ export async function collectReleaseAudit({ root, commandResults = {} }) {
   const resolvedRoot = path.resolve(root);
   const inspections = await inspectReleaseState(resolvedRoot);
   const enriched = {
-    documentation: inspections.documentation ? { status: 'passed', result: 'All required policy documents exist.' } : { status: 'failed', result: 'One or more required policy documents are missing.' },
     audit: { status: 'passed', result: `All ${CRITERIA.length} criteria have explicit commands and evidence paths.` },
     ...commandResults,
   };
@@ -72,9 +70,7 @@ export async function writeReleaseAudit({ root, outputRoot = path.join(root, 'do
 
 async function inspectReleaseState(root) {
   const manifest = JSON.parse(await readFile(path.join(root, '.codex-plugin', 'plugin.json'), 'utf8'));
-  const required = ['LICENSE', 'CHANGELOG.md', 'SECURITY.md', 'SUPPORT.md', 'PRIVACY.md', 'TERMS.md', 'CONTRIBUTING.md', 'CODE_OF_CONDUCT.md'];
-  const documentation = (await Promise.all(required.map((file) => exists(path.join(root, file))))).every(Boolean);
-  return { version: manifest.version, documentation };
+  return { version: manifest.version };
 }
 
 function combineResults(keys, results) {
@@ -98,7 +94,6 @@ function renderMarkdown(audit) {
   return `# ForgeMind Release Acceptance Evidence\n\nVersion: \`${audit.version}\`\n\nOverall status: **${audit.status}**\n\nRemote three-OS CI: **${audit.remoteCi.status}** — ${audit.remoteCi.result}\n\nPublic marketplace submission: not claimed.\n\n| # | Status | Criterion | Result | Evidence |\n| --- | --- | --- | --- | --- |\n${rows}\n`;
 }
 
-async function exists(candidate) { try { await access(candidate); return true; } catch { return false; } }
 
 async function runFromCommandLine() {
   const root = path.resolve(fileURLToPath(new URL('..', import.meta.url)));

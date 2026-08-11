@@ -10,7 +10,7 @@
 
 - Keep generated Leap state outside the project by default and expose `artifactMode` and `artifactPath` in JSON responses.
 - Never make market, customer, ROI, or test-success claims without evidence; label missing evidence as assumptions.
-- Continue without routine questions but stop before secrets, production access, deletion, irreversible migrations, external spend, legal/compliance commitments, or high-stakes decisions.
+- Continue without routine questions but stop before secrets, production access, deletion, irreversible migrations, external spend, or high-stakes decisions.
 - Preserve the ten existing journeys; Leap is the eleventh explicit journey and Guide remains the sole implicit route.
 
 ### Task 1: Create the deterministic Leap contract

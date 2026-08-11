@@ -10,8 +10,8 @@
         "tests/"
       ],
       "id": 1,
-      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
-      "status": "passed"
+      "result": "Pending authoritative result: localCi.",
+      "status": "pending"
     },
     {
       "commands": [
@@ -24,8 +24,8 @@
         "dist/plugin/.codex-plugin/plugin.json"
       ],
       "id": 2,
-      "result": "The generic Codex validator and ForgeMind source validator passed the repository root. The generic Codex validator and strict ForgeMind validator passed dist/plugin; marketplace path assertions passed.",
-      "status": "passed"
+      "result": "Pending authoritative result: sourceValidator, builtValidator.",
+      "status": "pending"
     },
     {
       "commands": [
@@ -36,8 +36,8 @@
         ".github/workflows/validate.yml"
       ],
       "id": 3,
-      "result": "GitHub Actions run 30652281355 passed all six Windows, macOS, and Linux jobs for Node 20 and 24, followed by the verified release-artifact job: https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin/actions/runs/30652281355",
-      "status": "passed"
+      "result": "Pending authoritative result: remoteCi.",
+      "status": "pending"
     },
     {
       "commands": [
@@ -49,8 +49,8 @@
         "scripts/"
       ],
       "id": 4,
-      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
-      "status": "passed"
+      "result": "Pending authoritative result: localCi.",
+      "status": "pending"
     },
     {
       "commands": [
@@ -62,8 +62,8 @@
         "tests/validate.test.mjs"
       ],
       "id": 5,
-      "result": "The generic Codex validator and ForgeMind source validator passed the repository root.",
-      "status": "passed"
+      "result": "Pending authoritative result: sourceValidator.",
+      "status": "pending"
     },
     {
       "commands": [
@@ -77,8 +77,8 @@
         "dist/marketplace/"
       ],
       "id": 6,
-      "result": "npm run build created checksum-valid standalone and marketplace packages. Two independent builds produced identical checksums.json content.",
-      "status": "passed"
+      "result": "Pending authoritative result: build, reproducibility.",
+      "status": "pending"
     },
     {
       "commands": [
@@ -90,8 +90,8 @@
         "tests/package.test.mjs"
       ],
       "id": 7,
-      "result": "The generic Codex validator and strict ForgeMind validator passed dist/plugin; marketplace path assertions passed.",
-      "status": "passed"
+      "result": "Pending authoritative result: builtValidator.",
+      "status": "pending"
     },
     {
       "commands": [
@@ -103,8 +103,8 @@
         "src/lifecycle.mjs"
       ],
       "id": 8,
-      "result": "Fresh install, upgrade, valid downgrade, injected-failure rollback, uninstall, preservation, and approved purge passed in isolated temporary homes.",
-      "status": "passed"
+      "result": "Pending authoritative result: lifecycle.",
+      "status": "pending"
     },
     {
       "commands": [
@@ -116,8 +116,8 @@
         "src/memory.mjs"
       ],
       "id": 9,
-      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
-      "status": "passed"
+      "result": "Pending authoritative result: localCi.",
+      "status": "pending"
     },
     {
       "commands": [
@@ -129,8 +129,8 @@
         "src/policy.mjs"
       ],
       "id": 10,
-      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
-      "status": "passed"
+      "result": "Pending authoritative result: localCi.",
+      "status": "pending"
     },
     {
       "commands": [
@@ -142,8 +142,8 @@
         "src/evidence.mjs"
       ],
       "id": 11,
-      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
-      "status": "passed"
+      "result": "Pending authoritative result: localCi.",
+      "status": "pending"
     },
     {
       "commands": [
@@ -155,8 +155,8 @@
         "src/readiness.mjs"
       ],
       "id": 12,
-      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
-      "status": "passed"
+      "result": "Pending authoritative result: localCi.",
+      "status": "pending"
     },
     {
       "commands": [
@@ -168,8 +168,8 @@
         "src/router.mjs"
       ],
       "id": 13,
-      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
-      "status": "passed"
+      "result": "Pending authoritative result: localCi.",
+      "status": "pending"
     },
     {
       "commands": [
@@ -181,8 +181,8 @@
         "src/signals.mjs"
       ],
       "id": 14,
-      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
-      "status": "passed"
+      "result": "Pending authoritative result: localCi.",
+      "status": "pending"
     },
     {
       "commands": [
@@ -194,8 +194,8 @@
         "src/dashboard.mjs"
       ],
       "id": 15,
-      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
-      "status": "passed"
+      "result": "Pending authoritative result: localCi.",
+      "status": "pending"
     },
     {
       "commands": [
@@ -207,8 +207,8 @@
         "docs/WORKFLOWS.md"
       ],
       "id": 16,
-      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
-      "status": "passed"
+      "result": "Pending authoritative result: localCi.",
+      "status": "pending"
     },
     {
       "commands": [
@@ -220,27 +220,8 @@
         ".codex-plugin/plugin.json"
       ],
       "id": 17,
-      "result": "The generic Codex validator and ForgeMind source validator passed the repository root.",
-      "status": "passed"
-    },
-    {
-      "commands": [
-        "node --test tests/release-metadata.test.mjs"
-      ],
-      "criterion": "License and all community policy documents exist.",
-      "evidence": [
-        "LICENSE",
-        "CHANGELOG.md",
-        "SECURITY.md",
-        "SUPPORT.md",
-        "PRIVACY.md",
-        "TERMS.md",
-        "CONTRIBUTING.md",
-        "CODE_OF_CONDUCT.md"
-      ],
-      "id": 18,
-      "result": "All required policy documents exist.",
-      "status": "passed"
+      "result": "Pending authoritative result: sourceValidator.",
+      "status": "pending"
     },
     {
       "commands": [
@@ -253,9 +234,9 @@
         "dist/plugin/checksums.json",
         "tests/package.test.mjs"
       ],
-      "id": 19,
-      "result": "npm run build created checksum-valid standalone and marketplace packages. Standalone and marketplace plugin checksum validation passed. Package hygiene test found no development state, personal memory directories, private-key blocks, or live GitHub token forms.",
-      "status": "passed"
+      "id": 18,
+      "result": "Pending authoritative result: build, packageValidation, secretScan.",
+      "status": "pending"
     },
     {
       "commands": [
@@ -267,8 +248,8 @@
         "tests/release-audit.test.mjs",
         "docs/release/acceptance-evidence.md"
       ],
-      "id": 20,
-      "result": "All 29 criteria have explicit commands and evidence paths.",
+      "id": 19,
+      "result": "All 28 criteria have explicit commands and evidence paths.",
       "status": "passed"
     },
     {
@@ -281,9 +262,9 @@
         "tests/forge-trust-strategy.test.mjs",
         "schemas/agent-trust-v1.schema.json"
       ],
-      "id": 21,
-      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
-      "status": "passed"
+      "id": 20,
+      "result": "Pending authoritative result: localCi.",
+      "status": "pending"
     },
     {
       "commands": [
@@ -295,9 +276,9 @@
         "tests/forge-trust-strategy.test.mjs",
         "schemas/executable-strategy-v1.schema.json"
       ],
-      "id": 22,
-      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
-      "status": "passed"
+      "id": 21,
+      "result": "Pending authoritative result: localCi.",
+      "status": "pending"
     },
     {
       "commands": [
@@ -309,9 +290,9 @@
         "tests/forge-genome-tournament.test.mjs",
         "schemas/engineering-genome-v1.schema.json"
       ],
-      "id": 23,
-      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
-      "status": "passed"
+      "id": 22,
+      "result": "Pending authoritative result: localCi.",
+      "status": "pending"
     },
     {
       "commands": [
@@ -323,9 +304,9 @@
         "tests/forge-foundation.test.mjs",
         "schemas/flight-event-v1.schema.json"
       ],
-      "id": 24,
-      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
-      "status": "passed"
+      "id": 23,
+      "result": "Pending authoritative result: localCi.",
+      "status": "pending"
     },
     {
       "commands": [
@@ -337,9 +318,9 @@
         "tests/forge-genome-tournament.test.mjs",
         "schemas/future-tournament-v1.schema.json"
       ],
-      "id": 25,
-      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
-      "status": "passed"
+      "id": 24,
+      "result": "Pending authoritative result: localCi.",
+      "status": "pending"
     },
     {
       "commands": [
@@ -351,9 +332,9 @@
         "tests/forge-shrink-loop.test.mjs",
         "schemas/shrink-plan-v1.schema.json"
       ],
-      "id": 26,
-      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
-      "status": "passed"
+      "id": 25,
+      "result": "Pending authoritative result: localCi.",
+      "status": "pending"
     },
     {
       "commands": [
@@ -365,9 +346,9 @@
         "tests/forge-shrink-loop.test.mjs",
         "schemas/product-loop-v1.schema.json"
       ],
-      "id": 27,
-      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
-      "status": "passed"
+      "id": 26,
+      "result": "Pending authoritative result: localCi.",
+      "status": "pending"
     },
     {
       "commands": [
@@ -379,9 +360,9 @@
         "tests/forge-escrow-federate.test.mjs",
         "schemas/evidence-escrow-v1.schema.json"
       ],
-      "id": 28,
-      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
-      "status": "passed"
+      "id": 27,
+      "result": "Pending authoritative result: localCi.",
+      "status": "pending"
     },
     {
       "commands": [
@@ -393,27 +374,27 @@
         "tests/forge-escrow-federate.test.mjs",
         "schemas/federated-bundle-v1.schema.json"
       ],
-      "id": 29,
-      "result": "The full local suite passed on Windows with Node 24.8.0; 108 tests passed, followed by validation, six journey evals, build, and strict built-plugin validation.",
-      "status": "passed"
+      "id": 28,
+      "result": "Pending authoritative result: localCi.",
+      "status": "pending"
     }
   ],
-  "generatedAt": "2026-07-31T17:45:28.516Z",
+  "generatedAt": "2026-08-11T09:28:19.205Z",
   "publicSubmission": {
     "result": "Public marketplace submission is an external authenticated action.",
     "status": "not-claimed"
   },
   "remoteCi": {
-    "result": "GitHub Actions run 30652281355 passed all six Windows, macOS, and Linux jobs for Node 20 and 24, followed by the verified release-artifact job: https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin/actions/runs/30652281355",
-    "status": "passed"
+    "result": "No authenticated GitHub Actions run evidence supplied.",
+    "status": "pending"
   },
   "schemaVersion": 1,
-  "status": "passed",
+  "status": "pending",
   "summary": {
     "failed": 0,
-    "passed": 29,
-    "pending": 0,
-    "total": 29
+    "passed": 1,
+    "pending": 27,
+    "total": 28
   },
-  "version": "1.7.0"
+  "version": "1.38.2"
 }

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.38.2
+
+- Removed release-audit license and policy-document checks, plus remaining legal/compliance prompts from product playbooks and USP templates.
+
 ## 1.38.1
 
 - Removed legal and compliance review from standard ForgeMind tasks, Market Engine output, and YOLO/Ship hard stops; operational safety boundaries remain.

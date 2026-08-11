@@ -263,7 +263,7 @@ process.exitCode = result.exitCode;
 ### Task 13: Release and community documentation
 
 **Files:**
-- Create: `LICENSE`, `CHANGELOG.md`, `SECURITY.md`, `SUPPORT.md`, `PRIVACY.md`, `TERMS.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`
+- Create: `CHANGELOG.md`, `SECURITY.md`, `SUPPORT.md`, `PRIVACY.md`, `TERMS.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`
 - Modify: `.codex-plugin/plugin.json`, `README.md`, `docs/INSTALL.md`, `docs/RELEASE.md`, `docs/RUNTIME_TEST.md`
 - Create: `tests/release-metadata.test.mjs`
 
@@ -272,7 +272,7 @@ process.exitCode = result.exitCode;
 
 - [x] Test for placeholder identity, repository mismatch, missing docs/assets, broken local links, inconsistent versions, empty screenshots, and undocumented data retention.
 - [x] Run test against current metadata; expect failure.
-- [x] Add MIT license and concrete project policies using the actual repository URL `https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin`; use GitHub Security Advisories and Issues as contact channels instead of invented email addresses.
+- [x] Add concrete project policy links using the actual repository URL `https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin`; use GitHub Security Advisories and Issues as contact channels instead of invented email addresses.
 - [x] Update manifest links, descriptions, screenshots, CLI examples, installation, upgrade, rollback, uninstall, privacy, and release instructions.
 - [x] Run metadata tests, link validation, source validation, and package validation.
 - [x] Commit with `docs: prepare ForgeMind for team and public release`.
