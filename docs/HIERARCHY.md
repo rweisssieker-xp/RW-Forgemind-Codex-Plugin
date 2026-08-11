@@ -24,6 +24,6 @@ Compass — choose the smallest safe path
 | Ship | `$forgemind-ship` | Bounded implementation, GUI/testing expectations, and release readiness. |
 | Leap | `$forgemind-leap` | Autonomous developer delivery without routine questions. |
 
-Leap is the automode. It continues through ordinary design and engineering decisions, but stops for credentials, production access, data deletion, irreversible migration, external spend, legal commitments, and high-stakes decisions.
+Leap is the automode. It continues through ordinary design and engineering decisions, but stops for credentials, production access, data deletion, irreversible migration, external spend, and high-stakes decisions.
 
 Every journey writes detailed generated state to `.codex-orchestrator/` in the target project and publishes concise reviewed records to `docs/forgemind/` in that same project. `--artifacts local` remains a compatible alias; use `--artifacts none` for one-shot output without persistence. No generated state is written into the installed plugin.

@@ -24,7 +24,7 @@ Venture combines explicit inputs, imported evidence, market chance, conservative
 
 Venture derives a per-project profile from `package.json`, `README.md`, relevant `docs/forgemind/` records, source and integration signals, and local ForgeMind research, telemetry, and outcomes. It applies to every project domain—not only operations software—and stores the profile at `.codex-orchestrator/project-profile.json`. Each profile field and financial input has an `observed`, `inferred`, `assumption`, or `missing` evidence label. Precedence is: explicit CLI value, structured imported evidence or telemetry, local ForgeMind configuration, then a conservative project-derived assumption. Missing evidence is listed with its effect on validation and scenarios.
 
-Venture also stores `.codex-orchestrator/market-intelligence/latest.json`. It ranks imported sources, maps configured competitors, calculates reachable-account scenarios bottom-up, records buyer and pricing hypotheses, highlights regional/regulatory boundaries, sweeps the most sensitive financial parameters, preserves project-local market memory, and proposes the highest-decision-value experiments. These outputs remain scenarios until supported by cited evidence; they are never market facts, forecasts, or legal advice.
+Venture also stores `.codex-orchestrator/market-intelligence/latest.json`. It ranks imported sources, maps configured competitors, calculates reachable-account scenarios bottom-up, records buyer and pricing hypotheses, sweeps the most sensitive financial parameters, preserves project-local market memory, and proposes the highest-decision-value experiments. These outputs remain scenarios until supported by cited evidence; they are never market facts or forecasts.
 
 ## Council: decide
 
@@ -36,7 +36,7 @@ Council produces product, customer, technical, risk, and contrarian positions pl
 
 `$forgemind-ship Implement and prove <outcome>.`
 
-Ship creates an implementation contract, user-experience state coverage, and verification path. It continues through routine work but pauses for credentials, production access, destructive action, irreversible migration, external spend, legal commitment, or a high-stakes decision.
+Ship creates an implementation contract, user-experience state coverage, and verification path. It continues through routine work but pauses for credentials, production access, destructive action, irreversible migration, external spend, or a high-stakes decision.
 
 ## Leap: developer automode
 

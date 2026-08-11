@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.38.1
+
+- Removed legal and compliance review from standard ForgeMind tasks, Market Engine output, and YOLO/Ship hard stops; operational safety boundaries remain.
+
 ## 1.38.0
 
 - Enforced project-only persistent artifact storage by disabling external artifact destinations.

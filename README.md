@@ -21,7 +21,7 @@ Every entry also works without appended text. For example, `$forgemind-spark` au
 Use **Leap** for fast autonomous MVP work:
 
 ```text
-$forgemind-leap Analyze this existing app, select the strongest disruptive AI opportunity, and implement the tested, reversible MVP autonomously. Do not ask routine questions; pause only for safety, production, legal, or cost decisions.
+$forgemind-leap Analyze this existing app, select the strongest disruptive AI opportunity, and implement the tested, reversible MVP autonomously. Do not ask routine questions; pause only for safety, production, or cost decisions.
 ```
 
 Leap analyzes the repository, creates radical alternatives, calculates an evidence-labelled opportunity and business case, selects a reversible bet with a kill condition, and drives delivery through a YOLO Hero Loop. The loop advances implementation, functional proof, experience proof, and risk/release readiness as evidence-gated work packets; it retries bounded failures autonomously and never claims that an assumption is market evidence.
@@ -32,7 +32,7 @@ Use `hero run` for the local Mission Control view. It joins the active Hero Loop
 
 - **Disruption before feature lists:** AI must eliminate or replace a user interaction, not merely decorate it.
 - **Existing-app first:** product bets start from the actual repository and its constraints.
-- **Evidence-to-Action market engine:** Venture adds source ranking, competitor map, bottom-up reachable-account sizing, willingness-to-pay, buyer journey, regional/regulatory boundary, sensitivity, market memory, and the next highest-decision-value experiments.
+- **Evidence-to-Action market engine:** Venture adds source ranking, competitor map, bottom-up reachable-account sizing, willingness-to-pay, buyer journey, sensitivity, market memory, and the next highest-decision-value experiments.
 - **Experience Intelligence:** Hero Control creates a visual quality gate, AI UX critique contract, outcome metrics, adaptive-interface plan, multimodal intake, project-local AI memory, counterfactuals, and self-healing UX experiments.
 - **Kill conditions:** every material bet has a measurable reason to stop.
 - **Fast with guardrails:** YOLO-style delivery continues autonomously until a genuine hard stop.

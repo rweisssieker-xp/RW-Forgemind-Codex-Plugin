@@ -40,7 +40,7 @@ Hero Control binds the current packet to a feature-flag experiment plan, configu
 
 Do not ask routine design, naming, scope, or sequencing questions. Make the smallest compatible and reversible choices from the existing app. Run relevant tests, GUI states, accessibility checks, risk checks, and a release-readiness assessment before handoff. Treat missing market, customer, ROI, or test evidence as an explicit assumption or gap—not a reason to stop safe work or a reason to invent proof.
 
-Stop only before secrets or credentials, production access, data deletion, irreversible migrations, external spend, legal or compliance commitments, or high-stakes decisions. State the exact boundary, complete all independent work, and request only the minimum decision needed to proceed.
+Stop only before secrets or credentials, production access, data deletion, irreversible migrations, external spend, or high-stakes decisions. State the exact boundary, complete all independent work, and request only the minimum decision needed to proceed.
 
 Load `playbooks/leap.md` for the full operating contract.
 

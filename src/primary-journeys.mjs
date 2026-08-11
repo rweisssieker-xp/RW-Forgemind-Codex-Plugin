@@ -91,7 +91,7 @@ export async function runCouncil({ workspace, goal }) {
     ['product', 'Prioritize only the smallest outcome that removes a measurable user step.', 'Use completion time and independent success as the decision metric.'],
     ['customer', 'Do not infer demand from repository structure; validate the painful moment with qualified users.', 'No launch claim without customer or behavioral evidence.'],
     ['technical', 'Use a feature flag, observable events, and a rollback path for the first release.', 'Avoid irreversible data and architecture changes.'],
-    ['risk', 'Automation must show its rationale, boundary, and recovery route.', 'Pause for production access, external spend, or regulated decisions.'],
+    ['risk', 'Automation must show its rationale, boundary, and recovery route.', 'Pause for production access, external spend, or high-stakes decisions.'],
     ['contrarian', 'A better workflow may be less valuable than deleting it entirely.', 'Test whether the user would prefer no new interface.'],
   ].map(([role, position, condition]) => ({ role, position, condition, evidenceBasis: opportunity.evidence.basis }));
   const result = { schemaVersion: 1, status: 'passed', generatedAt: new Date().toISOString(), goal: outcome, goalSource, projectProfile, perspectives,

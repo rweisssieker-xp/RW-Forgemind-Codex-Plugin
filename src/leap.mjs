@@ -11,7 +11,7 @@ import { markdownTable, publishProjectDocument } from './project-documents.mjs';
 import { deriveProjectProfile } from './project-profile.mjs';
 import { invalidInput } from './errors.mjs';
 
-const HARD_STOPS = ['secrets-or-credentials', 'production-access', 'data-deletion', 'irreversible-migration', 'external-spend', 'legal-or-compliance-commitment', 'high-stakes-decision'];
+const HARD_STOPS = ['secrets-or-credentials', 'production-access', 'data-deletion', 'irreversible-migration', 'external-spend', 'high-stakes-decision'];
 
 export async function runLeap({ workspace, goal, mode = 'yolo', autonomy = {} }) {
   const root = await resolveWorkspace(workspace);

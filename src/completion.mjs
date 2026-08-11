@@ -24,7 +24,7 @@ export async function createCompletionContract({ workspace, goal, acceptance = [
     executionPolicy: {
       continueByDefault: true,
       evidenceGapsAreBlockers: false,
-      pauseOnlyFor: ['secrets-or-credentials', 'production-access', 'data-deletion', 'irreversible-migration', 'external-spend', 'legal-or-compliance-commitment', 'high-stakes-decision'],
+      pauseOnlyFor: ['secrets-or-credentials', 'production-access', 'data-deletion', 'irreversible-migration', 'external-spend', 'high-stakes-decision'],
     },
     project: { stacks: project.stacks, commands: project.commands },
     nextAction: 'Implement the first open criterion and continue until all achievable criteria are satisfied.',

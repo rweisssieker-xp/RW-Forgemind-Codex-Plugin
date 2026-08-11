@@ -20,7 +20,7 @@ test('Leap creates a disruption-first, evidence-labelled MVP contract with proje
     assert.equal(result.data.opportunity.marketChance.confidence, 'assumption-led');
     assert.match(result.data.businessCase.confidence, /illustrative/);
     assert.match(result.data.selectedBet.killCondition, /./);
-    assert.deepEqual(result.data.hardStopBoundary, ['secrets-or-credentials', 'production-access', 'data-deletion', 'irreversible-migration', 'external-spend', 'legal-or-compliance-commitment', 'high-stakes-decision']);
+    assert.deepEqual(result.data.hardStopBoundary, ['secrets-or-credentials', 'production-access', 'data-deletion', 'irreversible-migration', 'external-spend', 'high-stakes-decision']);
     assert.equal(result.data.completionContract.executionPolicy.continueByDefault, true);
     assert.equal(result.data.heroLoop.status, 'active');
     assert.equal(result.data.heroLoop.packets[0].state, 'ready');

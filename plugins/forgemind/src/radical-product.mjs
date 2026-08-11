@@ -88,7 +88,7 @@ export async function createShadowModePlan({ workspace, id }) {
       { name: 'approve', action: 'Execute only a user-approved reversible action.', exitEvidence: 'Functional, accessibility, and rollback evidence pass.' },
       { name: 'bounded-autopilot', action: 'Execute only pre-authorized low-risk actions inside limits.', exitEvidence: 'Guardrails, costs, exceptions, and undo remain within thresholds.' },
     ],
-    hardBoundaries: ['Never access secrets or production without approval.', 'Never make irreversible, destructive, externally billed, legal, or high-stakes decisions autonomously.', 'Stop and surface an exception when confidence, policy, or rollback requirements are unmet.'],
+    hardBoundaries: ['Never access secrets or production without approval.', 'Never make irreversible, destructive, externally billed, or high-stakes decisions autonomously.', 'Stop and surface an exception when confidence, policy, or rollback requirements are unmet.'],
     artifactPath: '.codex-orchestrator/product/radical-shadow-mode-latest.json', errors: [] };
   await persist(root, 'radical-shadow-mode-latest.json', plan);
   return plan;
