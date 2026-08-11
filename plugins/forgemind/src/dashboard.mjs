@@ -9,7 +9,7 @@ import { listForgeRecords } from './forge/store.mjs';
 
 const SECTION_IDS = [
   'verification', 'risks', 'readiness', 'proof', 'traceability', 'decisions', 'memory-conflicts', 'outcomes', 'routing', 'usp-experiments',
-  'experiments', 'discovery-scorecard', 'checkpoints', 'visual-qa', 'capabilities', 'composition', 'delegation', 'forge-trust', 'forge-strategy', 'forge-genome', 'forge-flight', 'forge-tournament', 'forge-shrink', 'forge-loop', 'forge-escrow', 'forge-federation',
+  'experiments', 'discovery-scorecard', 'checkpoints', 'visual-qa', 'capabilities', 'composition', 'delegation', 'hero-control', 'forge-trust', 'forge-strategy', 'forge-genome', 'forge-flight', 'forge-tournament', 'forge-shrink', 'forge-loop', 'forge-escrow', 'forge-federation',
 ];
 
 export async function generateDashboard({ workspace, sources = {} }) {
@@ -38,6 +38,7 @@ export async function generateDashboard({ workspace, sources = {} }) {
     capabilities: await readJson(root, `${reports}/capability-manifest-latest.json`),
     composition: await readJson(root, '.codex-orchestrator/composition/latest.json'),
     delegation: await readJson(root, '.codex-orchestrator/delegation/latest.json'),
+    'hero-control': await readJson(root, '.codex-orchestrator/hero/control-latest.json'),
     'forge-trust': await latestForgeRecord(root, ['trust/attestations', 'trust/contracts']),
     'forge-strategy': await latestForgeRecord(root, ['strategies/checks', 'strategies']),
     'forge-genome': await latestForgeRecord(root, ['genome']),

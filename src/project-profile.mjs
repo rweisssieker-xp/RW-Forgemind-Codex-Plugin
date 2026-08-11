@@ -23,7 +23,7 @@ export async function deriveProjectProfile({ workspace }) {
     readJson(path.join(root, 'package.json')), readText(path.join(root, 'README.md')), readDocs(path.join(root, 'docs', 'forgemind')), readSourceSignals(root), readConfig(root), listSignals({ workspace: root }), readJson(artifactStatePath(root, 'product-ops', 'research-latest.json')), readJson(artifactStatePath(root, 'product-ops', 'telemetry-latest.json')), listOutcomes({ workspace: root }),
   ]);
   const corpus = `${pkg ? JSON.stringify(pkg) : ''}\n${readme}\n${documents.join('\n')}\n${sources.join('\n')}`.toLowerCase();
-  const category = classify(corpus);
+  const category = configuredCategory(config?.value?.projectProfile?.productCategory, corpus);
   const categorySources = category.matches.length ? category.matches : ['no category-specific project signal'];
   const deployment = deriveDeployment(corpus, pkg);
   const integrations = integrationSignals(pkg, corpus);
@@ -39,8 +39,8 @@ export async function deriveProjectProfile({ workspace }) {
   const profile = {
     schemaVersion: 1, status: 'passed', generatedAt: new Date().toISOString(), workspace: root,
     productCategory: field(category.value, category.evidence, categorySources),
-    targetAudience: field(audience(category.value), category.evidence, categorySources),
-    primaryJob: field(job(category.value), category.evidence, categorySources),
+    targetAudience: field(config?.value?.projectProfile?.targetAudience ?? audience(category.value), config?.value?.projectProfile?.targetAudience ? 'observed' : category.evidence, config?.value?.projectProfile?.targetAudience ? [config.source] : categorySources),
+    primaryJob: field(config?.value?.projectProfile?.primaryJob ?? job(category.value), config?.value?.projectProfile?.primaryJob ? 'observed' : category.evidence, config?.value?.projectProfile?.primaryJob ? [config.source] : categorySources),
     deploymentModel: field(deployment.value, deployment.evidence, deployment.sources),
     differentiationApproach: field(differentiation(category.value, integrations), category.evidence, categorySources),
     technicalCostSignals: integrations.map((signal) => field(signal.value, 'observed', [signal.source])),
@@ -78,6 +78,7 @@ function classify(corpus) {
   for (const [value, pattern] of patterns) { const matches = [...corpus.matchAll(pattern)].map((item) => item[0]); if (matches.length) return { value, evidence: 'inferred', matches: [...new Set(matches)].slice(0, 5) }; }
   return { value: 'b2b-software', evidence: 'assumption', matches: ['generic fallback; no category-specific signal'] };
 }
+function configuredCategory(value, corpus) { const configured = String(value ?? '').trim(); return configured && COMMERCIAL[configured] ? { value: configured, evidence: 'observed', matches: ['project profile configuration'] } : classify(corpus); }
 function audience(category) { return ({ 'enterprise-operations': 'service operations teams', 'creator-saas': 'independent creators', 'commerce-platform': 'independent online merchants', 'learning-platform': 'training and enablement teams', 'developer-tools': 'software development teams', 'b2b-software': 'business teams' })[category]; }
 function job(category) { return ({ 'enterprise-operations': 'resolve operational incidents faster', 'creator-saas': 'produce publishable media faster', 'commerce-platform': 'operate merchant checkout and storefront workflows with less effort', 'learning-platform': 'create, assign, and measure learning programs with less manual coordination', 'developer-tools': 'ship and maintain software with less friction', 'b2b-software': 'complete a recurring business workflow with less effort' })[category]; }
 function differentiation(category, integrations) { return integrations.length ? `${category} workflow with existing integration context` : `${category} workflow automation hypothesis`; }

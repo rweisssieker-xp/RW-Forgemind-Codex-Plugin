@@ -29,6 +29,15 @@ node <plugin-root>/bin/forgemind.mjs leap advance --packet "<packet-id>" --outco
 
 For a failed check, diagnose and repair autonomously, then record `--outcome failed` with the real failure evidence. The Hero Loop retries the current packet up to its repair budget and only escalates after that budget, a stated hard stop, or an explicit evidence gate. Never mark a packet complete without real test, review, GUI, accessibility, risk, or readiness evidence.
 
+Use Hero Control before and during execution to coordinate the full local delivery system:
+
+```text
+node <plugin-root>/bin/forgemind.mjs hero run --artifacts workspace --json
+node <plugin-root>/bin/forgemind.mjs hero execute --run --artifacts workspace --json
+```
+
+Hero Control binds the current packet to a feature-flag experiment plan, configured local evidence connectors, release readiness, and an outcome benchmark. It runs no deployment, external API call, payment, pull request, or feature-flag mutation without an explicit configured adapter and the normal hard-stop approval.
+
 Do not ask routine design, naming, scope, or sequencing questions. Make the smallest compatible and reversible choices from the existing app. Run relevant tests, GUI states, accessibility checks, risk checks, and a release-readiness assessment before handoff. Treat missing market, customer, ROI, or test evidence as an explicit assumption or gap—not a reason to stop safe work or a reason to invent proof.
 
 Stop only before secrets or credentials, production access, data deletion, irreversible migrations, external spend, legal or compliance commitments, or high-stakes decisions. State the exact boundary, complete all independent work, and request only the minimum decision needed to proceed.

@@ -42,6 +42,12 @@ Ship creates an implementation contract, user-experience state coverage, and ver
 
 Leap joins app analysis, radical product selection, market and business-case assumptions, kill conditions, tester expectations, and the Ship handoff. In YOLO mode, its Hero Loop controls the mission through four evidence-gated packets: `implement-thin-slice`, `functional-proof`, `experience-proof`, and `risk-and-release`. It continues routine work autonomously, retries failed packets within its repair budget, and stops only at a defined hard stop, exhausted repair budget, or evidence gate. Use `leap status`, `leap continue`, or `leap advance --packet <id> --outcome passed|failed --evidence <reference>` after an interruption.
 
+## Hero Control: Mission Control for YOLO
+
+`hero run` creates the project-local control record at `.codex-orchestrator/hero/control-latest.json`. It combines the active mission, project profile, feature-flag experiment plan, configured connector contracts, release simulation, and benchmark status. Connector configuration is local in `forgemind.config.json`; supported modes are `manual-import` and explicit future `command-adapter` contracts. No connector is contacted automatically.
+
+`hero execute --run` runs only detected local verification commands. It neither writes production code on its own nor deploys, opens a pull request, spends money, or invokes an external API. The active Codex session performs routine implementation under the Hero Loop contract; explicit evidence advances the packet.
+
 ## One-Session MVP Launch compatibility
 
 `launch-mvp` remains an advanced CLI compatibility workflow for a resumable staged launch. It records market/MVP preparation, build, verification, and a tester evidence gate. New sessions should prefer Leap for autonomous discovery or Ship for a selected scope.

@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.35.0
+
+- Added Hero Control, a project-local YOLO mission control record that connects work packets, feature-flag experiments, connector contracts, release gates, and benchmark status without silent external side effects.
+- Added configured project-profile overrides and Hero Control visibility in the local dashboard.
+
 ## 1.34.0
 
 - Added the YOLO Hero Loop: ordered, evidence-gated autonomous work packets with real-evidence requirements, bounded repair retries, resumable progress, and hard-stop escalation.

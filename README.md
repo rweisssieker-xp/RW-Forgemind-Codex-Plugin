@@ -26,6 +26,8 @@ $forgemind-leap Analyze this existing app, select the strongest disruptive AI op
 
 Leap analyzes the repository, creates radical alternatives, calculates an evidence-labelled opportunity and business case, selects a reversible bet with a kill condition, and drives delivery through a YOLO Hero Loop. The loop advances implementation, functional proof, experience proof, and risk/release readiness as evidence-gated work packets; it retries bounded failures autonomously and never claims that an assumption is market evidence.
 
+Use `hero run` for the local Mission Control view. It joins the active Hero Loop with a feature-flag experiment contract, configured research/telemetry connectors, release gates, and a benchmark scorecard. `hero execute --run` runs local verification only; it never silently deploys, spends money, contacts an external service, or changes a remote feature flag.
+
 ## What makes it different
 
 - **Disruption before feature lists:** AI must eliminate or replace a user interaction, not merely decorate it.

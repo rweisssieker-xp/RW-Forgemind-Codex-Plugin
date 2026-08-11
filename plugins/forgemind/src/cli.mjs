@@ -21,6 +21,7 @@ const PRIMARY_COMMANDS = [
   'route',
   'signals',
   'compass',
+  'hero',
   'innovation',
   'leap',
   'spark',
@@ -242,6 +243,14 @@ export async function runCli(argv, context = {}) {
           ? await saveUspRecords({ workspace, records: createUspRecords(clusters) })
           : { schemaVersion: 1, status: 'passed', clusters, errors: [] };
       }
+    } else if (command === 'hero') {
+      const action = positionals[0] ?? 'run';
+      const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
+      const hero = await import('./hero-control.mjs');
+      if (action === 'run' || action === 'status') data = await hero.runHeroControl({ workspace });
+      else if (action === 'execute') data = await hero.executeHeroControl({ workspace, run: Boolean(options.run) });
+      else if (action === 'advance') data = await hero.advanceHeroMission({ workspace, packet: options.packet, outcome: options.outcome, evidence: options.evidence });
+      else throw invalidInput('FM_HERO_ACTION_INVALID', 'Hero supports run, status, execute, and advance.');
     } else if (command === 'compass') {
       const action = positionals[0] ?? 'run';
       if (action !== 'run') throw invalidInput('FM_COMPASS_ACTION_INVALID', 'Compass supports run.');
