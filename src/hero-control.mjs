@@ -9,6 +9,9 @@ import { benchmarkProduct, simulateRelease } from './product-os.mjs';
 import { resolveWorkspace } from './paths.mjs';
 import { verifyWorkspace } from './verify.mjs';
 import { createExperienceIntelligence } from './experience-intelligence.mjs';
+import { planUiTesting } from './product-ops-lab.mjs';
+import { scanRisks } from './risks.mjs';
+import { scoreReadiness } from './readiness.mjs';
 
 export async function runHeroControl({ workspace }) {
   const root = await resolveWorkspace(workspace);
@@ -38,8 +41,8 @@ export async function executeHeroControl({ workspace, run = false }) {
   const root = await resolveWorkspace(workspace);
   const control = await runHeroControl({ workspace: root });
   if (!run) return { ...control, status: 'dry-run', nextAction: 'Review the proposed mission packet, then rerun with hero execute --run to execute detected local verification commands.', errors: [] };
-  const verification = await verifyWorkspace({ workspace: root, run: true, allowInferred: false });
-  const result = { ...control, status: verification.status === 'passed' ? 'verified' : 'verification-failed', verification, nextAction: verification.status === 'passed' ? 'Record the real evidence against the current Hero Loop packet with leap advance.' : 'Repair the recorded verification failure autonomously, then rerun Hero Control.', errors: [] };
+  const [verification, uiTestPlan, risks, readiness] = await Promise.all([verifyWorkspace({ workspace: root, run: true, allowInferred: false }), planUiTesting({ workspace: root }), scanRisks({ workspace: root }), scoreReadiness({ workspace: root })]);
+  const result = { ...control, status: verification.status === 'passed' ? 'verified' : 'verification-failed', verification, uiTestPlan, risks, readiness, nextAction: verification.status === 'passed' ? 'Run the planned GUI and accessibility checks, then record the real evidence against the current Hero Loop packet with leap advance.' : 'Repair the recorded verification failure autonomously, then rerun Hero Control.', errors: [] };
   await writeJsonAtomic(artifactStatePath(root, 'hero', 'control-latest.json'), result);
   return result;
 }

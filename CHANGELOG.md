@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.38.0
+
+- Enforced project-only persistent artifact storage by disabling external artifact destinations.
+- Extended Hero Execute with UI-test planning, risk scanning, and release-readiness assessment; expanded project-profile source signals recursively.
+
 ## 1.37.0
 
 - Fixed Venture classification contamination by excluding all generated ForgeMind decision documents from project-profile signals.

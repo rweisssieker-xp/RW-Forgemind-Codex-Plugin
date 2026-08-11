@@ -48,7 +48,7 @@ Leap joins app analysis, radical product selection, market and business-case ass
 
 `hero run` creates the project-local control record at `.codex-orchestrator/hero/control-latest.json`. It combines the active mission, project profile, feature-flag experiment plan, configured connector contracts, release simulation, and benchmark status. Connector configuration is local in `forgemind.config.json`; supported modes are `manual-import` and explicit future `command-adapter` contracts. No connector is contacted automatically.
 
-`hero execute --run` runs only detected local verification commands. It neither writes production code on its own nor deploys, opens a pull request, spends money, or invokes an external API. The active Codex session performs routine implementation under the Hero Loop contract; explicit evidence advances the packet.
+`hero execute --run` runs detected local verification commands and generates the project UI-test plan, risk scan, and release-readiness record. It neither writes production code on its own nor deploys, opens a pull request, spends money, or invokes an external API. The active Codex session performs routine implementation under the Hero Loop contract; explicit evidence advances the packet.
 
 Hero Control also writes `.codex-orchestrator/experience-intelligence/latest.json`. It defines the visual-quality gate for every critical UI state, an AI UX Critic, outcome and trust metrics, adaptive role-based disclosure, multimodal intake, project-local confirmed-decision memory, counterfactual comparisons, and self-healing UX experiments. These are evidence contracts, not unsupported GUI-quality claims.
 

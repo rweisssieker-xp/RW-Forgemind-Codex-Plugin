@@ -13,24 +13,17 @@ export async function activateArtifactStore({ workspace, mode = 'workspace', art
   if (!['local', 'workspace', 'none'].includes(selectedMode)) {
     throw new ForgeMindError('FM_ARTIFACT_MODE_INVALID', 'Artifact mode must be local, workspace, or none.');
   }
-  if (artifactDir && !path.isAbsolute(artifactDir)) {
-    throw new ForgeMindError('FM_ARTIFACT_DIR_ABSOLUTE_REQUIRED', '--artifact-dir must be an absolute path.');
-  }
-  if (artifactDir && selectedMode === 'none') {
-    throw new ForgeMindError('FM_ARTIFACT_OPTIONS_CONFLICT', '--artifact-dir cannot be combined with --artifacts none.');
-  }
+  if (artifactDir) throw new ForgeMindError('FM_ARTIFACT_DIR_DISABLED', 'External artifact directories are disabled. ForgeMind stores persistent output only in the target project.', { exitCode: 2 });
 
   const projectLocal = selectedMode === 'local' ? 'workspace' : selectedMode;
-  const basePath = artifactDir
-    ? path.resolve(artifactDir)
-    : projectLocal === 'workspace'
+  const basePath = projectLocal === 'workspace'
       ? projectRoot
       : await mkdtemp(path.join(tmpdir(), 'forgemind-'));
   active = {
     projectRoot,
-    mode: artifactDir ? 'custom' : projectLocal,
+    mode: projectLocal,
     basePath,
-    stateRoot: projectLocal === 'workspace' && !artifactDir ? path.join(projectRoot, '.codex-orchestrator') : path.join(basePath, '.codex-orchestrator'),
+    stateRoot: projectLocal === 'workspace' ? path.join(projectRoot, '.codex-orchestrator') : path.join(basePath, '.codex-orchestrator'),
     temporary: projectLocal === 'none',
   };
   setArtifactRedirection(active.projectRoot, active.stateRoot);

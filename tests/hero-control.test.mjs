@@ -29,4 +29,6 @@ test('Hero Control connects mission, experiment, release, integrations, and benc
   assert.equal(result.data.experience.multimodalIntake.enabled, true);
   assert.equal(result.data.experience.counterfactuals.length, 2);
   assert.match(result.data.claimBoundary, /does not deploy/i);
+  const dryRun = await runCli(['hero', 'execute', '--workspace', workspace, '--json'], context());
+  assert.equal(dryRun.data.status, 'dry-run');
 });

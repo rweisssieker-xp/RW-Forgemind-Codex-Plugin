@@ -52,7 +52,7 @@ The target app remains the source for inspection, implementation, tests, signals
 - `--artifacts workspace` is the default.
 - `--artifacts local` is a backwards-compatible alias for `workspace`.
 - `--artifacts none` returns one-shot JSON without persistence.
-- `--artifact-dir <absolute-path>` is an explicit advanced override; it never targets the plugin installation.
+- External `--artifact-dir` destinations are disabled; persistent artifacts always remain in the target project.
 
 Every JSON response includes `artifactMode` and absolute `artifactPath`.
 

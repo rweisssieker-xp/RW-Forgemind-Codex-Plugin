@@ -53,4 +53,12 @@ test('decision records and generated state stay in the app project by default', 
   }
 });
 
+test('artifact storage rejects external destinations to preserve project isolation', async () => {
+  const workspace = await mkdtemp(path.join(tmpdir(), 'forgemind-artifact-isolation-'));
+  try {
+    const result = await runCli(['venture', 'run', '--workspace', workspace, '--artifact-dir', tmpdir(), '--json'], { stdout: sink(), stderr: sink() });
+    assert.equal(result.exitCode, 2);
+  } finally { await rm(workspace, { recursive: true, force: true }); }
+});
+
 function sink() { return { write() {} }; }
