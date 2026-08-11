@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.37.0
+
+- Fixed Venture classification contamination by excluding all generated ForgeMind decision documents from project-profile signals.
+- Added Experience Intelligence to Hero Control: visual quality gates, AI UX critique, outcome metrics, adaptive UI, multimodal intake, project-local AI memory, counterfactuals, and self-healing UX contracts.
+
 ## 1.36.0
 
 - Added the evidence-to-action Market Engine to Venture: ranked research, competitor mapping, bottom-up market sizing, willingness-to-pay and buyer hypotheses, regional boundaries, sensitivity sweeps, market memory, and decision-value experiments.

@@ -25,5 +25,8 @@ test('Hero Control connects mission, experiment, release, integrations, and benc
   assert.equal(result.data.integrations[0].mode, 'manual-import');
   assert.equal(result.data.release.action, 'run-readiness-before-release');
   assert.equal(result.data.benchmark.observedUsage, 'missing');
+  assert.equal(result.data.experience.qualityGate.status, 'planned');
+  assert.equal(result.data.experience.multimodalIntake.enabled, true);
+  assert.equal(result.data.experience.counterfactuals.length, 2);
   assert.match(result.data.claimBoundary, /does not deploy/i);
 });

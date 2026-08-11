@@ -50,6 +50,8 @@ Leap joins app analysis, radical product selection, market and business-case ass
 
 `hero execute --run` runs only detected local verification commands. It neither writes production code on its own nor deploys, opens a pull request, spends money, or invokes an external API. The active Codex session performs routine implementation under the Hero Loop contract; explicit evidence advances the packet.
 
+Hero Control also writes `.codex-orchestrator/experience-intelligence/latest.json`. It defines the visual-quality gate for every critical UI state, an AI UX Critic, outcome and trust metrics, adaptive role-based disclosure, multimodal intake, project-local confirmed-decision memory, counterfactual comparisons, and self-healing UX experiments. These are evidence contracts, not unsupported GUI-quality claims.
+
 ## One-Session MVP Launch compatibility
 
 `launch-mvp` remains an advanced CLI compatibility workflow for a resumable staged launch. It records market/MVP preparation, build, verification, and a tester evidence gate. New sessions should prefer Leap for autonomous discovery or Ship for a selected scope.

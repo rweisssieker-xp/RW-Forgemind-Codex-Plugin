@@ -8,6 +8,7 @@ import { deriveProjectProfile } from './project-profile.mjs';
 import { benchmarkProduct, simulateRelease } from './product-os.mjs';
 import { resolveWorkspace } from './paths.mjs';
 import { verifyWorkspace } from './verify.mjs';
+import { createExperienceIntelligence } from './experience-intelligence.mjs';
 
 export async function runHeroControl({ workspace }) {
   const root = await resolveWorkspace(workspace);
@@ -15,6 +16,7 @@ export async function runHeroControl({ workspace }) {
     getLeapStatus({ workspace: root }), deriveProjectProfile({ workspace: root }), benchmarkProduct({ workspace: root }), simulateRelease({ workspace: root }), readConfig(root),
   ]);
   const nextPacket = leap.leap?.heroLoop?.packets?.find((item) => item.state === 'ready') ?? null;
+  const experience = await createExperienceIntelligence({ workspace: root, projectProfile, mission: { nextPacket } });
   const result = {
     schemaVersion: 1, status: leap.status === 'missing' ? 'needs-leap-mission' : 'ready', generatedAt: new Date().toISOString(),
     mission: { status: leap.status, nextPacket, hardStops: leap.leap?.hardStopBoundary ?? [], repairBudget: leap.leap?.heroLoop?.maxRepairAttempts ?? null },
@@ -23,6 +25,7 @@ export async function runHeroControl({ workspace }) {
     integrations: integrations(config),
     release: { action: 'run-readiness-before-release', simulatedDecision: release.releaseDecision, evidenceBoundary: 'No deployment, pull request, feature-flag change, or external API call is made by Hero Control.' },
     benchmark: { product: benchmark.status, observedUsage: 'missing', next: 'Import representative run measurements before treating efficiency as proven.' },
+    experience,
     execution: { dryRunByDefault: true, command: 'hero execute --run', rule: 'Execution runs local project verification only; code changes remain controlled by the active Codex mission and hard-stop policy.' },
     claimBoundary: 'Hero Control coordinates local plans and recorded evidence. It does not deploy, spend money, contact external systems, or claim market validation without supplied evidence.',
     artifactPath: '.codex-orchestrator/hero/control-latest.json', errors: [],

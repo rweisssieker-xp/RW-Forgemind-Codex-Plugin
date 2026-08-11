@@ -95,3 +95,15 @@ test('Venture differentiates non-ITSM projects from their own product and operat
   assert.equal(left.data.financialModel.assumptionSources.monthlyPrice.evidence, 'inferred');
   assert.equal(right.data.financialModel.assumptionSources.monthlyPrice.evidence, 'inferred');
 });
+
+test('Venture ignores its generated documents when classifying a project', async (t) => {
+  const root = await fixture('forgemind-profile-provenance-', { name: 'aivana-platform', dependencies: { next: '^15.0.0' } }, '# Aivana\n\nAI automation platform for business workflows.');
+  await mkdir(path.join(root, 'docs', 'forgemind'), { recursive: true });
+  await writeFile(path.join(root, 'docs', 'forgemind', 'leap-decision.md'), '# Leap Decision\n\nLearning, training, course, and curriculum are mentioned in an AI-generated example.');
+  await writeFile(path.join(root, 'docs', 'forgemind', 'council-decision.md'), '# Council Decision\n\nEducation is not the product domain.');
+  t.after(() => rm(root, { recursive: true, force: true }));
+
+  const result = await runCli(['venture', 'run', '--workspace', root, '--goal', 'automate business workflows', '--json'], context());
+  assert.notEqual(result.data.projectProfile.productCategory.value, 'learning-platform');
+  assert.equal(result.data.projectProfile.evidenceSummary.projectDocuments, 0);
+});
