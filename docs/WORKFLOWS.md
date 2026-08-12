@@ -50,6 +50,10 @@ Leap joins app analysis, radical product selection, market and business-case ass
 
 Autopilot does not pause for ordinary design or implementation uncertainty. It holds for credentials, irreversible deletion/migration, external spend, production impact, legal/contractual decisions, platform-required approval, absent rollback, invalid evidence, or exhausted repair budget. Remote mutable actions remain disabled until a project explicitly configures an adapter and matching policy/grant; read-only connectors and sandbox feature flags use the same bounded adapter contract.
 
+## Portfolio and Transform: maximum AI-native USP discovery
+
+`$forgemind-portfolio` creates the complete deduplicated opportunity portfolio for the current repository. Every candidate states the interaction replaced, 10x outcome, AI core, moat, target user, metric, guardrails, kill condition, rollback, and evidence basis. `$forgemind-transform` discovers the portfolio and schedules its eligible candidates as isolated child Autopilot missions. The scheduler defaults to three concurrent candidates and serializes conflicts. Repository-derived ideas are hypotheses, never claims of market validation.
+
 ## Hero Control: Mission Control for YOLO
 
 `hero run` creates the project-local control record at `.codex-orchestrator/hero/control-latest.json`. It combines the active mission, project profile, feature-flag experiment plan, configured connector contracts, release simulation, and benchmark status. Connector configuration is local in `forgemind.config.json`; supported modes are `manual-import` and explicit future `command-adapter` contracts. No connector is contacted automatically.

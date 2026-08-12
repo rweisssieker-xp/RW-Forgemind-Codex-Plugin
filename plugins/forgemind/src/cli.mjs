@@ -25,6 +25,8 @@ const PRIMARY_COMMANDS = [
   'innovation',
   'leap',
   'autopilot',
+  'portfolio',
+  'transform',
   'spark',
   'evolve',
   'venture',
@@ -270,7 +272,8 @@ export async function runCli(argv, context = {}) {
       const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
       const action = positionals[0] ?? 'status';
       const autopilot = await import('./autopilot.mjs');
-      if (action === 'start') data = await autopilot.startAutopilot({ workspace, goal: options.goal, autonomy: parseJson(options.autonomy, 'FM_AUTOPILOT_AUTONOMY_INVALID') });
+      if (action === 'start' && options.mode === 'portfolio') { const portfolio = await import('./portfolio-autopilot.mjs'); data = await portfolio.discoverPortfolio({ workspace, goal: options.goal, maxConcurrentCandidates: options.concurrency }); }
+      else if (action === 'start') data = await autopilot.startAutopilot({ workspace, goal: options.goal, autonomy: parseJson(options.autonomy, 'FM_AUTOPILOT_AUTONOMY_INVALID') });
       else if (action === 'status') data = await autopilot.getAutopilotStatus({ workspace });
       else if (action === 'resume') data = await autopilot.resumeAutopilot({ workspace });
       else if (action === 'hold') data = await autopilot.holdAutopilot({ workspace, reason: options.reason });
@@ -282,6 +285,20 @@ export async function runCli(argv, context = {}) {
         const config = await loadConfig(workspace);
         data = await autopilot.runAutopilot({ workspace, executeAction: adapterAction ? (mission) => executeAdapter({ workspace, mission, action: { ...adapterAction, missionId: mission.id }, grant, policy: config.policy, config: config.redaction }) : null });
       } else throw invalidInput('FM_AUTOPILOT_ACTION_INVALID', 'Autopilot supports start, run, status, resume, and hold.');
+    } else if (command === 'portfolio') {
+      const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()); const action = positionals[0] ?? 'status'; const portfolio = await import('./portfolio-autopilot.mjs');
+      if (action === 'plan') { const { runPortfolio } = await import('./primary-journeys.mjs'); data = await runPortfolio({ workspace, goal: options.goal }); }
+      else if (action === 'discover') data = await portfolio.discoverPortfolio({ workspace, goal: options.goal, maxConcurrentCandidates: options.concurrency });
+      else if (action === 'status' || action === 'candidate') data = await portfolio.getPortfolio({ workspace });
+      else if (action === 'run' || action === 'resume') data = await portfolio.runPortfolio({ workspace });
+      else if (action === 'stop') data = await portfolio.stopCandidate({ workspace, id: options.id, reason: options.reason });
+      else throw invalidInput('FM_PORTFOLIO_ACTION_INVALID', 'Portfolio supports discover, status, run, resume, candidate, and stop.');
+    } else if (command === 'transform') {
+      const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()); const action = positionals[0] ?? 'run'; const portfolio = await import('./portfolio-autopilot.mjs');
+      if (action === 'run') { const discovered = await portfolio.discoverPortfolio({ workspace, goal: options.goal, maxConcurrentCandidates: options.concurrency }); data = await portfolio.runPortfolio({ workspace }); data.discoveredCandidates = discovered.candidates.length; }
+      else if (action === 'status') data = await portfolio.getPortfolio({ workspace });
+      else if (action === 'resume') data = await portfolio.runPortfolio({ workspace });
+      else throw invalidInput('FM_TRANSFORM_ACTION_INVALID', 'Transform supports run, status, and resume.');
     } else if (['spark', 'evolve', 'venture', 'council', 'showcase', 'ship'].includes(command)) {
       const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
       const action = positionals[0] ?? (command === 'council' ? 'decide' : 'run');

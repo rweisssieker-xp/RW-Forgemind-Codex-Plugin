@@ -14,6 +14,8 @@ ForgeMind is an evidence-first product innovation and delivery plugin for Codex,
 | Ship | `$forgemind-ship Implement and prove …` | Delivery contract, UX test surface, and release path. |
 | Leap | `$forgemind-leap Autonomously turn this app or idea into a disruptive MVP: …` | Developer automode from idea/app to bounded MVP. |
 | Autopilot | `$forgemind-autopilot Autonomously achieve this Codex goal end to end.` | Persistent goal-driven delivery with adapters, recovery, and evidence gates. |
+| Portfolio | `$forgemind-portfolio` | All evidence-labelled AI-native USP opportunities in the active repository. |
+| Transform | `$forgemind-transform` | Autonomous, reversible portfolio transformation of the active repository. |
 
 Every entry also works without appended text. For example, `$forgemind-spark` automatically runs its radical-idea default for the current project, and `$forgemind-leap` starts autonomous product mode. The first response states the derived goal; any supplied text overrides it.
 
@@ -26,6 +28,8 @@ $forgemind-autopilot Autonomously achieve this Codex goal end to end.
 ```
 
 Autopilot persists its mission, checkpoint and action receipts below `.codex-orchestrator/`. It makes routine implementation decisions itself, runs only explicitly scoped adapters, and recovers reversible failures within its retry budget. It pauses only for credentials, irreversible migrations or deletion, real spend, production impact, legal or contractual decisions, platform-required approval, or an objectively blocked goal.
+
+Use **Portfolio** and **Transform** to discover every defensible AI-native USP in the repository and run the eligible candidates as isolated child missions. The scheduler defaults to three concurrent, non-conflicting candidates; all candidates are retained as hypotheses with metrics, guardrails, kill conditions, and rollback paths.
 
 Use **Leap** for fast autonomous MVP work:
 

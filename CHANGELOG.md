@@ -4,6 +4,7 @@
 
 - Added `$forgemind-autopilot`, a persistent goal-driven delivery loop with scoped action adapters, idempotent receipts, mission checkpoints, evidence gates, and bounded recovery.
 - Added evidence-backed autonomy readiness: reversible adapter execution is required before `bounded-autopilot` is reported. Production, spend, irreversible, and remote mutable actions remain explicitly policy- and grant-gated.
+- Added `$forgemind-portfolio` and `$forgemind-transform`: repository-native discovery and autonomous scheduling of all evidence-labelled AI-native USP candidates.
 
 ## 1.38.2
 
