@@ -5,7 +5,7 @@ import path from 'node:path';
 import test from 'node:test';
 
 import { loadConfig } from '../src/config.mjs';
-import { DEFAULT_POLICY, evaluateAction, mergePolicies } from '../src/policy.mjs';
+import { DEFAULT_POLICY, evaluateAction, evaluateMissionGrant, mergePolicies } from '../src/policy.mjs';
 
 test('personal policy can become stricter but cannot weaken shared policy', () => {
   const shared = { actions: { deployment: 'deny', network: 'approval' }, protectedPaths: ['production/'] };
@@ -33,6 +33,12 @@ test('policy evaluates risky actions and protected paths with source rationale',
   assert.equal(deployment.decision, 'approval');
   assert.equal(protectedWrite.decision, 'deny');
   assert.equal(protectedWrite.source, 'protectedPaths');
+});
+
+test('mission grants expire and cannot override a protected path', () => {
+  const grant = { missionId: 'm1', expiresAt: '2999-01-01T00:00:00Z', operations: ['write'] };
+  const decision = evaluateMissionGrant({ policy: DEFAULT_POLICY, grant, action: { missionId: 'm1', operation: 'write', kind: 'write', path: '.env' } });
+  assert.equal(decision.decision, 'deny');
 });
 
 test('config loader validates versioned shared and personal configuration', async (t) => {

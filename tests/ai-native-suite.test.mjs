@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
@@ -20,5 +20,8 @@ test('AI-native suite persists all eight bounded product operations without exte
   assert.equal((await refactorPortfolio({ workspace })).candidates.length, 3);
   assert.equal((await truthLoop({ workspace, goal: 'Reduce approvals' })).evidence.state, 'assumption-only');
   assert.equal((await autonomyReadiness({ workspace })).allowedNow[0], 'observe');
+  await mkdir(path.join(workspace, '.codex-orchestrator', 'adapters', 'receipts'), { recursive: true });
+  await writeFile(path.join(workspace, '.codex-orchestrator', 'adapters', 'receipts', 'receipt.json'), JSON.stringify({ status: 'succeeded', rollback: { kind: 'none' } }));
+  assert.equal((await autonomyReadiness({ workspace })).mode, 'bounded-autopilot');
   assert.equal((await truthfulDemo({ workspace, title: 'Proof' })).status, 'passed');
 });

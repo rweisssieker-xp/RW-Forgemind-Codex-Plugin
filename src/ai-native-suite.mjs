@@ -62,8 +62,10 @@ export async function truthLoop({ workspace, goal }) {
 
 export async function autonomyReadiness({ workspace }) {
   const root = await resolveWorkspace(workspace); const artifacts = await Promise.all(['outcome-operator-latest.json', 'workflow-observer-latest.json', 'experiment-autopilot-latest.json', 'ai-provider-registry-latest.json'].map((name) => optionalArtifact(root, name)));
-  const available = artifacts.filter(Boolean).length; const score = available * 20;
-  return persist(root, 'autonomy-readiness-latest.json', { status: score >= 60 ? 'ready-with-notes' : 'risky', score, dimensions: { outcomeContract: Boolean(artifacts[0]), observedWorkflow: Boolean(artifacts[1]), experimentGuardrails: Boolean(artifacts[2]), providerGovernance: Boolean(artifacts[3]), reversibility: false }, allowedNow: ['observe', 'suggest'], blockedUntilEvidence: ['autonomous production', 'destructive action', 'external spend', 'irreversible migration', 'high-stakes decision'], next: 'Complete all dimensions and explicitly configure reversible action adapters before bounded autopilot.' });
+  const receipts = await listReceipts(root); const succeeded = receipts.some((receipt) => receipt.status === 'succeeded' && receipt.rollback);
+  const mission = await optionalJson(artifactStatePath(root, 'autopilot', 'mission-latest.json'));
+  const available = artifacts.filter(Boolean).length; const score = Math.min(100, available * 15 + (succeeded ? 40 : 0)); const mode = mission?.state === 'held' ? 'held' : succeeded ? 'bounded-autopilot' : available ? 'suggest' : 'observe';
+  return persist(root, 'autonomy-readiness-latest.json', { status: mode === 'bounded-autopilot' ? 'ready-with-notes' : mode === 'held' ? 'held' : 'risky', mode, score, dimensions: { outcomeContract: Boolean(artifacts[0]), observedWorkflow: Boolean(artifacts[1]), experimentGuardrails: Boolean(artifacts[2]), providerGovernance: Boolean(artifacts[3]), reversibility: succeeded }, allowedNow: mode === 'bounded-autopilot' ? ['observe', 'suggest', 'bounded-autopilot'] : ['observe', 'suggest'], blockedUntilEvidence: ['autonomous production', 'destructive action', 'external spend', 'irreversible migration', 'high-stakes decision'], next: succeeded ? 'Continue only through active scoped grants and reversible adapters.' : 'Execute a configured reversible adapter successfully before bounded autopilot.' });
 }
 
 export async function truthfulDemo({ workspace, title }) {
@@ -75,5 +77,6 @@ async function persist(root, name, body) { const value = { schemaVersion: 1, gen
 async function readArtifact(root, name) { const value = await optionalArtifact(root, name); if (!value) throw new ForgeMindError('FM_AI_NATIVE_ARTIFACT_MISSING', `Create the required artifact first: ${name}.`); return value; }
 async function optionalArtifact(root, name) { return optionalJson(artifactStatePath(root, 'product', name)); }
 async function optionalJson(file) { try { return JSON.parse(await readFile(file, 'utf8')); } catch { return null; } }
+async function listReceipts(root) { try { const { readdir } = await import('node:fs/promises'); const directory = artifactStatePath(root, 'adapters', 'receipts'); return Promise.all((await readdir(directory)).filter((name) => name.endsWith('.json')).map((name) => optionalJson(path.join(directory, name)))).then((items) => items.filter(Boolean)); } catch { return []; } }
 function required(value, code, message) { if (!String(value ?? '').trim()) throw invalidInput(code, message); return String(value).trim(); }
 function slug(value) { return String(value).toLowerCase().replaceAll(/[^a-z0-9]+/g, '-').replaceAll(/^-|-$/g, '').slice(0, 48) || 'experiment'; }

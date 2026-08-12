@@ -2,7 +2,7 @@
 
 ForgeMind is an evidence-first product innovation and delivery plugin for Codex, published by [Aivana GmbH](https://aivana-gmbh.ai/). It turns ideas and existing applications into disruptive, market-aware, testable MVPs while keeping a clear boundary between facts, assumptions, and release proof.
 
-## The seven starting points
+## The starting points
 
 | Start | Prompt | Result |
 | --- | --- | --- |
@@ -13,10 +13,19 @@ ForgeMind is an evidence-first product innovation and delivery plugin for Codex,
 | Council | `$forgemind-council Decide whether we should …` | One decision with visible dissent, metric, and kill condition. |
 | Ship | `$forgemind-ship Implement and prove …` | Delivery contract, UX test surface, and release path. |
 | Leap | `$forgemind-leap Autonomously turn this app or idea into a disruptive MVP: …` | Developer automode from idea/app to bounded MVP. |
+| Autopilot | `$forgemind-autopilot Autonomously achieve this Codex goal end to end.` | Persistent goal-driven delivery with adapters, recovery, and evidence gates. |
 
 Every entry also works without appended text. For example, `$forgemind-spark` automatically runs its radical-idea default for the current project, and `$forgemind-leap` starts autonomous product mode. The first response states the derived goal; any supplied text overrides it.
 
 ## Developer automode
+
+Use **Autopilot** when the Codex goal itself is the delivery contract:
+
+```text
+$forgemind-autopilot Autonomously achieve this Codex goal end to end.
+```
+
+Autopilot persists its mission, checkpoint and action receipts below `.codex-orchestrator/`. It makes routine implementation decisions itself, runs only explicitly scoped adapters, and recovers reversible failures within its retry budget. It pauses only for credentials, irreversible migrations or deletion, real spend, production impact, legal or contractual decisions, platform-required approval, or an objectively blocked goal.
 
 Use **Leap** for fast autonomous MVP work:
 
@@ -65,6 +74,8 @@ node <plugin-root>/bin/forgemind.mjs leap run --goal "Eliminate manual case tria
 node <plugin-root>/bin/forgemind.mjs compass run --goal "Choose the right ForgeMind journey" --artifacts workspace --json
 node <plugin-root>/bin/forgemind.mjs venture run --goal "Validate an AI triage copilot" --artifacts workspace --json
 node <plugin-root>/bin/forgemind.mjs ship plan --goal "Release a flagged, reversible MVP" --artifacts workspace --json
+node <plugin-root>/bin/forgemind.mjs autopilot start --goal "Implement and prove this Codex goal" --artifacts workspace --json
+node <plugin-root>/bin/forgemind.mjs autopilot run --artifacts workspace --json
 ```
 
 From a source checkout, the equivalent maintainer command is `node bin/forgemind.mjs`. The legacy `launch-mvp` CLI remains available for a resumable, staged MVP launch and tester-evidence loop; new work should start through Leap or Ship.

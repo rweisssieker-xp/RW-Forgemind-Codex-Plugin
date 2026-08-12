@@ -41,6 +41,15 @@ export function evaluateAction(policy, action) {
   return { decision: effect, source: `actions.${action.kind}`, rationale: `${owner} ${verb} ${action.kind}.` };
 }
 
+export function evaluateMissionGrant({ policy, grant, action, now = new Date() }) {
+  if (!grant || grant.missionId !== action.missionId) return { decision: 'deny', source: 'grant', rationale: 'A matching mission grant is required.' };
+  if (!grant.expiresAt || new Date(grant.expiresAt) <= now) return { decision: 'deny', source: 'grant', rationale: 'Grant is absent or expired.' };
+  if (!Array.isArray(grant.operations) || !grant.operations.includes(action.operation)) return { decision: 'deny', source: 'grant', rationale: 'Grant does not allow this operation.' };
+  if (Number.isInteger(grant.maxActions) && grant.maxActions < 1) return { decision: 'deny', source: 'grant', rationale: 'Grant action budget is exhausted.' };
+  const policyDecision = evaluateAction(policy, action);
+  return policyDecision.decision === 'allow' ? { decision: 'allow', source: 'grant', rationale: 'Policy and scoped grant allow this action.' } : policyDecision;
+}
+
 function applyLayer(policy, sources, layer, source, canReplace, rejections, options) {
   for (const [kind, requested] of Object.entries(layer.actions ?? {})) {
     if (!Object.hasOwn(EFFECT_RANK, requested)) continue;

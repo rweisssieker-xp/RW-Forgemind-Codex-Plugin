@@ -29,7 +29,7 @@ test('offline dashboard renders every evidence section and escapes imported cont
   const report = await generateDashboard({ workspace: root, sources: { traceability: 'docs-traceability.md' } });
   const html = await readFile(report.path, 'utf8');
 
-  for (const section of ['verification', 'risks', 'readiness', 'proof', 'traceability', 'decisions', 'memory-conflicts', 'outcomes', 'routing', 'usp-experiments', 'experiments', 'discovery-scorecard', 'checkpoints', 'visual-qa', 'capabilities', 'composition', 'delegation', 'hero-control', 'forge-trust', 'forge-strategy', 'forge-genome', 'forge-flight', 'forge-tournament', 'forge-shrink', 'forge-loop', 'forge-escrow', 'forge-federation']) {
+  for (const section of ['verification', 'risks', 'readiness', 'proof', 'traceability', 'decisions', 'memory-conflicts', 'outcomes', 'routing', 'usp-experiments', 'experiments', 'discovery-scorecard', 'checkpoints', 'visual-qa', 'capabilities', 'composition', 'delegation', 'hero-control', 'autopilot', 'forge-trust', 'forge-strategy', 'forge-genome', 'forge-flight', 'forge-tournament', 'forge-shrink', 'forge-loop', 'forge-escrow', 'forge-federation']) {
     assert.ok(report.sections.includes(section));
     assert.match(html, new RegExp(`id="${section}"`));
   }
@@ -47,5 +47,5 @@ test('dashboard renders explicit missing states instead of failing', async (t) =
   const html = await readFile(report.path, 'utf8');
 
   assert.match(html, /No evidence available/);
-  assert.equal(report.sections.length, 27);
+  assert.equal(report.sections.length, 28);
 });

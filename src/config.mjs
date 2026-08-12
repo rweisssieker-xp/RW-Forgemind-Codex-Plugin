@@ -20,6 +20,10 @@ export async function loadConfig(workspace, options = {}) {
     routing: {
       maxSkillTokens: Math.min(shared?.routing?.maxSkillTokens ?? 800, personal?.routing?.maxSkillTokens ?? 800),
     },
+    autopilot: {
+      adapters: [...(shared?.autopilot?.adapters ?? []), ...(personal?.autopilot?.adapters ?? [])],
+      connectors: [...(shared?.autopilot?.connectors ?? []), ...(personal?.autopilot?.connectors ?? [])],
+    },
     sources: {
       shared: shared ? 'forgemind.config.json' : null,
       personal: personal ? '.forgemind.local.json' : null,
@@ -44,7 +48,7 @@ async function readConfig(candidate) {
   if (config.schemaVersion !== 1) {
     throw new ForgeMindError('FM_CONFIG_INVALID', `${path.basename(candidate)} must use schemaVersion 1`);
   }
-  const unsupported = Object.keys(config).filter((key) => !['schemaVersion', 'policy', 'redaction', 'routing'].includes(key));
+  const unsupported = Object.keys(config).filter((key) => !['schemaVersion', 'policy', 'redaction', 'routing', 'autopilot'].includes(key));
   if (unsupported.length) {
     throw new ForgeMindError('FM_CONFIG_INVALID', `${path.basename(candidate)} has unsupported fields: ${unsupported.join(', ')}`);
   }

@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Added `$forgemind-autopilot`, a persistent goal-driven delivery loop with scoped action adapters, idempotent receipts, mission checkpoints, evidence gates, and bounded recovery.
+- Added evidence-backed autonomy readiness: reversible adapter execution is required before `bounded-autopilot` is reported. Production, spend, irreversible, and remote mutable actions remain explicitly policy- and grant-gated.
+
 ## 1.38.2
 
 - Removed release-audit license and policy-document checks, plus remaining legal/compliance prompts from product playbooks and USP templates.

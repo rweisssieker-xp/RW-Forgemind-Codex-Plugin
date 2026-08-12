@@ -44,6 +44,12 @@ Ship creates an implementation contract, user-experience state coverage, and ver
 
 Leap joins app analysis, radical product selection, market and business-case assumptions, kill conditions, tester expectations, and the Ship handoff. In YOLO mode, its Hero Loop controls the mission through four evidence-gated packets: `implement-thin-slice`, `functional-proof`, `experience-proof`, and `risk-and-release`. It continues routine work autonomously, retries failed packets within its repair budget, and stops only at a defined hard stop, exhausted repair budget, or evidence gate. Use `leap status`, `leap continue`, or `leap advance --packet <id> --outcome passed|failed --evidence <reference>` after an interruption.
 
+## Autopilot: goal-driven delivery
+
+`$forgemind-autopilot <Codex goal>` treats the goal as the outcome contract and continues through inspect, implementation, functional proof, review, risk/release proof, and handoff. `autopilot start --goal`, `autopilot run`, `autopilot status`, `autopilot resume`, and `autopilot hold` persist a project-local mission. `run` advances only with a configured adapter action and an unexpired mission grant; every action has a preview, idempotency key, compensating rollback declaration, policy result, and redacted receipt.
+
+Autopilot does not pause for ordinary design or implementation uncertainty. It holds for credentials, irreversible deletion/migration, external spend, production impact, legal/contractual decisions, platform-required approval, absent rollback, invalid evidence, or exhausted repair budget. Remote mutable actions remain disabled until a project explicitly configures an adapter and matching policy/grant; read-only connectors and sandbox feature flags use the same bounded adapter contract.
+
 ## Hero Control: Mission Control for YOLO
 
 `hero run` creates the project-local control record at `.codex-orchestrator/hero/control-latest.json`. It combines the active mission, project profile, feature-flag experiment plan, configured connector contracts, release simulation, and benchmark status. Connector configuration is local in `forgemind.config.json`; supported modes are `manual-import` and explicit future `command-adapter` contracts. No connector is contacted automatically.

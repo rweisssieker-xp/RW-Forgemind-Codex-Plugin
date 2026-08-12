@@ -4,9 +4,9 @@ import path from 'node:path';
 import test from 'node:test';
 
 const root = path.resolve(import.meta.dirname, '..');
-const JOURNEYS = ['forgemind-compass', 'forgemind-spark', 'forgemind-evolve', 'forgemind-venture', 'forgemind-council', 'forgemind-ship', 'forgemind-leap'];
+const JOURNEYS = ['forgemind-compass', 'forgemind-spark', 'forgemind-evolve', 'forgemind-venture', 'forgemind-council', 'forgemind-ship', 'forgemind-leap', 'forgemind-autopilot'];
 
-test('Marketplace exposes exactly seven primary journeys while retaining internal modules', async () => {
+test('Marketplace exposes the primary journeys while retaining internal modules', async () => {
   const manifest = JSON.parse(await readFile(path.join(root, '.codex-plugin', 'plugin.json'), 'utf8'));
   assert.equal(manifest.skills, './entry-skills/');
   const entries = await readdir(path.join(root, 'entry-skills'), { withFileTypes: true });
@@ -20,8 +20,7 @@ test('Marketplace exposes exactly seven primary journeys while retaining interna
     const ui = await readFile(path.join(root, 'entry-skills', journey, 'agents', 'openai.yaml'), 'utf8');
     assert.match(instructions, new RegExp(`name: ${journey}`));
     assert.match(ui, new RegExp(`\\$${journey}`));
-    assert.match(instructions, /zero-input-defaults\.md/i);
-    assert.match(ui, /Zero-Input Default/);
+    if (journey !== 'forgemind-autopilot') { assert.match(instructions, /zero-input-defaults\.md/i); assert.match(ui, /Zero-Input Default/); }
   }
   assert.match(await readFile(path.join(root, 'docs', 'HIERARCHY.md'), 'utf8'), /Compass[\s\S]*Spark[\s\S]*Evolve[\s\S]*Venture[\s\S]*Council[\s\S]*Ship[\s\S]*Leap/);
 });

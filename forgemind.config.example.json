@@ -21,5 +21,17 @@
   },
   "routing": {
     "maxSkillTokens": 800
+  },
+  "autopilot": {
+    "adapters": [
+      {
+        "type": "local-command",
+        "operations": ["test"],
+        "rollback": { "kind": "none", "reason": "Tests do not mutate project state." }
+      }
+    ],
+    "connectors": [
+      { "type": "read-only-connector", "environment": "sandbox", "operations": ["observe"], "rollback": { "kind": "none" } }
+    ]
   }
 }

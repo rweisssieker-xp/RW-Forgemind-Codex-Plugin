@@ -24,6 +24,7 @@ const PRIMARY_COMMANDS = [
   'hero',
   'innovation',
   'leap',
+  'autopilot',
   'spark',
   'evolve',
   'venture',
@@ -265,6 +266,22 @@ export async function runCli(argv, context = {}) {
       else if (action === 'status') data = await getLeapStatus({ workspace });
       else if (action === 'advance') data = await advanceLeap({ workspace, packet: options.packet, outcome: options.outcome, evidence: splitList(options.evidence) });
       else throw invalidInput('FM_LEAP_ACTION_INVALID', 'Leap supports run, continue, status, and advance.');
+    } else if (command === 'autopilot') {
+      const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
+      const action = positionals[0] ?? 'status';
+      const autopilot = await import('./autopilot.mjs');
+      if (action === 'start') data = await autopilot.startAutopilot({ workspace, goal: options.goal, autonomy: parseJson(options.autonomy, 'FM_AUTOPILOT_AUTONOMY_INVALID') });
+      else if (action === 'status') data = await autopilot.getAutopilotStatus({ workspace });
+      else if (action === 'resume') data = await autopilot.resumeAutopilot({ workspace });
+      else if (action === 'hold') data = await autopilot.holdAutopilot({ workspace, reason: options.reason });
+      else if (action === 'run') {
+        const { loadConfig } = await import('./config.mjs');
+        const { executeAdapter } = await import('./adapters.mjs');
+        const adapterAction = options.action ? parseJson(options.action, 'FM_AUTOPILOT_ACTION_INVALID') : null;
+        const grant = options.grant ? parseJson(options.grant, 'FM_AUTOPILOT_GRANT_INVALID') : null;
+        const config = await loadConfig(workspace);
+        data = await autopilot.runAutopilot({ workspace, executeAction: adapterAction ? (mission) => executeAdapter({ workspace, mission, action: { ...adapterAction, missionId: mission.id }, grant, policy: config.policy, config: config.redaction }) : null });
+      } else throw invalidInput('FM_AUTOPILOT_ACTION_INVALID', 'Autopilot supports start, run, status, resume, and hold.');
     } else if (['spark', 'evolve', 'venture', 'council', 'showcase', 'ship'].includes(command)) {
       const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
       const action = positionals[0] ?? (command === 'council' ? 'decide' : 'run');
