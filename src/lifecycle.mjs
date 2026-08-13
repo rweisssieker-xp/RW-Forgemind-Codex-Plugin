@@ -1,4 +1,4 @@
-import { chmod, cp, mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises';
+import { access, chmod, cp, mkdir, readFile, readdir, rename, rm, writeFile } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
 import path from 'node:path';
 
@@ -39,6 +39,7 @@ export async function installPlugin({ packagePath, home, requestedStatus, inject
     await rename(staging, target);
     installedTarget = true;
     commandWrapper = await installCommandWrapper({ home: root, target });
+    const selfTest = await runInstallationSelfTest({ home: root });
     return {
       schemaVersion: 1,
       status: requestedStatus ?? (previousManifest ? versionStatus(previousManifest.version, sourceManifest.version) : 'installed'),
@@ -48,6 +49,7 @@ export async function installPlugin({ packagePath, home, requestedStatus, inject
       commandPath: commandWrapper.path,
       commandSmokeTest: commandWrapper.smokeTest,
       reloadRequired: commandWrapper.reloadRequired,
+      selfTest,
     };
   } catch (error) {
     await rm(staging, { recursive: true, force: true });
@@ -79,6 +81,33 @@ export async function uninstallPlugin({ home, workspace, purgeData = false, appr
     dataPurged = true;
   }
   return { schemaVersion: 1, status: 'uninstalled', installPath: target, dataPurged };
+}
+
+export async function runInstallationSelfTest({ home }) {
+  const root = path.resolve(home);
+  const target = assertContained(root, path.join(root, 'plugins', 'forgemind'));
+  const manifest = await readManifest(target);
+  if (!manifest) throw new ForgeMindError('FM_INSTALLATION_MISSING', 'ForgeMind is not installed in this Codex home.');
+  const bin = assertContained(root, path.join(root, 'bin'));
+  const name = process.platform === 'win32' ? 'forgemind.cmd' : 'forgemind';
+  const commandPath = assertContained(root, path.join(bin, name));
+  await access(commandPath);
+  await smokeTestCommand(bin);
+  const packageReport = await verifyPackage(target);
+  const removedLegacyPluginArtifacts = await removeLegacyPluginArtifacts(root, target);
+  return {
+    schemaVersion: 1,
+    status: packageReport.status === 'passed' ? 'passed' : 'failed',
+    installedVersion: manifest.version,
+    installPath: target,
+    commandPath,
+    commandSmokeTest: 'passed',
+    packageValidation: packageReport.status,
+    removedLegacyPluginArtifacts,
+    remediation: removedLegacyPluginArtifacts.length ? 'Removed only legacy artifact directories within the installed plugin or ForgeMind backups. Project .codex-orchestrator directories were not touched.' : null,
+    reloadRequired: true,
+    errors: packageReport.errors,
+  };
 }
 
 async function installCommandWrapper({ home, target }) {
@@ -113,6 +142,28 @@ async function removeManagedCommandWrapper(home) {
   try {
     if ((await readFile(wrapper, 'utf8')).includes('ForgeMind managed wrapper')) await rm(wrapper, { force: true });
   } catch (error) { if (error.code !== 'ENOENT') throw error; }
+}
+
+async function removeLegacyPluginArtifacts(home, target) {
+  const roots = [target, assertContained(home, path.join(home, 'backups', 'forgemind'))];
+  const names = ['.codex-orchestrator', '.forgemind-artifacts'];
+  const found = [];
+  for (const root of roots) {
+    for (const candidate of await findNamedDirectories(root, names)) { await rm(candidate, { recursive: true, force: true }); found.push(candidate); }
+  }
+  return found;
+}
+
+async function findNamedDirectories(root, names) {
+  let entries;
+  try { entries = await readdir(root, { withFileTypes: true }); } catch (error) { if (error.code === 'ENOENT') return []; throw error; }
+  const found = [];
+  for (const entry of entries) {
+    const candidate = path.join(root, entry.name);
+    if (entry.isDirectory() && names.includes(entry.name)) found.push(candidate);
+    else if (entry.isDirectory()) found.push(...await findNamedDirectories(candidate, names));
+  }
+  return found;
 }
 
 async function readManifest(target) {

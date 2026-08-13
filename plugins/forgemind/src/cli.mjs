@@ -71,6 +71,7 @@ const PRIMARY_COMMANDS = [
   'eval',
   'package',
   'install',
+  'selftest',
   'uninstall',
 ];
 
@@ -99,7 +100,7 @@ export async function runCli(argv, context = {}) {
       return { exitCode: 0, data };
     }
     const { options, positionals } = parseOptions(argv.slice(1));
-    if (!['validate', 'package', 'install', 'uninstall', 'eval', 'legacy'].includes(command)) {
+    if (!['validate', 'package', 'install', 'selftest', 'uninstall', 'eval', 'legacy'].includes(command)) {
       await activateArtifactStore({
         workspace: options.workspace ?? context.cwd ?? process.cwd(),
         mode: options.artifacts === true ? 'workspace' : options.artifacts ?? 'workspace',
@@ -484,6 +485,9 @@ export async function runCli(argv, context = {}) {
     } else if (command === 'install') {
       const { installPlugin } = await import('./lifecycle.mjs');
       data = await installPlugin({ packagePath: options.package, home: options.home ?? await defaultHome() });
+    } else if (command === 'selftest') {
+      const { runInstallationSelfTest } = await import('./lifecycle.mjs');
+      data = await runInstallationSelfTest({ home: options.home ?? await defaultHome() });
     } else if (command === 'uninstall') {
       const { uninstallPlugin } = await import('./lifecycle.mjs');
       data = await uninstallPlugin({

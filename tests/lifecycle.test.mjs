@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { access, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 
-import { installPlugin, uninstallPlugin } from '../src/lifecycle.mjs';
+import { installPlugin, runInstallationSelfTest, uninstallPlugin } from '../src/lifecycle.mjs';
 import { buildPackages } from '../src/package.mjs';
 import { resolvePluginRoot } from '../src/paths.mjs';
 
@@ -24,6 +24,9 @@ test('install, upgrade, downgrade, and uninstall are recoverable in an isolated 
   assert.equal(installed.commandSmokeTest, 'passed');
   assert.match(installed.commandPath, process.platform === 'win32' ? /bin[\\/]forgemind\.cmd$/i : /bin[\\/]forgemind$/i);
   assert.match(await readFile(installed.commandPath, 'utf8'), /ForgeMind managed wrapper/);
+  assert.equal(installed.selfTest.installedVersion, currentVersion);
+  assert.deepEqual(installed.selfTest.removedLegacyPluginArtifacts, []);
+  assert.equal((await runInstallationSelfTest({ home })).commandSmokeTest, 'passed');
 
   const upgraded = await installPlugin({ packagePath, home });
   assert.equal(upgraded.status, 'upgraded');
@@ -46,6 +49,19 @@ test('install, upgrade, downgrade, and uninstall are recoverable in an isolated 
   const removed = await uninstallPlugin({ home });
   assert.equal(removed.status, 'uninstalled');
   await assert.rejects(readFile(installed.commandPath));
+});
+
+test('self-test removes only legacy plugin-local artifact directories', async (t) => {
+  const { packagePath, home } = await fixture(t);
+  const installed = await installPlugin({ packagePath, home });
+  const legacy = path.join(installed.installPath, '.codex-orchestrator');
+  const backupLegacy = path.join(home, 'backups', 'forgemind', 'old', '.forgemind-artifacts');
+  await mkdir(legacy, { recursive: true });
+  await mkdir(backupLegacy, { recursive: true });
+  const report = await runInstallationSelfTest({ home });
+  assert.deepEqual(report.removedLegacyPluginArtifacts.sort(), [legacy, backupLegacy].sort());
+  await assert.rejects(access(legacy));
+  await assert.rejects(access(backupLegacy));
 });
 
 test('an injected failure after backup restores the previous installation', async (t) => {

@@ -51,6 +51,16 @@ node <installed-plugin-root>/bin/forgemind.mjs product launch --goal "<outcome>"
 
 The primary journeys document this portable runner as their standard fallback. A plugin cannot safely modify the PATH of an already-running Codex process.
 
+## Post-update self-test
+
+After a controlled install, upgrade, or downgrade, ForgeMind automatically checks the installed version, checksum-valid package, managed wrapper, and `forgemind --help`. Run it again at any time with:
+
+```text
+node bin/forgemind.mjs selftest --home <Codex-home> --json
+```
+
+The result reports `installedVersion` and removes legacy `.codex-orchestrator` or `.forgemind-artifacts` directories found inside the installed plugin or its ForgeMind backups. It never touches project-owned `.codex-orchestrator` directories.
+
 ## Upgrade and downgrade
 
 Build or obtain the exact desired version, verify its package, and run the same install command. Installing a newer version is an upgrade; installing an older valid version is a downgrade. ForgeMind reports the lifecycle transition and retains a recoverable backup during the operation.
