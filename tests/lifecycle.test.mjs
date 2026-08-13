@@ -21,6 +21,9 @@ test('install, upgrade, downgrade, and uninstall are recoverable in an isolated 
   const installed = await installPlugin({ packagePath, home });
   assert.equal(installed.status, 'installed');
   assert.equal(JSON.parse(await readFile(path.join(installed.installPath, '.codex-plugin', 'plugin.json'))).version, currentVersion);
+  assert.equal(installed.commandSmokeTest, 'passed');
+  assert.match(installed.commandPath, process.platform === 'win32' ? /bin[\\/]forgemind\.cmd$/i : /bin[\\/]forgemind$/i);
+  assert.match(await readFile(installed.commandPath, 'utf8'), /ForgeMind managed wrapper/);
 
   const upgraded = await installPlugin({ packagePath, home });
   assert.equal(upgraded.status, 'upgraded');
@@ -42,6 +45,7 @@ test('install, upgrade, downgrade, and uninstall are recoverable in an isolated 
 
   const removed = await uninstallPlugin({ home });
   assert.equal(removed.status, 'uninstalled');
+  await assert.rejects(readFile(installed.commandPath));
 });
 
 test('an injected failure after backup restores the previous installation', async (t) => {

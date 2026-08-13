@@ -22,7 +22,7 @@ Choose an explicit destination under your Codex plugin home:
 node bin/forgemind.mjs install --source dist/plugin --destination <absolute-plugin-directory>
 ```
 
-The installer validates checksums, uses a staging directory, backs up an existing installation, swaps atomically where the platform permits, and restores the backup after a failed swap. Restart or reload Codex and run the runtime checks below.
+The controlled installer creates a managed command wrapper at `<Codex-home>/bin/forgemind.cmd` on Windows and `<Codex-home>/bin/forgemind` on macOS/Linux, then smoke-tests `forgemind --help`. Reload Codex so a supported installation can inherit that bin directory. The installer validates checksums, uses a staging directory, backs up an existing installation, swaps atomically where the platform permits, and restores the backup after a failed swap.
 
 ## Team marketplace installation
 
@@ -43,13 +43,13 @@ The GitHub Marketplace snapshot is intentionally a lean runtime payload. It cont
 
 ### If `forgemind` is not found
 
-This is expected for a Marketplace installation: Codex loads the ForgeMind skills but does not register a global shell executable. Invoke the embedded runner from the installed plugin root instead:
+This can occur for a Marketplace installation: Codex loads ForgeMind skills but does not run ForgeMind's lifecycle installer, so it cannot guarantee a global shell executable. Invoke the embedded runner from the installed plugin root instead:
 
 ```text
 node <installed-plugin-root>/bin/forgemind.mjs product launch --goal "<outcome>" --json
 ```
 
-The primary journeys use this portable runner path as their standard fallback. A global `forgemind` command is optional.
+The primary journeys document this portable runner as their standard fallback. A plugin cannot safely modify the PATH of an already-running Codex process.
 
 ## Upgrade and downgrade
 

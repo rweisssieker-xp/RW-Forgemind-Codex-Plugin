@@ -1,4 +1,5 @@
-import { cp, mkdir, readFile, rename, rm } from 'node:fs/promises';
+import { chmod, cp, mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises';
+import { spawn } from 'node:child_process';
 import path from 'node:path';
 
 import { loadConfig } from './config.mjs';
@@ -21,6 +22,8 @@ export async function installPlugin({ packagePath, home, requestedStatus, inject
     ? assertContained(root, path.join(root, 'backups', 'forgemind', `${previousManifest.version}-${Date.now()}`))
     : null;
   let backedUp = false;
+  let installedTarget = false;
+  let commandWrapper = null;
   try {
     await rm(staging, { recursive: true, force: true });
     await mkdir(path.dirname(staging), { recursive: true });
@@ -34,20 +37,27 @@ export async function installPlugin({ packagePath, home, requestedStatus, inject
     if (injectFailure === 'after-backup') throw new Error('Injected lifecycle failure');
     await mkdir(path.dirname(target), { recursive: true });
     await rename(staging, target);
+    installedTarget = true;
+    commandWrapper = await installCommandWrapper({ home: root, target });
     return {
       schemaVersion: 1,
       status: requestedStatus ?? (previousManifest ? versionStatus(previousManifest.version, sourceManifest.version) : 'installed'),
       version: sourceManifest.version,
       installPath: target,
       backupPath: backup,
+      commandPath: commandWrapper.path,
+      commandSmokeTest: commandWrapper.smokeTest,
+      reloadRequired: commandWrapper.reloadRequired,
     };
   } catch (error) {
     await rm(staging, { recursive: true, force: true });
+    if (commandWrapper?.created) await removeManagedCommandWrapper(root);
     if (backedUp) {
       await rm(target, { recursive: true, force: true });
       await rename(backup, target);
       throw new ForgeMindError('FM_INSTALL_ROLLED_BACK', `Installation failed and previous version was restored: ${error.message}`);
     }
+    if (installedTarget) await rm(target, { recursive: true, force: true });
     if (error instanceof ForgeMindError) throw error;
     throw new ForgeMindError('FM_INSTALL_FAILED', error.message);
   }
@@ -56,6 +66,7 @@ export async function installPlugin({ packagePath, home, requestedStatus, inject
 export async function uninstallPlugin({ home, workspace, purgeData = false, approvedPurge = false }) {
   const root = path.resolve(home);
   const target = assertContained(root, path.join(root, 'plugins', 'forgemind'));
+  await removeManagedCommandWrapper(root);
   await rm(target, { recursive: true, force: true });
   let dataPurged = false;
   if (purgeData) {
@@ -68,6 +79,40 @@ export async function uninstallPlugin({ home, workspace, purgeData = false, appr
     dataPurged = true;
   }
   return { schemaVersion: 1, status: 'uninstalled', installPath: target, dataPurged };
+}
+
+async function installCommandWrapper({ home, target }) {
+  const bin = assertContained(home, path.join(home, 'bin'));
+  const name = process.platform === 'win32' ? 'forgemind.cmd' : 'forgemind';
+  const wrapper = assertContained(home, path.join(bin, name));
+  await mkdir(bin, { recursive: true });
+  const runner = path.relative(bin, path.join(target, 'bin', 'forgemind.mjs')).replaceAll('\\', '/');
+  const content = process.platform === 'win32'
+    ? `@echo off\r\n:: ForgeMind managed wrapper\r\nnode "%~dp0${runner}" %*\r\n`
+    : `#!/bin/sh\n# ForgeMind managed wrapper\nexec node "$(dirname "$0")/${runner}" "$@"\n`;
+  await writeFile(wrapper, content, 'utf8');
+  if (process.platform !== 'win32') await chmod(wrapper, 0o755);
+  await smokeTestCommand(bin);
+  return { path: wrapper, smokeTest: 'passed', reloadRequired: true, created: true };
+}
+
+async function smokeTestCommand(bin) {
+  const environment = { ...process.env, PATH: `${bin}${path.delimiter}${process.env.PATH ?? ''}` };
+  await new Promise((resolve, reject) => {
+    const child = process.platform === 'win32'
+      ? spawn('cmd.exe', ['/d', '/s', '/c', 'forgemind --help'], { env: environment, stdio: 'ignore', windowsHide: true })
+      : spawn('forgemind', ['--help'], { env: environment, stdio: 'ignore' });
+    child.once('error', reject);
+    child.once('exit', (code) => code === 0 ? resolve() : reject(new Error(`forgemind --help exited with ${code}`)));
+  });
+}
+
+async function removeManagedCommandWrapper(home) {
+  const name = process.platform === 'win32' ? 'forgemind.cmd' : 'forgemind';
+  const wrapper = assertContained(home, path.join(home, 'bin', name));
+  try {
+    if ((await readFile(wrapper, 'utf8')).includes('ForgeMind managed wrapper')) await rm(wrapper, { force: true });
+  } catch (error) { if (error.code !== 'ENOENT') throw error; }
 }
 
 async function readManifest(target) {
