@@ -6,16 +6,20 @@ import { writeJsonAtomic } from './io.mjs';
 import { createInnovationPortfolio } from './innovation-portfolio.mjs';
 import { createRadicalPortfolio } from './radical-product.mjs';
 import { startChildAutopilot } from './autopilot.mjs';
+import { evaluateProductLab } from './product-lab.mjs';
 
 const DEFAULT_CONCURRENCY = 3;
 
 export async function discoverPortfolio({ workspace, goal, maxConcurrentCandidates = DEFAULT_CONCURRENCY }) {
+  const root = workspace;
   const [radical, innovation] = await Promise.all([createRadicalPortfolio({ workspace, goal }), createInnovationPortfolio({ workspace, goal })]);
   const candidates = dedupe([
     ...radical.ideas.map((item) => radicalCandidate(item)),
     ...innovation.candidates.map((item) => innovationCandidate(item)),
   ]).sort((left, right) => right.score - left.score || left.id.localeCompare(right.id));
-  const portfolio = { schemaVersion: 1, id: `portfolio-${Date.now().toString(36)}`, status: 'ready', goal: String(goal ?? '').trim() || radical.goal, maxConcurrentCandidates: finite(maxConcurrentCandidates, DEFAULT_CONCURRENCY), evidence: { basis: radical.evidence.basis, note: 'Candidates are repository-aware hypotheses. They are not market facts until supported by qualified evidence.' }, candidates, learningLedger: [], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), artifactPath: '.codex-orchestrator/portfolio/latest.json', errors: [] };
+  const labs = await Promise.all(candidates.map((candidate) => evaluateProductLab({ workspace: root, candidate })));
+  candidates.forEach((candidate, index) => { candidate.productLab = labs[index].adjustment; candidate.score += labs[index].adjustment.scoreDelta; candidate.state = labs[index].adjustment.state === 'held' ? 'held' : candidate.state; });
+  const portfolio = { schemaVersion: 1, id: `portfolio-${Date.now().toString(36)}`, status: 'ready', goal: String(goal ?? '').trim() || radical.goal, maxConcurrentCandidates: finite(maxConcurrentCandidates, DEFAULT_CONCURRENCY), evidence: { basis: radical.evidence.basis, note: 'Candidates are repository-aware hypotheses. They are not market facts until supported by qualified evidence.' }, candidates: candidates.sort((left, right) => right.score - left.score || left.id.localeCompare(right.id)), learningLedger: [], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), artifactPath: '.codex-orchestrator/portfolio/latest.json', errors: [] };
   await save(workspace, portfolio);
   return portfolio;
 }

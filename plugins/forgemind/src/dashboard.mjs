@@ -9,7 +9,7 @@ import { listForgeRecords } from './forge/store.mjs';
 
 const SECTION_IDS = [
   'verification', 'risks', 'readiness', 'proof', 'traceability', 'decisions', 'memory-conflicts', 'outcomes', 'routing', 'usp-experiments',
-  'experiments', 'discovery-scorecard', 'checkpoints', 'visual-qa', 'capabilities', 'composition', 'delegation', 'hero-control', 'autopilot', 'portfolio', 'forge-trust', 'forge-strategy', 'forge-genome', 'forge-flight', 'forge-tournament', 'forge-shrink', 'forge-loop', 'forge-escrow', 'forge-federation',
+  'experiments', 'discovery-scorecard', 'checkpoints', 'visual-qa', 'capabilities', 'composition', 'delegation', 'hero-control', 'autopilot', 'portfolio', 'twin', 'ux-evolution', 'product-lab', 'outcome-memory', 'growth', 'integration-mesh', 'forge-trust', 'forge-strategy', 'forge-genome', 'forge-flight', 'forge-tournament', 'forge-shrink', 'forge-loop', 'forge-escrow', 'forge-federation',
 ];
 
 export async function generateDashboard({ workspace, sources = {} }) {
@@ -41,6 +41,12 @@ export async function generateDashboard({ workspace, sources = {} }) {
     'hero-control': await readJson(root, '.codex-orchestrator/hero/control-latest.json'),
     autopilot: await readJson(root, '.codex-orchestrator/autopilot/mission-latest.json'),
     portfolio: await readJson(root, '.codex-orchestrator/portfolio/latest.json'),
+    twin: await readJson(root, '.codex-orchestrator/twin/latest.json'),
+    'ux-evolution': await readJson(root, '.codex-orchestrator/ux-evolution/latest.json'),
+    'product-lab': await readJson(root, '.codex-orchestrator/product-lab/latest.json'),
+    'outcome-memory': entries.filter((item) => item.type === 'outcome'),
+    growth: await readJson(root, '.codex-orchestrator/growth/latest.json'),
+    'integration-mesh': await readJson(root, '.codex-orchestrator/integration-mesh/latest.json'),
     'forge-trust': await latestForgeRecord(root, ['trust/attestations', 'trust/contracts']),
     'forge-strategy': await latestForgeRecord(root, ['strategies/checks', 'strategies']),
     'forge-genome': await latestForgeRecord(root, ['genome']),

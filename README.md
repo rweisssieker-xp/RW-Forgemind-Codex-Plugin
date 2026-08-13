@@ -16,6 +16,9 @@ ForgeMind is an evidence-first product innovation and delivery plugin for Codex,
 | Autopilot | `$forgemind-autopilot Autonomously achieve this Codex goal end to end.` | Persistent goal-driven delivery with adapters, recovery, and evidence gates. |
 | Portfolio | `$forgemind-portfolio` | All evidence-labelled AI-native USP opportunities in the active repository. |
 | Transform | `$forgemind-transform` | Autonomous, reversible portfolio transformation of the active repository. |
+| Twin | `$forgemind-twin` | Evidence-labelled live model of the active application. |
+| Evolve UI | `$forgemind-evolve-ui` | Reversible outcome-first UX experiment with proof gates. |
+| Growth | `$forgemind-growth` | Activation, retention, monetization, and value-proof experiments. |
 
 Every entry also works without appended text. For example, `$forgemind-spark` automatically runs its radical-idea default for the current project, and `$forgemind-leap` starts autonomous product mode. The first response states the derived goal; any supplied text overrides it.
 
@@ -30,6 +33,8 @@ $forgemind-autopilot Autonomously achieve this Codex goal end to end.
 Autopilot persists its mission, checkpoint and action receipts below `.codex-orchestrator/`. It makes routine implementation decisions itself, runs only explicitly scoped adapters, and recovers reversible failures within its retry budget. It pauses only for credentials, irreversible migrations or deletion, real spend, production impact, legal or contractual decisions, platform-required approval, or an objectively blocked goal.
 
 Use **Portfolio** and **Transform** to discover every defensible AI-native USP in the repository and run the eligible candidates as isolated child missions. The scheduler defaults to three concurrent, non-conflicting candidates; all candidates are retained as hypotheses with metrics, guardrails, kill conditions, and rollback paths.
+
+Use **Twin** before broad product work to map repository-derived workflows and knowledge gaps. **Evolve UI** stages a feature-flagged, reversible outcome-flow experiment. **Growth** creates non-contact, non-spend experiment plans. Portfolio invokes a six-perspective Product Lab, Autopilot retains verified Outcome Memory, and Transform prepares an Integration Mesh; none of these capabilities makes market, user, or production claims without evidence and an authorized adapter.
 
 Use **Leap** for fast autonomous MVP work:
 

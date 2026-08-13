@@ -3,6 +3,7 @@ import { readFile, rm } from 'node:fs/promises';
 import { artifactStatePath } from './artifact-store.mjs';
 import { invalidInput } from './errors.mjs';
 import { writeJsonAtomic } from './io.mjs';
+import { readOutcomeMemory, recordOutcomeMemory } from './outcome-memory.mjs';
 
 const HARD_STOPS = ['credentials-or-secrets', 'irreversible-deletion-or-migration', 'external-spend', 'production-impact', 'legal-or-contractual-decision', 'platform-required-approval'];
 const PACKETS = [
@@ -24,7 +25,8 @@ export async function startChildAutopilot({ workspace, goal, autonomy = {}, id }
 async function startMission({ workspace, goal, autonomy, key }) {
   const existing = await loadMission(workspace, key);
   if (existing && !['completed', 'blocked'].includes(existing.state)) return { schemaVersion: 1, status: 'ready', mission: existing, errors: [] };
-  const mission = { schemaVersion: 1, id: `autopilot-${Date.now().toString(36)}`, goal: String(goal ?? '').trim() || 'Inspect this project and autonomously achieve the highest-value safe outcome.', goalSource: goal ? 'explicit' : 'zero-input-default', definitionOfDone: 'The goal is implemented, verified, reviewed, evidence-backed, and handed off or held at a real hard stop.', state: 'ready', autonomy: { maxRepairAttempts: finite(autonomy.maxRepairAttempts, 2), maxActions: finite(autonomy.maxActions, 25), hardStops: HARD_STOPS }, packets: PACKETS.map(([id, instruction, requiredEvidence], index) => ({ id, instruction, requiredEvidence, state: index === 0 ? 'ready' : 'pending', attempts: 0, evidence: [], failures: [] })), receipts: [], checkpoints: [], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), errors: [] };
+  const outcomes = await readOutcomeMemory({ workspace });
+  const mission = { schemaVersion: 1, id: `autopilot-${Date.now().toString(36)}`, goal: String(goal ?? '').trim() || 'Inspect this project and autonomously achieve the highest-value safe outcome.', goalSource: goal ? 'explicit' : 'zero-input-default', definitionOfDone: 'The goal is implemented, verified, reviewed, evidence-backed, and handed off or held at a real hard stop.', state: 'ready', autonomy: { maxRepairAttempts: finite(autonomy.maxRepairAttempts, 2), maxActions: finite(autonomy.maxActions, 25), hardStops: HARD_STOPS }, priorOutcomes: outcomes.slice(-5).map((item) => ({ subject: item.subject, statement: item.statement, evidence: item.evidence })), packets: PACKETS.map(([id, instruction, requiredEvidence], index) => ({ id, instruction, requiredEvidence, state: index === 0 ? 'ready' : 'pending', attempts: 0, evidence: [], failures: [] })), receipts: [], checkpoints: [], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), errors: [] };
   await saveMission(workspace, mission, key);
   return { schemaVersion: 1, status: 'ready', mission, errors: [] };
 }
@@ -52,7 +54,7 @@ export async function runAutopilot({ workspace, executeAction }) {
   } finally { await releaseLease(workspace, mission.id); }
 }
 
-async function complete(workspace, mission, packet, evidence, receipt = null) { packet.state = 'verified'; packet.evidence = evidence; packet.completedAt = new Date().toISOString(); const next = mission.packets.find((item) => item.state === 'pending'); if (next) next.state = 'ready'; else mission.state = 'completed'; mission.updatedAt = new Date().toISOString(); mission.checkpoints.push({ at: mission.updatedAt, packet: packet.id, evidence }); await saveMission(workspace, mission); return { schemaVersion: 1, status: mission.state === 'completed' ? 'completed' : 'ready', mission, nextPacket: readyPacket(mission), receipt, errors: [] }; }
+async function complete(workspace, mission, packet, evidence, receipt = null) { packet.state = 'verified'; packet.evidence = evidence; packet.completedAt = new Date().toISOString(); const next = mission.packets.find((item) => item.state === 'pending'); if (next) next.state = 'ready'; else mission.state = 'completed'; mission.updatedAt = new Date().toISOString(); mission.checkpoints.push({ at: mission.updatedAt, packet: packet.id, evidence }); await saveMission(workspace, mission); await recordOutcomeMemory({ workspace, subject: mission.id, statement: `Verified ${packet.id} for ${mission.goal}.`, evidence }); return { schemaVersion: 1, status: mission.state === 'completed' ? 'completed' : 'ready', mission, nextPacket: readyPacket(mission), receipt, errors: [] }; }
 async function loadMission(workspace, key = 'mission-latest.json') { try { return JSON.parse(await readFile(missionPath(workspace, key), 'utf8')); } catch (error) { if (error.code === 'ENOENT') return null; throw error; } }
 async function requireMission(workspace) { const mission = await loadMission(workspace); if (!mission) throw invalidInput('FM_AUTOPILOT_MISSION_MISSING', 'Start an autopilot mission first.'); return mission; }
 async function saveMission(workspace, mission, key = 'mission-latest.json') { await writeJsonAtomic(missionPath(workspace, key), mission); }

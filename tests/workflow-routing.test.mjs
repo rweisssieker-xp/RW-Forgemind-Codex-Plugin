@@ -4,9 +4,9 @@ import path from 'node:path';
 import test from 'node:test';
 
 const root = path.resolve(import.meta.dirname, '..');
-const JOURNEYS = ['forgemind-compass', 'forgemind-leap', 'forgemind-council', 'forgemind-venture', 'forgemind-spark', 'forgemind-evolve', 'forgemind-ship', 'forgemind-autopilot', 'forgemind-portfolio', 'forgemind-transform'];
+const JOURNEYS = ['forgemind-compass', 'forgemind-leap', 'forgemind-council', 'forgemind-venture', 'forgemind-spark', 'forgemind-evolve', 'forgemind-ship', 'forgemind-autopilot', 'forgemind-portfolio', 'forgemind-transform', 'forgemind-twin', 'forgemind-evolve-ui', 'forgemind-growth'];
 
-test('eight journeys are the complete primary skill hierarchy', async () => {
+test('thirteen journeys are the complete primary skill hierarchy', async () => {
   const directories = [];
   for (const entry of (await readdir(path.join(root, 'entry-skills'), { withFileTypes: true })).filter((item) => item.isDirectory())) {
     try { await readFile(path.join(root, 'entry-skills', entry.name, 'SKILL.md'), 'utf8'); directories.push(entry.name); } catch {}
@@ -14,7 +14,7 @@ test('eight journeys are the complete primary skill hierarchy', async () => {
   directories.sort();
   assert.deepEqual(directories, [...JOURNEYS].sort());
   const compass = await readFile(path.join(root, 'entry-skills', 'forgemind-compass', 'SKILL.md'), 'utf8');
-  for (const journey of JOURNEYS.filter((name) => !['forgemind-compass', 'forgemind-autopilot', 'forgemind-portfolio', 'forgemind-transform'].includes(name))) assert.match(compass, new RegExp(`\\$${journey}`));
+  for (const journey of JOURNEYS.filter((name) => !['forgemind-compass', 'forgemind-autopilot', 'forgemind-portfolio', 'forgemind-transform', 'forgemind-twin', 'forgemind-evolve-ui', 'forgemind-growth'].includes(name))) assert.match(compass, new RegExp(`\\$${journey}`));
 });
 
 test('journeys load compact playbooks instead of a specialist-skill library', async () => {

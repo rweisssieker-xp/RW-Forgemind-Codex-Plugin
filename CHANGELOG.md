@@ -1,5 +1,10 @@
 # Changelog
 
+## [Unreleased]
+
+- Added the Application Intelligence Core: Live Application Twin, reversible UX Evolution, six-perspective Product Lab, verified Outcome Memory, bounded Growth Loop, and held-by-default Integration Mesh.
+- Added `$forgemind-twin`, `$forgemind-evolve-ui`, and `$forgemind-growth`; Portfolio, Autopilot, and Transform now consume the corresponding intelligence records.
+
 ## Unreleased
 
 - Added `$forgemind-autopilot`, a persistent goal-driven delivery loop with scoped action adapters, idempotent receipts, mission checkpoints, evidence gates, and bounded recovery.

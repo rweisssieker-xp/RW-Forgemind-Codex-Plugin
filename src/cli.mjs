@@ -27,6 +27,10 @@ const PRIMARY_COMMANDS = [
   'autopilot',
   'portfolio',
   'transform',
+  'twin',
+  'evolve-ui',
+  'growth',
+  'integration-mesh',
   'spark',
   'evolve',
   'venture',
@@ -297,10 +301,18 @@ export async function runCli(argv, context = {}) {
     } else if (command === 'transform') {
       const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
       const action = positionals[0] ?? 'run'; const portfolio = await import('./portfolio-autopilot.mjs');
-      if (action === 'run') { const discovered = await portfolio.discoverPortfolio({ workspace, goal: options.goal, maxConcurrentCandidates: options.concurrency }); data = await portfolio.runPortfolio({ workspace }); data.discoveredCandidates = discovered.candidates.length; }
+      if (action === 'run') { const discovered = await portfolio.discoverPortfolio({ workspace, goal: options.goal, maxConcurrentCandidates: options.concurrency }); const { createIntegrationMesh } = await import('./integration-mesh.mjs'); const mesh = await createIntegrationMesh({ workspace }); data = await portfolio.runPortfolio({ workspace }); data.discoveredCandidates = discovered.candidates.length; data.integrationMesh = mesh; }
       else if (action === 'status') data = await portfolio.getPortfolio({ workspace });
       else if (action === 'resume') data = await portfolio.runPortfolio({ workspace });
       else throw invalidInput('FM_TRANSFORM_ACTION_INVALID', 'Transform supports run, status, and resume.');
+    } else if (command === 'twin') {
+      const { createApplicationTwin } = await import('./application-twin.mjs'); data = await createApplicationTwin({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()) });
+    } else if (command === 'evolve-ui') {
+      const { createUxEvolution } = await import('./ux-evolution.mjs'); data = await createUxEvolution({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), workflowId: options.workflow });
+    } else if (command === 'growth') {
+      const { createGrowthLoop } = await import('./growth-loop.mjs'); data = await createGrowthLoop({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), goal: options.goal });
+    } else if (command === 'integration-mesh') {
+      const { createIntegrationMesh } = await import('./integration-mesh.mjs'); data = await createIntegrationMesh({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), integrations: options.integrations ? parseJson(options.integrations, 'FM_MESH_INTEGRATIONS_INVALID') : [] });
     } else if (['spark', 'evolve', 'venture', 'council', 'showcase', 'ship'].includes(command)) {
       const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
       const action = positionals[0] ?? (command === 'council' ? 'decide' : 'run');

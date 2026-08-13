@@ -1,0 +1,6 @@
+interface:
+  display_name: "ForgeMind Growth"
+  short_description: "Plan bounded activation, retention, monetization, and value proof."
+  default_prompt: "Use $forgemind-growth to create bounded evidence-labelled growth experiments."
+policy:
+  allow_implicit_invocation: false

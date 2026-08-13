@@ -54,6 +54,10 @@ Autopilot does not pause for ordinary design or implementation uncertainty. It h
 
 `$forgemind-portfolio` creates the complete deduplicated opportunity portfolio for the current repository. Every candidate states the interaction replaced, 10x outcome, AI core, moat, target user, metric, guardrails, kill condition, rollback, and evidence basis. `$forgemind-transform` discovers the portfolio and schedules its eligible candidates as isolated child Autopilot missions. The scheduler defaults to three concurrent candidates and serializes conflicts. Repository-derived ideas are hypotheses, never claims of market validation.
 
+## Application Intelligence: Twin, Evolve UI, and Growth
+
+`$forgemind-twin` creates a repository-derived Live Application Twin: interfaces, domain concepts, workflow hypotheses, integration candidates, and explicit knowledge gaps. `$forgemind-evolve-ui` turns one mapped workflow into a feature-flagged, reversible outcome-first experiment with functional, visual, accessibility, baseline, and rollback evidence gates. `$forgemind-growth` creates bounded activation, retention, monetization, and value-proof experiments; it never contacts users, changes billing, spends money, or enables production connectors. Portfolio applies a six-perspective Product Lab before ranking candidates, Autopilot reads and records verified Outcome Memory, and Transform writes an Integration Mesh action plan. External and mutable actions still require explicit adapters, policy, grants, idempotency, receipts, and rollback.
+
 ## Hero Control: Mission Control for YOLO
 
 `hero run` creates the project-local control record at `.codex-orchestrator/hero/control-latest.json`. It combines the active mission, project profile, feature-flag experiment plan, configured connector contracts, release simulation, and benchmark status. Connector configuration is local in `forgemind.config.json`; supported modes are `manual-import` and explicit future `command-adapter` contracts. No connector is contacted automatically.

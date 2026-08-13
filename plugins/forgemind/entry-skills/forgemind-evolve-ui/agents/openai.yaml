@@ -1,0 +1,6 @@
+interface:
+  display_name: "ForgeMind Evolve UI"
+  short_description: "Stage a reversible outcome-first UX experiment."
+  default_prompt: "Use $forgemind-evolve-ui to stage a reversible outcome-first UX experiment."
+policy:
+  allow_implicit_invocation: false
