@@ -49,4 +49,7 @@ test('installation and release docs use the portable lifecycle commands', async 
   for (const operation of ['install', 'upgrade', 'downgrade', 'uninstall', 'rollback']) {
     assert.match(install, new RegExp(operation, 'i'));
   }
+  assert.match(install, /install --source <package-path> --home <codex-home>/);
+  assert.match(install, /--plugin-path <codex-home>\/plugins\/forgemind/);
+  assert.match(install, /--destination.*compatible alias/i);
 });

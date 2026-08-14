@@ -3,15 +3,14 @@ import { spawn } from 'node:child_process';
 import path from 'node:path';
 
 import { loadConfig } from './config.mjs';
-import { ForgeMindError } from './errors.mjs';
+import { ForgeMindError, invalidInput } from './errors.mjs';
 import { assertContained } from './paths.mjs';
 import { evaluateAction } from './policy.mjs';
 import { verifyPackage } from './package.mjs';
 
-export async function installPlugin({ packagePath, home, requestedStatus, injectFailure }) {
+export async function installPlugin({ packagePath, home, pluginPath, requestedStatus, injectFailure }) {
   const source = path.resolve(packagePath);
-  const root = path.resolve(home);
-  const target = assertContained(root, path.join(root, 'plugins', 'forgemind'));
+  const { home: root, target } = await resolveInstallationTarget({ home, pluginPath });
   const sourceReport = await verifyPackage(source);
   if (sourceReport.status !== 'passed') throw new ForgeMindError('FM_PACKAGE_INVALID', 'Installation package validation failed.', { details: sourceReport.errors });
   await mkdir(root, { recursive: true });
@@ -62,17 +61,16 @@ export async function installPlugin({ packagePath, home, requestedStatus, inject
   }
 }
 
-export async function runInstallationSelfTest({ home }) {
-  const root = path.resolve(home); const target = assertContained(root, path.join(root, 'plugins', 'forgemind')); const manifest = await readManifest(target);
+export async function runInstallationSelfTest({ home, pluginPath }) {
+  const { home: root, target } = await resolveInstallationTarget({ home, pluginPath }); const manifest = await readManifest(target);
   if (!manifest) throw new ForgeMindError('FM_INSTALLATION_MISSING', 'ForgeMind is not installed in this Codex home.');
   const bin = assertContained(root, path.join(root, 'bin')); const name = process.platform === 'win32' ? 'forgemind.cmd' : 'forgemind'; const commandPath = assertContained(root, path.join(bin, name));
   await access(commandPath); await smokeTestCommand(bin); const packageReport = await verifyPackage(target); const removedLegacyPluginArtifacts = await removeLegacyPluginArtifacts(root, target);
   return { schemaVersion: 1, status: packageReport.status === 'passed' ? 'passed' : 'failed', installedVersion: manifest.version, installPath: target, commandPath, commandSmokeTest: 'passed', packageValidation: packageReport.status, removedLegacyPluginArtifacts, remediation: removedLegacyPluginArtifacts.length ? 'Removed only legacy artifact directories within the installed plugin or ForgeMind backups. Project .codex-orchestrator directories were not touched.' : null, reloadRequired: true, errors: packageReport.errors };
 }
 
-export async function uninstallPlugin({ home, workspace, purgeData = false, approvedPurge = false }) {
-  const root = path.resolve(home);
-  const target = assertContained(root, path.join(root, 'plugins', 'forgemind'));
+export async function uninstallPlugin({ home, pluginPath, workspace, purgeData = false, approvedPurge = false }) {
+  const { home: root, target } = await resolveInstallationTarget({ home, pluginPath });
   await removeManagedCommandWrapper(root);
   await rm(target, { recursive: true, force: true });
   let dataPurged = false;
@@ -87,6 +85,8 @@ export async function uninstallPlugin({ home, workspace, purgeData = false, appr
   }
   return { schemaVersion: 1, status: 'uninstalled', installPath: target, dataPurged };
 }
+
+export async function resolveInstallationTarget({ home, pluginPath }) { if (pluginPath) { const target = path.resolve(pluginPath); if (path.basename(target) !== 'forgemind' || path.basename(path.dirname(target)) !== 'plugins') throw invalidInput('FM_INSTALL_TARGET_INVALID', '--plugin-path must end in plugins/forgemind.'); const root = path.dirname(path.dirname(target)); return { home: root, target: assertContained(root, target) }; } const root = path.resolve(home); return { home: root, target: assertContained(root, path.join(root, 'plugins', 'forgemind')) }; }
 
 async function installCommandWrapper({ home, target }) { const bin = assertContained(home, path.join(home, 'bin')); const name = process.platform === 'win32' ? 'forgemind.cmd' : 'forgemind'; const wrapper = assertContained(home, path.join(bin, name)); await mkdir(bin, { recursive: true }); const runner = path.relative(bin, path.join(target, 'bin', 'forgemind.mjs')).replaceAll('\\', '/'); const content = process.platform === 'win32' ? `@echo off\r\n:: ForgeMind managed wrapper\r\nnode "%~dp0${runner}" %*\r\n` : `#!/bin/sh\n# ForgeMind managed wrapper\nexec node "$(dirname "$0")/${runner}" "$@"\n`; await writeFile(wrapper, content, 'utf8'); if (process.platform !== 'win32') await chmod(wrapper, 0o755); await smokeTestCommand(bin); return { path: wrapper, smokeTest: 'passed', reloadRequired: true, created: true }; }
 async function smokeTestCommand(bin) { const environment = { ...process.env, PATH: `${bin}${path.delimiter}${process.env.PATH ?? ''}` }; await new Promise((resolve, reject) => { const child = process.platform === 'win32' ? spawn('cmd.exe', ['/d', '/s', '/c', 'forgemind --help'], { env: environment, stdio: 'ignore', windowsHide: true }) : spawn('forgemind', ['--help'], { env: environment, stdio: 'ignore' }); child.once('error', reject); child.once('exit', (code) => code === 0 ? resolve() : reject(new Error(`forgemind --help exited with ${code}`))); }); }

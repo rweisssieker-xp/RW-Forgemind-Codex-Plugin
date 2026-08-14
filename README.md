@@ -76,6 +76,8 @@ Every JSON response includes `artifactMode` and absolute `artifactPath`.
 
 ## Portable CLI
 
+For controlled installation, use `node bin/forgemind.mjs install --source <package-path> --home <codex-home>`. ForgeMind installs only to `<codex-home>/plugins/forgemind`; `--destination` is a compatible alias and `--plugin-path <codex-home>/plugins/forgemind` is available for explicit local or team targets.
+
 Marketplace installation makes the skills available in Codex; it does not require a global shell command. The portable runner is:
 
 ```text

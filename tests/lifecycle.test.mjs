@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 
-import { installPlugin, runInstallationSelfTest, uninstallPlugin } from '../src/lifecycle.mjs';
+import { installPlugin, resolveInstallationTarget, runInstallationSelfTest, uninstallPlugin } from '../src/lifecycle.mjs';
 import { runCli } from '../src/cli.mjs';
 import { buildPackages } from '../src/package.mjs';
 import { resolvePluginRoot } from '../src/paths.mjs';
@@ -15,6 +15,17 @@ async function fixture(t) {
   const built = await buildPackages({ pluginRoot: await resolvePluginRoot(), outputRoot: path.join(root, 'build') });
   return { root, packagePath: built.pluginPath, home: path.join(root, 'home') };
 }
+
+test('installation targets resolve only to the ForgeMind plugin directory', async (t) => {
+  const { root, home } = await fixture(t);
+  const target = path.join(home, 'plugins', 'forgemind');
+  assert.deepEqual(await resolveInstallationTarget({ home }), { home, target });
+  assert.deepEqual(await resolveInstallationTarget({ pluginPath: target }), { home, target });
+  await assert.rejects(
+    resolveInstallationTarget({ pluginPath: path.join(root, 'plugins', 'other-plugin') }),
+    (error) => error.code === 'FM_INSTALL_TARGET_INVALID',
+  );
+});
 
 test('install, upgrade, downgrade, and uninstall are recoverable in an isolated home', async (t) => {
   const { root, packagePath, home } = await fixture(t);
@@ -75,6 +86,17 @@ test('documented source and destination CLI aliases install and self-test correc
   const selfTest = await runCli(['selftest', '--destination', home], { stdout: output, stderr: output });
   assert.equal(selfTest.exitCode, 0);
   assert.equal(selfTest.data.installedVersion, installed.data.version);
+});
+
+test('CLI accepts only an explicit ForgeMind plugin path', async (t) => {
+  const { root, packagePath, home } = await fixture(t);
+  const pluginPath = path.join(root, 'explicit-home', 'plugins', 'forgemind');
+  const output = { write() {} };
+  const installed = await runCli(['install', '--source', packagePath, '--home', home, '--plugin-path', pluginPath], { stdout: output, stderr: output });
+  assert.equal(installed.exitCode, 0);
+  assert.equal(installed.data.installPath, pluginPath);
+  const rejected = await runCli(['install', '--source', packagePath, '--plugin-path', path.join(root, 'plugins', 'other-plugin')], { stdout: output, stderr: output });
+  assert.equal(rejected.exitCode, 2);
 });
 
 test('an injected failure after backup restores the previous installation', async (t) => {
