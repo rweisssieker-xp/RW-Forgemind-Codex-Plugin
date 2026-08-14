@@ -5,6 +5,7 @@ import path from 'node:path';
 import test from 'node:test';
 
 import { installPlugin, runInstallationSelfTest, uninstallPlugin } from '../src/lifecycle.mjs';
+import { runCli } from '../src/cli.mjs';
 import { buildPackages } from '../src/package.mjs';
 import { resolvePluginRoot } from '../src/paths.mjs';
 
@@ -62,6 +63,18 @@ test('self-test removes only legacy plugin-local artifact directories', async (t
   assert.deepEqual(report.removedLegacyPluginArtifacts.sort(), [legacy, backupLegacy].sort());
   await assert.rejects(access(legacy));
   await assert.rejects(access(backupLegacy));
+});
+
+test('documented source and destination CLI aliases install and self-test correctly', async (t) => {
+  const { root, packagePath } = await fixture(t);
+  const home = path.join(root, 'documented-home');
+  const output = { write() {} };
+  const installed = await runCli(['install', '--source', packagePath, '--destination', home], { stdout: output, stderr: output });
+  assert.equal(installed.exitCode, 0);
+  assert.equal(installed.data.status, 'installed');
+  const selfTest = await runCli(['selftest', '--destination', home], { stdout: output, stderr: output });
+  assert.equal(selfTest.exitCode, 0);
+  assert.equal(selfTest.data.installedVersion, installed.data.version);
 });
 
 test('an injected failure after backup restores the previous installation', async (t) => {

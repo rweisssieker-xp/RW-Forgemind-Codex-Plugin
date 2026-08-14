@@ -484,14 +484,14 @@ export async function runCli(argv, context = {}) {
       data = await buildPackages({ pluginRoot, outputRoot: options.output });
     } else if (command === 'install') {
       const { installPlugin } = await import('./lifecycle.mjs');
-      data = await installPlugin({ packagePath: options.package, home: options.home ?? await defaultHome() });
+      data = await installPlugin({ packagePath: options.package ?? options.source, home: options.home ?? options.destination ?? await defaultHome() });
     } else if (command === 'selftest') {
       const { runInstallationSelfTest } = await import('./lifecycle.mjs');
-      data = await runInstallationSelfTest({ home: options.home ?? await defaultHome() });
+      data = await runInstallationSelfTest({ home: options.home ?? options.destination ?? await defaultHome() });
     } else if (command === 'uninstall') {
       const { uninstallPlugin } = await import('./lifecycle.mjs');
       data = await uninstallPlugin({
-        home: options.home ?? await defaultHome(),
+        home: options.home ?? options.destination ?? await defaultHome(),
         workspace: options.workspace,
         purgeData: Boolean(options['purge-data']),
         approvedPurge: Boolean(options.approved),
