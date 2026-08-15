@@ -20,6 +20,10 @@ test('Marketplace exposes the primary journeys while retaining internal modules'
     const ui = await readFile(path.join(root, 'entry-skills', journey, 'agents', 'openai.yaml'), 'utf8');
     assert.match(instructions, new RegExp(`name: ${journey}`));
     assert.match(ui, new RegExp(`\\$${journey}`));
+    if (journey === 'forgemind-autopilot') {
+      assert.match(instructions, /node <plugin-root>\/bin\/forgemind\.mjs autopilot start/);
+      assert.doesNotMatch(instructions, /Run `forgemind autopilot start/);
+    }
     if (!['forgemind-autopilot', 'forgemind-portfolio', 'forgemind-transform', 'forgemind-twin', 'forgemind-evolve-ui', 'forgemind-growth'].includes(journey)) { assert.match(instructions, /zero-input-defaults\.md/i); assert.match(ui, /Zero-Input Default/); }
   }
   assert.match(await readFile(path.join(root, 'docs', 'HIERARCHY.md'), 'utf8'), /Compass[\s\S]*Spark[\s\S]*Evolve[\s\S]*Venture[\s\S]*Council[\s\S]*Ship[\s\S]*Leap/);

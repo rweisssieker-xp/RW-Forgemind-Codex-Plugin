@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Fixed Autopilot skill commands to use ForgeMind's bundled runner, which is available in Marketplace installations.
+- Fixed project-profile classification so historical ForgeMind reports cannot override current repository signals.
 - Added the Application Intelligence Core: Live Application Twin, reversible UX Evolution, six-perspective Product Lab, verified Outcome Memory, bounded Growth Loop, and held-by-default Integration Mesh.
 - Added `$forgemind-twin`, `$forgemind-evolve-ui`, and `$forgemind-growth`; Portfolio, Autopilot, and Transform now consume the corresponding intelligence records.
 
