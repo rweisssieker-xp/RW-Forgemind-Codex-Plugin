@@ -73,6 +73,7 @@ const PRIMARY_COMMANDS = [
   'install',
   'selftest',
   'uninstall',
+  'xray',
 ];
 
 const HELP = `ForgeMind — vendor-neutral trust and evidence-driven delivery for Codex
@@ -264,6 +265,13 @@ export async function runCli(argv, context = {}) {
       if (action !== 'run') throw invalidInput('FM_COMPASS_ACTION_INVALID', 'Compass supports run.');
       const { runCompass } = await import('./primary-journeys.mjs');
       data = await runCompass({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), goal: options.goal });
+    } else if (command === 'xray') {
+      const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
+      const action = positionals[0] ?? 'run';
+      const xray = await import('./xray.mjs');
+      if (action === 'run') data = await xray.runXray({ workspace, goal: options.goal });
+      else if (action === 'status') data = await xray.getXrayStatus({ workspace });
+      else throw invalidInput('FM_XRAY_ACTION_INVALID', 'Xray supports run and status.');
     } else if (command === 'leap') {
       const action = positionals[0] ?? 'run';
       const { advanceLeap, continueLeap, getLeapStatus, runLeap } = await import('./leap.mjs');
@@ -291,7 +299,8 @@ export async function runCli(argv, context = {}) {
         data = await autopilot.runAutopilot({ workspace, executeAction: adapterAction ? (mission) => executeAdapter({ workspace, mission, action: { ...adapterAction, missionId: mission.id }, grant, policy: config.policy, config: config.redaction }) : null });
       } else throw invalidInput('FM_AUTOPILOT_ACTION_INVALID', 'Autopilot supports start, run, status, resume, and hold.');
     } else if (command === 'portfolio') {
-      const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()); const action = positionals[0] ?? 'status'; const portfolio = await import('./portfolio-autopilot.mjs');
+      const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
+      const action = positionals[0] ?? 'status'; const portfolio = await import('./portfolio-autopilot.mjs');
       if (action === 'plan') { const { runPortfolio } = await import('./primary-journeys.mjs'); data = await runPortfolio({ workspace, goal: options.goal }); }
       else if (action === 'discover') data = await portfolio.discoverPortfolio({ workspace, goal: options.goal, maxConcurrentCandidates: options.concurrency });
       else if (action === 'status' || action === 'candidate') data = await portfolio.getPortfolio({ workspace });
@@ -299,7 +308,8 @@ export async function runCli(argv, context = {}) {
       else if (action === 'stop') data = await portfolio.stopCandidate({ workspace, id: options.id, reason: options.reason });
       else throw invalidInput('FM_PORTFOLIO_ACTION_INVALID', 'Portfolio supports discover, status, run, resume, candidate, and stop.');
     } else if (command === 'transform') {
-      const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()); const action = positionals[0] ?? 'run'; const portfolio = await import('./portfolio-autopilot.mjs');
+      const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
+      const action = positionals[0] ?? 'run'; const portfolio = await import('./portfolio-autopilot.mjs');
       if (action === 'run') { const discovered = await portfolio.discoverPortfolio({ workspace, goal: options.goal, maxConcurrentCandidates: options.concurrency }); const { createIntegrationMesh } = await import('./integration-mesh.mjs'); const mesh = await createIntegrationMesh({ workspace }); data = await portfolio.runPortfolio({ workspace }); data.discoveredCandidates = discovered.candidates.length; data.integrationMesh = mesh; }
       else if (action === 'status') data = await portfolio.getPortfolio({ workspace });
       else if (action === 'resume') data = await portfolio.runPortfolio({ workspace });

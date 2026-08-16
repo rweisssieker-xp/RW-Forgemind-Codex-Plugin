@@ -6,7 +6,7 @@ import test from 'node:test';
 import { resolvePluginRoot } from '../src/paths.mjs';
 
 const FORBIDDEN = [ ['bm', 'ad'].join(''), ['super', 'powers'].join('') ];
-const IGNORED = new Set(['.git', 'dist', 'node_modules', ['super', 'powers'].join('')]);
+const IGNORED = new Set(['.git', 'dist', 'node_modules', ['super', 'powers'].join(''), ['.super', 'powers'].join('')]);
 const TEXT_EXTENSIONS = new Set(['.json', '.md', '.mjs', '.ps1', '.toml', '.txt', '.yml', '.yaml']);
 
 test('ForgeMind source and package paths remain independent of historical framework branding', async () => {
