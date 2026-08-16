@@ -4,6 +4,8 @@ import path from 'node:path';
 import { inspectProject } from './project.mjs';
 import { runProcess } from './process.mjs';
 import { redactText } from './redact.mjs';
+import { artifactStatePath } from './artifact-store.mjs';
+import { writeJsonAtomic, writeTextAtomic } from './io.mjs';
 
 const API_DEPENDENCIES = new Set([
   'express', '@hapi/hapi', 'fastify', 'koa', '@nestjs/core', 'hono', 'restify',
@@ -12,6 +14,15 @@ const WEB_GUI_DEPENDENCIES = new Set([
   'vite', 'next', 'react', 'react-dom', 'vue', '@angular/core', 'svelte', '@sveltejs/kit',
 ]);
 const UNSAFE_COMMAND_PATTERN = /migrate|deploy|publish|seed|reset|delete|production/i;
+const SCORE_COMPONENTS = [
+  { id: 'functional-correctness', label: 'Functional correctness and regressions', configuredWeight: 30 },
+  { id: 'api-contracts', label: 'API, CLI, and integration contracts', configuredWeight: 20 },
+  { id: 'gui-usability', label: 'GUI behavior and usability', configuredWeight: 15 },
+  { id: 'accessibility-visual', label: 'Accessibility and visual quality', configuredWeight: 15 },
+  { id: 'robustness-error-paths', label: 'Robustness and error paths', configuredWeight: 10 },
+  { id: 'evidence-coverage', label: 'Evidence coverage of detected surfaces', configuredWeight: 10 },
+];
+const SEVERITY_DEDUCTIONS = { critical: 40, high: 25, medium: 10, low: 3 };
 
 export async function discoverXrayMission({ workspace, goal, guiControl = { browser: false, computerUse: false } }) {
   const profile = await inspectProject(workspace);
@@ -137,8 +148,172 @@ export function deduplicateFindings(findings) {
   return [...unique.values()];
 }
 
+export function scoreXrayQuality({ mission, findings = [], receipts = [], gaps = [] }) {
+  const surfaces = mission?.surfaces ?? [];
+  const surfaceIds = new Set(surfaces.map(({ id }) => id));
+  const hasGui = surfaceIds.has('web-gui') || surfaceIds.has('native-gui') || surfaceIds.has('mobile-gui');
+  const hasApiOrCli = surfaceIds.has('api') || surfaceIds.has('cli');
+  const hasReceipts = receipts.length > 0;
+  const applicability = {
+    'functional-correctness': hasReceipts ? 'applicable' : 'insufficient-evidence',
+    'api-contracts': hasApiOrCli ? 'applicable' : 'not-applicable',
+    'gui-usability': hasGui ? 'applicable' : 'not-applicable',
+    'accessibility-visual': hasGui ? 'applicable' : 'not-applicable',
+    'robustness-error-paths': hasReceipts ? 'applicable' : 'insufficient-evidence',
+    'evidence-coverage': hasReceipts ? 'applicable' : 'insufficient-evidence',
+  };
+  const applicableWeight = SCORE_COMPONENTS
+    .filter(({ id }) => applicability[id] === 'applicable')
+    .reduce((total, { configuredWeight }) => total + configuredWeight, 0);
+  const effectiveWeights = redistributedWeights(applicability, applicableWeight);
+  const components = SCORE_COMPONENTS.map((definition) => {
+    const status = applicability[definition.id];
+    const effectiveWeight = effectiveWeights.get(definition.id) ?? 0;
+    const relevantFindings = findings.filter((finding) => findingAppliesToComponent(finding, definition.id));
+    const deductions = relevantFindings.map((finding) => ({
+      findingId: finding.id ?? null,
+      severity: finding.severity,
+      value: SEVERITY_DEDUCTIONS[finding.severity] ?? 0,
+    }));
+    const deductionTotal = deductions.reduce((total, deduction) => total + deduction.value, 0);
+    return {
+      ...definition,
+      effectiveWeight,
+      status,
+      evidence: componentEvidence(definition.id, receipts, gaps, surfaceIds),
+      deductions,
+      score: status === 'applicable' ? Math.max(0, 100 - deductionTotal) : null,
+    };
+  });
+  const noSurface = surfaces.length === 0;
+  const scoreGaps = noSurface ? [{ code: 'FM_XRAY_NO_TEST_SURFACE' }] : [];
+  const value = applicableWeight === 0
+    ? 0
+    : Math.round(components.reduce((total, component) => total + ((component.score ?? 0) * component.effectiveWeight), 0) / 100);
+  return {
+    value,
+    status: applicableWeight === 0 ? 'insufficient-evidence' : 'scored',
+    components,
+    rationale: applicableWeight === 0
+      ? 'No executable test evidence is available for a detected surface.'
+      : 'Applicable component weights are redistributed to 100; verified finding severities deduct deterministically per component.',
+    gaps: scoreGaps,
+  };
+}
+
+export async function runXray({ workspace, goal, runCommand, now = new Date() }) {
+  const mission = await discoverXrayMission({ workspace, goal });
+  const execution = await executeXrayMission({ workspace, mission, runCommand });
+  const score = scoreXrayQuality({ mission, ...execution });
+  const gaps = [...execution.gaps, ...score.gaps];
+  const report = {
+    schemaVersion: 1,
+    status: deriveStatus({ ...execution, gaps }, score),
+    generatedAt: now.toISOString(),
+    mission,
+    receipts: execution.receipts,
+    findings: execution.findings,
+    gaps,
+    score,
+    errors: [],
+  };
+  await writeJsonAtomic(artifactStatePath(workspace, 'xray', 'test-mission-latest.json'), mission);
+  await writeJsonAtomic(artifactStatePath(workspace, 'xray', 'report-latest.json'), report);
+  await writeTextAtomic(path.join(workspace, 'docs', 'forgemind', 'xray-report.md'), renderXrayMarkdown(report));
+  return {
+    ...report,
+    evidencePath: '.codex-orchestrator/xray/report-latest.json',
+    projectDocuments: ['docs/forgemind/xray-report.md'],
+  };
+}
+
+export async function getXrayStatus({ workspace }) {
+  try {
+    const report = JSON.parse(await readFile(artifactStatePath(workspace, 'xray', 'report-latest.json'), 'utf8'));
+    return {
+      ...report,
+      evidencePath: '.codex-orchestrator/xray/report-latest.json',
+      projectDocuments: ['docs/forgemind/xray-report.md'],
+    };
+  } catch (error) {
+    if (error?.code === 'ENOENT') {
+      return { schemaVersion: 1, status: 'missing', nextAction: 'Run xray run first.', errors: [] };
+    }
+    throw error;
+  }
+}
+
+export function renderXrayMarkdown(report) {
+  const lines = [
+    '# ForgeMind Xray report',
+    '',
+    `Generated: ${report.generatedAt}`,
+    `Status: ${report.status}`,
+    '',
+    '## Quality score',
+    '',
+    `${report.score.value}/100 (${report.score.status})`,
+    '',
+    '### Components',
+    '',
+    '| Component | Weight | Status | Score | Deductions |',
+    '| --- | ---: | --- | ---: | --- |',
+    ...report.score.components.map((component) => `| ${component.label} | ${formatWeight(component.effectiveWeight)} | ${component.status} | ${component.score ?? '—'} | ${component.deductions.map(({ severity, value }) => `${severity} -${value}`).join(', ') || '—'} |`),
+    '',
+    '## Findings',
+    '',
+    ...(report.findings.length ? report.findings.map((finding) => `- **${finding.severity}** ${finding.title} (${finding.evidence.join(', ')})`) : ['No verified failures.']),
+    '',
+    '## Test gaps',
+    '',
+    ...(report.gaps.length ? report.gaps.map((gap) => `- ${gap.code}${gap.message ? `: ${gap.message}` : ''}`) : ['No test gaps recorded.']),
+    '',
+  ];
+  return lines.join('\n');
+}
+
 function isUnsafeCommand(command) {
   return UNSAFE_COMMAND_PATTERN.test(String(command ?? ''));
+}
+
+function findingAppliesToComponent(finding, componentId) {
+  const surfaces = new Set(finding.surfaces ?? []);
+  if (componentId === 'api-contracts') return surfaces.has('api') || surfaces.has('cli');
+  if (componentId === 'gui-usability' || componentId === 'accessibility-visual') return surfaces.has('web-gui') || surfaces.has('native-gui') || surfaces.has('mobile-gui');
+  if (componentId === 'functional-correctness') return true;
+  if (componentId === 'robustness-error-paths') return /error|exception|timeout|resilien|robust/i.test(`${finding.title ?? ''} ${finding.actual ?? ''}`);
+  return false;
+}
+
+function componentEvidence(componentId, receipts, gaps, surfaceIds) {
+  if (componentId === 'api-contracts') return surfaceIds.has('api') || surfaceIds.has('cli') ? receipts.map(({ id }) => id) : [];
+  if (componentId === 'gui-usability' || componentId === 'accessibility-visual') return receipts.map(({ id }) => id);
+  if (componentId === 'evidence-coverage') return { receipts: receipts.map(({ id }) => id), gaps: gaps.map(({ code }) => code) };
+  return receipts.map(({ id }) => id);
+}
+
+function deriveStatus(execution, score) {
+  if (execution.findings.length) return 'issues-found';
+  if (execution.gaps.length || score.status === 'insufficient-evidence') return 'gaps-found';
+  return 'passed';
+}
+
+function formatWeight(value) {
+  return Number.isInteger(value) ? String(value) : value.toFixed(2);
+}
+
+function redistributedWeights(applicability, applicableWeight) {
+  const applicable = SCORE_COMPONENTS.filter(({ id }) => applicability[id] === 'applicable');
+  const weights = new Map();
+  let assigned = 0;
+  applicable.forEach((component, index) => {
+    const weight = index === applicable.length - 1
+      ? 100 - assigned
+      : (component.configuredWeight / applicableWeight) * 100;
+    weights.set(component.id, weight);
+    assigned += weight;
+  });
+  return weights;
 }
 
 async function readPackageManifest(workspace) {

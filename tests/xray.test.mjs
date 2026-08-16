@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
-import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 
-import { discoverXrayMission, executeXrayMission } from '../src/xray.mjs';
+import { discoverXrayMission, executeXrayMission, getXrayStatus, runXray, scoreXrayQuality } from '../src/xray.mjs';
 
 async function fixture(t, { packageJson, files = {} } = {}) {
   const root = await mkdtemp(path.join(tmpdir(), 'forgemind-xray-'));
@@ -106,4 +106,69 @@ test('Xray deduplicates findings with identical surfaces and command outcomes', 
 
   assert.equal(result.findings.length, 1);
   assert.deepEqual(result.findings[0].evidence, ['command-1', 'command-2']);
+});
+
+test('Xray redistributes not-applicable weights and deducts high severity deterministically', () => {
+  const score = scoreXrayQuality({
+    mission: { surfaces: [{ id: 'api' }], checks: [] },
+    receipts: [],
+    gaps: [],
+    findings: [{ severity: 'high', surfaces: ['api'] }],
+  });
+
+  assert.equal(score.value, 75);
+  assert.deepEqual(
+    score.components.filter(({ status }) => status === 'not-applicable').map(({ id }) => id).sort(),
+    ['accessibility-visual', 'gui-usability'],
+  );
+  assert.equal(score.components.find(({ id }) => id === 'api-contracts').effectiveWeight, 100);
+});
+
+test('Xray effective component weights total exactly 100 after redistribution', () => {
+  const score = scoreXrayQuality({
+    mission: { surfaces: [{ id: 'api' }], checks: [{ id: 'command-1' }] },
+    receipts: [{ id: 'command-1', status: 'passed' }],
+    gaps: [],
+    findings: [],
+  });
+
+  assert.equal(score.components.reduce((total, component) => total + component.effectiveWeight, 0), 100);
+});
+
+test('Xray writes canonical evidence and a readable Markdown report without changing product files', async (t) => {
+  const packageJson = { scripts: { test: 'node --test' } };
+  const root = await fixture(t, { packageJson });
+
+  const report = await runXray({
+    workspace: root,
+    now: new Date('2026-08-16T00:00:00.000Z'),
+    runCommand: async () => ({ exitCode: 0, stdout: 'ok', stderr: '' }),
+  });
+
+  assert.equal(report.evidencePath, '.codex-orchestrator/xray/report-latest.json');
+  assert.match(await readFile(path.join(root, 'docs', 'forgemind', 'xray-report.md'), 'utf8'), /Quality score/);
+  assert.deepEqual(
+    JSON.parse(await readFile(path.join(root, '.codex-orchestrator', 'xray', 'report-latest.json'), 'utf8')),
+    Object.fromEntries(Object.entries(report).filter(([key]) => !['evidencePath', 'projectDocuments'].includes(key))),
+  );
+  assert.equal(await readFile(path.join(root, 'package.json'), 'utf8'), JSON.stringify(packageJson, null, 2));
+});
+
+test('Xray status identifies a workspace with no evidence report', async (t) => {
+  const status = await getXrayStatus({ workspace: await fixture(t) });
+
+  assert.deepEqual(status, {
+    schemaVersion: 1,
+    status: 'missing',
+    nextAction: 'Run xray run first.',
+    errors: [],
+  });
+});
+
+test('Xray labels a mission with no test surface as insufficient evidence', () => {
+  const score = scoreXrayQuality({ mission: { surfaces: [], checks: [] }, receipts: [], gaps: [], findings: [] });
+
+  assert.equal(score.value, 0);
+  assert.equal(score.status, 'insufficient-evidence');
+  assert.deepEqual(score.gaps, [{ code: 'FM_XRAY_NO_TEST_SURFACE' }]);
 });
