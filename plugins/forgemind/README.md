@@ -116,4 +116,4 @@ git -C ~/.codex/.tmp/marketplaces/forgemind-marketplace pull --ff-only origin ma
 codex plugin add forgemind@forgemind-marketplace
 ```
 
-See [the hierarchy](docs/HIERARCHY.md), [installation guide](docs/INSTALL.md), and [workflow guide](docs/WORKFLOWS.md) for operational detail.
+See [the hierarchy](docs/HIERARCHY.md) for operational detail.

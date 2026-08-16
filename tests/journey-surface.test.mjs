@@ -4,7 +4,7 @@ import path from 'node:path';
 import test from 'node:test';
 
 const root = path.resolve(import.meta.dirname, '..');
-const JOURNEYS = ['forgemind-compass', 'forgemind-spark', 'forgemind-evolve', 'forgemind-venture', 'forgemind-council', 'forgemind-ship', 'forgemind-leap', 'forgemind-autopilot', 'forgemind-portfolio', 'forgemind-transform', 'forgemind-twin', 'forgemind-evolve-ui', 'forgemind-growth'];
+const JOURNEYS = ['forgemind-compass', 'forgemind-spark', 'forgemind-evolve', 'forgemind-venture', 'forgemind-council', 'forgemind-ship', 'forgemind-leap', 'forgemind-autopilot', 'forgemind-portfolio', 'forgemind-transform', 'forgemind-twin', 'forgemind-evolve-ui', 'forgemind-growth', 'forgemind-xray'];
 
 test('Marketplace exposes the primary journeys while retaining internal modules', async () => {
   const manifest = JSON.parse(await readFile(path.join(root, '.codex-plugin', 'plugin.json'), 'utf8'));
@@ -20,7 +20,11 @@ test('Marketplace exposes the primary journeys while retaining internal modules'
     const ui = await readFile(path.join(root, 'entry-skills', journey, 'agents', 'openai.yaml'), 'utf8');
     assert.match(instructions, new RegExp(`name: ${journey}`));
     assert.match(ui, new RegExp(`\\$${journey}`));
-    if (!['forgemind-autopilot', 'forgemind-portfolio', 'forgemind-transform', 'forgemind-twin', 'forgemind-evolve-ui', 'forgemind-growth'].includes(journey)) { assert.match(instructions, /zero-input-defaults\.md/i); assert.match(ui, /Zero-Input Default/); }
+    if (journey === 'forgemind-autopilot') {
+      assert.match(instructions, /node <plugin-root>\/bin\/forgemind\.mjs autopilot start/);
+      assert.doesNotMatch(instructions, /Run `forgemind autopilot start/);
+    }
+    if (!['forgemind-autopilot', 'forgemind-portfolio', 'forgemind-transform', 'forgemind-twin', 'forgemind-evolve-ui', 'forgemind-growth', 'forgemind-xray'].includes(journey)) { assert.match(instructions, /zero-input-defaults\.md/i); assert.match(ui, /Zero-Input Default/); }
   }
   assert.match(await readFile(path.join(root, 'docs', 'HIERARCHY.md'), 'utf8'), /Compass[\s\S]*Spark[\s\S]*Evolve[\s\S]*Venture[\s\S]*Council[\s\S]*Ship[\s\S]*Leap/);
 });
@@ -38,4 +42,13 @@ test('Compass is the sole implicit journey and routes natural-language requests 
     const expected = journey === 'forgemind-compass';
     assert.match(ui, new RegExp(`allow_implicit_invocation: ${expected}`));
   }
+});
+
+test('Xray remains an explicit-only primary journey with the bundled runner and GUI-control protocol', async () => {
+  const instructions = await readFile(path.join(root, 'entry-skills', 'forgemind-xray', 'SKILL.md'), 'utf8');
+  const ui = await readFile(path.join(root, 'entry-skills', 'forgemind-xray', 'agents', 'openai.yaml'), 'utf8');
+  assert.match(instructions, /node <plugin-root>\/bin\/forgemind\.mjs xray run/);
+  assert.match(instructions, /internal Browser/);
+  assert.match(instructions, /Computer Use/);
+  assert.match(ui, /allow_implicit_invocation: false/);
 });

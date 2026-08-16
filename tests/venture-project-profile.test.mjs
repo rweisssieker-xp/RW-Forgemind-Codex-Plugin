@@ -107,3 +107,13 @@ test('Venture ignores its generated documents when classifying a project', async
   assert.notEqual(result.data.projectProfile.productCategory.value, 'learning-platform');
   assert.equal(result.data.projectProfile.evidenceSummary.projectDocuments, 0);
 });
+
+test('Venture prioritizes the current README over historical ForgeMind documents', async (t) => {
+  const root = await fixture('forgemind-profile-current-', { name: 'release-helper', dependencies: { commander: '^12.0.0' } }, '# Release Helper\n\nA CLI for developers to verify and publish software releases.');
+  await mkdir(path.join(root, 'docs', 'forgemind'), { recursive: true });
+  await writeFile(path.join(root, 'docs', 'forgemind', 'legacy-product-notes.md'), '# Legacy Commerce Project\n\nMerchant storefront checkout cart payment order checkout merchant.');
+  t.after(() => rm(root, { recursive: true, force: true }));
+
+  const result = await runCli(['venture', 'run', '--workspace', root, '--goal', 'improve release verification', '--json'], context());
+  assert.equal(result.data.projectProfile.productCategory.value, 'developer-tools');
+});

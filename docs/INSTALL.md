@@ -16,13 +16,13 @@ This produces a checksum-protected standalone plugin at `dist/plugin` and a repo
 
 ## Personal installation
 
-Choose an explicit destination under your Codex plugin home:
+Use the Codex home as the canonical target. ForgeMind installs itself at `<codex-home>/plugins/forgemind`:
 
 ```text
-node bin/forgemind.mjs install --source dist/plugin --destination <absolute-plugin-directory>
+node bin/forgemind.mjs install --source <package-path> --home <codex-home>
 ```
 
-The controlled installer creates a managed command wrapper at `<Codex-home>/bin/forgemind.cmd` on Windows and `<Codex-home>/bin/forgemind` on macOS/Linux, then smoke-tests `forgemind --help`. Reload Codex so a supported installation can inherit that bin directory. The installer validates checksums, uses a staging directory, backs up an existing installation, swaps atomically where the platform permits, and restores the backup after a failed swap.
+`--destination` remains a compatible alias for `--home`. For an explicit team or local target, use `--plugin-path <codex-home>/plugins/forgemind`; paths that do not end exactly in `plugins/forgemind` are rejected. The controlled installer creates a managed command wrapper at `<codex-home>/bin/forgemind.cmd` on Windows and `<codex-home>/bin/forgemind` on macOS/Linux, then smoke-tests `forgemind --help`. Reload Codex so a supported installation can inherit that bin directory. The installer validates checksums, uses a staging directory, backs up an existing installation, swaps atomically where the platform permits, and restores the backup after a failed swap.
 
 ## Team marketplace installation
 
@@ -56,7 +56,7 @@ The primary journeys document this portable runner as their standard fallback. A
 After a controlled install, upgrade, or downgrade, ForgeMind automatically checks the installed version, checksum-valid package, managed wrapper, and `forgemind --help`. Run it again at any time with:
 
 ```text
-node bin/forgemind.mjs selftest --home <Codex-home> --json
+node bin/forgemind.mjs selftest --home <codex-home> --json
 ```
 
 The result reports `installedVersion` and removes legacy `.codex-orchestrator` or `.forgemind-artifacts` directories found inside the installed plugin or its ForgeMind backups. It never touches project-owned `.codex-orchestrator` directories.
@@ -66,21 +66,21 @@ The result reports `installedVersion` and removes legacy `.codex-orchestrator` o
 Build or obtain the exact desired version, verify its package, and run the same install command. Installing a newer version is an upgrade; installing an older valid version is a downgrade. ForgeMind reports the lifecycle transition and retains a recoverable backup during the operation.
 
 ```text
-node bin/forgemind.mjs install --source <verified-package> --destination <absolute-plugin-directory>
+node bin/forgemind.mjs install --source <package-path> --home <codex-home>
 ```
 
 Do not replace individual installed files manually because that invalidates package checksums and makes rollback ambiguous.
 
 ## Rollback
 
-If installation fails, automatic rollback restores the prior directory. To roll back after a successful install, reinstall the last known-good, checksum-valid package using the same destination. Preserve release packages according to team retention policy.
+If installation fails, automatic rollback restores the prior directory. To roll back after a successful install, reinstall the last known-good, checksum-valid package using the same Codex home or explicit plugin path. Preserve release packages according to team retention policy.
 
 ## Uninstall
 
 Remove only the installed plugin directory:
 
 ```text
-node bin/forgemind.mjs uninstall --destination <absolute-plugin-directory>
+node bin/forgemind.mjs uninstall --home <codex-home>
 ```
 
 Project memory and evidence are preserved by default. Purge project-owned data only with the explicit purge option and after reviewing the exact workspace target; deletion may be irreversible.

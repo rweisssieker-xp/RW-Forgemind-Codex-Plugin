@@ -1,0 +1,725 @@
+import { readFile, readdir } from 'node:fs/promises';
+import path from 'node:path';
+
+import { inspectProject } from './project.mjs';
+import { runProcess } from './process.mjs';
+import { redactText } from './redact.mjs';
+import { artifactStatePath } from './artifact-store.mjs';
+import { writeJsonAtomic, writeTextAtomic } from './io.mjs';
+
+const API_DEPENDENCIES = new Set([
+  'express', '@hapi/hapi', 'fastify', 'koa', '@nestjs/core', 'hono', 'restify',
+]);
+const WEB_GUI_DEPENDENCIES = new Set([
+  'vite', 'next', 'react', 'react-dom', 'vue', '@angular/core', 'svelte', '@sveltejs/kit',
+]);
+const MOBILE_GUI_DEPENDENCIES = new Set([
+  'react-native', 'expo', '@capacitor/core', '@ionic/react', '@ionic/vue', '@ionic/angular',
+]);
+const GUI_SURFACE_IDS = new Set(['web-gui', 'native-gui', 'mobile-gui']);
+const GUI_COMPONENT_IDS = new Set(['gui-usability', 'accessibility-visual']);
+const UNSAFE_COMMAND_PATTERN = /\b(?:migrate|deploy|publish|seed|reset|delete|destroy|drop|truncate|production)\b/i;
+const DESTRUCTIVE_OPERATION_PATTERN = /(?:\brm\s+(?:-[a-z]*[rf][a-z]*\s+)+|\brimraf\b|\bRemove-Item\b|\b(?:del|erase|rmdir|rd|shred)\s+|\b(?:fs\.)?(?:rm|rmSync|unlink|unlinkSync|rmdir|rmdirSync)\s*\(|\b(?:File|Directory)\.Delete\s*\(|\b(?:shutil\.rmtree|os\.remove|Deno\.remove)\s*\()/i;
+const CREDENTIAL_PATTERN = /\b(?:credentials?|secrets?|passwords?|api[_-]?keys?|auth[_-]?tokens?)\b/i;
+const EXTERNAL_SPEND_PATTERN = /\b(?:terraform\s+apply|pulumi\s+up|stripe\s+(?:charge|payment)|aws\s+.*\bcreate)\b/i;
+const ENVIRONMENT_TARGET_PATTERN = /(?:\$(?:env:)?\{?[A-Z_][A-Z0-9_]*(?:URL|URI|HOST|ENDPOINT|TARGET)[A-Z0-9_]*\}?|%[A-Z_][A-Z0-9_]*(?:URL|URI|HOST|ENDPOINT|TARGET)[A-Z0-9_]*%|process\.env\.[A-Z_][A-Z0-9_]*(?:URL|URI|HOST|ENDPOINT|TARGET)[A-Z0-9_]*)/i;
+const SCORE_COMPONENTS = [
+  { id: 'functional-correctness', label: 'Functional correctness and regressions', configuredWeight: 30 },
+  { id: 'api-contracts', label: 'API, CLI, and integration contracts', configuredWeight: 20 },
+  { id: 'gui-usability', label: 'GUI behavior and usability', configuredWeight: 15 },
+  { id: 'accessibility-visual', label: 'Accessibility and visual quality', configuredWeight: 15 },
+  { id: 'robustness-error-paths', label: 'Robustness and error paths', configuredWeight: 10 },
+  { id: 'evidence-coverage', label: 'Evidence coverage of detected surfaces', configuredWeight: 10 },
+];
+const SEVERITY_DEDUCTIONS = { critical: 40, high: 25, medium: 10, low: 3 };
+
+export async function discoverXrayMission({
+  workspace,
+  goal,
+  guiControl = { browser: false, computerUse: false },
+  guiReceipts = [],
+}) {
+  const profile = await inspectProject(workspace);
+  const manifest = await readPackageManifest(profile.root);
+  const files = await projectFileNames(profile.root);
+  const guiSignals = await detectGuiProjectSignals(profile.root, files, manifest, profile);
+  const surfaces = detectSurfaces({ ...profile, files, manifest, ...guiSignals });
+  const commandChecks = profile.commands
+    .filter(({ confidence }) => confidence === 'detected')
+    .map((check, index) => {
+      const scriptBody = manifest.scripts?.[check.category];
+      const safetyReasons = classifyPackageScript(manifest.scripts ?? {}, check.category);
+      return {
+        id: `command-${index + 1}`,
+        kind: 'command',
+        surfaceIds: surfaceIdsForCommand(check, surfaces),
+        ...check,
+        scriptName: check.category,
+        scriptBody,
+        componentIds: commandComponentIds(check, scriptBody),
+        safetyReasons,
+        unsafe: safetyReasons.length > 0,
+      };
+    });
+  const guiChecks = createGuiChecks(surfaces, guiControl, guiReceipts);
+  const gaps = guiGap(surfaces, guiControl, guiChecks);
+
+  return {
+    id: `xray-${Date.now().toString(36)}`,
+    goal: String(goal ?? '').trim() || 'Autonomously assess this software quality.',
+    surfaces,
+    checks: [...commandChecks, ...guiChecks],
+    gaps,
+  };
+}
+
+export function detectSurfaces(profile) {
+  const manifest = profile.manifest ?? {};
+  const dependencies = new Set([
+    ...Object.keys(manifest.dependencies ?? {}),
+    ...Object.keys(manifest.devDependencies ?? {}),
+  ]);
+  const scripts = manifest.scripts ?? {};
+  const surfaces = [];
+
+  if (manifest.bin || scripts.cli || scripts.command) surfaces.push({ id: 'cli', label: 'Command-line interface' });
+  if (hasKnownDependency(dependencies, API_DEPENDENCIES) || hasRouteFile(profile)) surfaces.push({ id: 'api', label: 'API' });
+  const hasMobileDependency = hasKnownDependency(dependencies, MOBILE_GUI_DEPENDENCIES);
+  const hasWebDependency = [...WEB_GUI_DEPENDENCIES]
+    .some((dependency) => dependencies.has(dependency)
+      && !(hasMobileDependency && (dependency === 'react' || dependency === 'react-dom')));
+  const hasWebStart = [scripts.dev, scripts.start].some((command) => isRecognizedWebStart(command));
+  if (hasWebDependency || hasWebStart) {
+    surfaces.push({ id: 'web-gui', label: 'Web GUI', control: 'browser' });
+  }
+  if (profile.nativeGui) surfaces.push({ id: 'native-gui', label: 'Native desktop GUI', control: 'computer-use' });
+  if (profile.mobileGui) surfaces.push({ id: 'mobile-gui', label: 'Mobile emulator GUI', control: 'computer-use' });
+
+  return surfaces;
+}
+
+export function surfaceIdsForCommand(check, surfaces) {
+  return surfaces.map(({ id }) => id).filter((id) => !GUI_SURFACE_IDS.has(id));
+}
+
+export function guiGap(surfaces, guiControl = {}, guiChecks = []) {
+  return surfaces.filter(({ id, control }) => {
+    if (!GUI_SURFACE_IDS.has(id)) return false;
+    const hasReceipt = guiChecks.some((check) => check.surfaceIds.includes(id) && check.importedReceipt);
+    const available = control === 'browser' ? guiControl.browser : guiControl.computerUse;
+    return !hasReceipt && !available;
+  }).map(({ id, control }) => ({
+    code: 'FM_XRAY_GUI_CONTROL_UNAVAILABLE',
+    surfaceId: id,
+    control,
+    message: `${control === 'browser' ? 'Browser' : 'Computer Use'} control is unavailable for the detected ${id} surface.`,
+  }));
+}
+
+export async function executeXrayMission({ workspace, mission, runCommand = executeDetectedCommand }) {
+  const receipts = [];
+  const findings = [];
+  const gaps = [...(mission.gaps ?? [])];
+
+  for (const check of mission.checks ?? []) {
+    if (check.kind === 'gui-control') {
+      if (check.importedReceipt) {
+        receipts.push({ id: check.id, ...check.importedReceipt });
+        if (check.importedReceipt.status === 'failed') findings.push(guiFinding(check));
+      } else {
+        receipts.push({ id: check.id, status: 'blocked' });
+        gaps.push({
+          code: 'FM_XRAY_GUI_EVIDENCE_NOT_RECORDED',
+          checkId: check.id,
+          surfaceId: check.surfaceIds[0],
+          message: 'GUI control was available, but no surface-specific execution receipt was recorded.',
+        });
+      }
+      continue;
+    }
+
+    if (check.unsafe || check.safetyReasons?.length || isUnsafeCommand(check.command)) {
+      receipts.push({ id: check.id, status: 'skipped' });
+      gaps.push({
+        code: 'FM_XRAY_UNSAFE_CHECK_SKIPPED',
+        checkId: check.id,
+        message: 'This check was not executed because its command may be destructive or irreversible.',
+      });
+      continue;
+    }
+
+    const result = await runCommand(check, workspace);
+    const prerequisite = classifyPrerequisiteFailure(result);
+    receipts.push({
+      id: check.id,
+      ...redactReceipt(result),
+      status: result.exitCode === 0 ? 'passed' : prerequisite ? 'blocked' : 'failed',
+    });
+    if (prerequisite) gaps.push(prerequisiteGap(check, prerequisite));
+    else if (result.exitCode !== 0) findings.push(commandFinding(check, result));
+  }
+
+  return { receipts, findings: deduplicateFindings(findings), gaps };
+}
+
+export async function executeDetectedCommand(check, workspace) {
+  const [command, ...args] = String(check.command ?? '').trim().split(/\s+/);
+  return runProcess(command, args, { cwd: workspace });
+}
+
+export function redactReceipt(result) {
+  const stdout = redactText(result.stdout).text;
+  const stderr = redactText(result.stderr).text;
+  return { ...result, stdout, stderr };
+}
+
+export function commandFinding(check, result) {
+  const command = String(check.command ?? 'detected command');
+  return {
+    id: `finding-${check.id}`,
+    severity: 'high',
+    surfaces: [...(check.surfaceIds ?? [])],
+    componentIds: [...(check.componentIds ?? ['functional-correctness'])],
+    title: `Detected command failed: ${command}`,
+    reproduction: `Run ${command} from the workspace root.`,
+    expected: `Command succeeds: ${command}`,
+    actual: `Command exited with ${result.exitCode}`,
+    evidence: [check.id],
+    suspectedCause: 'The detected local verification command exited unsuccessfully.',
+    userImpact: 'The affected surface may not behave as expected for users.',
+    nextVerification: `Fix the failure, then rerun ${command}.`,
+  };
+}
+
+function guiFinding(check) {
+  const surfaceId = check.surfaceIds?.[0] ?? 'gui';
+  return {
+    id: `finding-${check.id}`,
+    severity: check.importedReceipt?.severity ?? 'high',
+    surfaces: [...(check.surfaceIds ?? [])],
+    componentIds: [...(check.componentIds ?? [])],
+    title: `GUI control check failed: ${surfaceId}`,
+    reproduction: `Repeat the recorded ${check.control ?? 'GUI'} interaction for ${surfaceId}.`,
+    expected: 'The recorded GUI interaction satisfies its expected visible behavior.',
+    actual: 'The surface-specific GUI execution receipt recorded a failure.',
+    evidence: [check.id],
+    suspectedCause: 'The visible application behavior did not match the tested expectation.',
+    userImpact: 'Users may encounter the failed behavior on the affected GUI surface.',
+    nextVerification: 'Fix the affected behavior, then repeat the same GUI interaction and capture a new receipt.',
+  };
+}
+
+export function deduplicateFindings(findings) {
+  const unique = new Map();
+  for (const finding of findings) {
+    const key = JSON.stringify([finding.surfaces, finding.title, finding.expected, finding.actual]);
+    const existing = unique.get(key);
+    if (existing) existing.evidence.push(...finding.evidence);
+    else unique.set(key, { ...finding, evidence: [...finding.evidence] });
+  }
+  return [...unique.values()];
+}
+
+export function scoreXrayQuality({ mission, findings = [], receipts = [], gaps = [] }) {
+  const surfaces = mission?.surfaces ?? [];
+  const surfaceIds = new Set(surfaces.map(({ id }) => id));
+  const hasGui = surfaceIds.has('web-gui') || surfaceIds.has('native-gui') || surfaceIds.has('mobile-gui');
+  const hasApiOrCli = surfaceIds.has('api') || surfaceIds.has('cli');
+  const executedReceiptIds = new Set(receipts.filter(isExecutionReceipt).map(({ id }) => id));
+  const hasReceipts = executedReceiptIds.size > 0;
+  const functionalEvidence = receiptIdsForComponent(mission, executedReceiptIds, 'functional-correctness');
+  const robustnessEvidence = receiptIdsForComponent(mission, executedReceiptIds, 'robustness-error-paths');
+  const apiOrCliEvidence = receiptIdsForSurfaces(mission, executedReceiptIds, ['api', 'cli']);
+  const guiEvidence = receiptIdsForGuiComponent(mission, executedReceiptIds, 'gui-usability');
+  const accessibilityEvidence = receiptIdsForGuiComponent(mission, executedReceiptIds, 'accessibility-visual');
+  const coverage = evidenceCoverage(mission, surfaces, executedReceiptIds);
+  const applicability = {
+    'functional-correctness': functionalEvidence.length ? 'applicable' : 'insufficient-evidence',
+    'api-contracts': componentStatus(hasApiOrCli, apiOrCliEvidence.length),
+    'gui-usability': componentStatus(hasGui, guiEvidence.length),
+    'accessibility-visual': componentStatus(hasGui, accessibilityEvidence.length),
+    'robustness-error-paths': robustnessEvidence.length ? 'applicable' : 'insufficient-evidence',
+    'evidence-coverage': hasReceipts ? 'applicable' : 'insufficient-evidence',
+  };
+  const applicableWeight = SCORE_COMPONENTS
+    .filter(({ id }) => applicability[id] === 'applicable')
+    .reduce((total, { configuredWeight }) => total + configuredWeight, 0);
+  const effectiveWeights = redistributedWeights(applicability, applicableWeight);
+  const components = SCORE_COMPONENTS.map((definition) => {
+    const status = applicability[definition.id];
+    const effectiveWeight = effectiveWeights.get(definition.id) ?? 0;
+    const relevantFindings = findings.filter((finding) => findingAppliesToComponent(finding, definition.id));
+    const deductions = relevantFindings.map((finding) => ({
+      findingId: finding.id ?? null,
+      severity: finding.severity,
+      value: SEVERITY_DEDUCTIONS[finding.severity] ?? 0,
+    }));
+    const deductionTotal = deductions.reduce((total, deduction) => total + deduction.value, 0);
+    return {
+      ...definition,
+      effectiveWeight,
+      status,
+      evidence: componentEvidence(definition.id, receipts, gaps, surfaceIds, functionalEvidence, robustnessEvidence, apiOrCliEvidence, guiEvidence, accessibilityEvidence),
+      deductions,
+      score: status === 'applicable'
+        ? definition.id === 'evidence-coverage' ? coverage.score : Math.max(0, 100 - deductionTotal)
+        : null,
+    };
+  });
+  const noSurface = surfaces.length === 0;
+  const scoreGaps = noSurface
+    ? [{ code: 'FM_XRAY_NO_TEST_SURFACE' }]
+    : missingSurfaceEvidenceGaps(mission, surfaces, executedReceiptIds);
+  const value = applicableWeight === 0
+    ? 0
+    : Math.round(components.reduce((total, component) => total + ((component.score ?? 0) * component.effectiveWeight), 0) / 100);
+  return {
+    value,
+    status: applicableWeight === 0 ? 'insufficient-evidence' : 'scored',
+    components,
+    rationale: applicableWeight === 0
+      ? 'No executable test evidence is available for a detected surface.'
+      : 'Applicable component weights are redistributed to 100; verified finding severities deduct deterministically per component.',
+    gaps: scoreGaps,
+  };
+}
+
+export async function runXray({
+  workspace,
+  goal,
+  runCommand,
+  now = new Date(),
+  guiControl,
+  guiReceipts = [],
+}) {
+  const discoveredMission = await discoverXrayMission({ workspace, goal, guiControl, guiReceipts });
+  const execution = await executeXrayMission({ workspace, mission: discoveredMission, runCommand });
+  const score = scoreXrayQuality({ mission: discoveredMission, ...execution });
+  const gaps = deduplicateGaps([...execution.gaps, ...score.gaps]);
+  const mission = enrichMission(discoveredMission, execution.receipts, gaps);
+  const report = {
+    schemaVersion: 1,
+    status: deriveStatus({ ...execution, gaps }, score),
+    generatedAt: now.toISOString(),
+    mission,
+    receipts: execution.receipts,
+    findings: execution.findings,
+    gaps,
+    score,
+    errors: [],
+  };
+  await writeJsonAtomic(artifactStatePath(workspace, 'xray', 'test-mission-latest.json'), mission);
+  await writeJsonAtomic(artifactStatePath(workspace, 'xray', 'report-latest.json'), report);
+  await writeTextAtomic(path.join(workspace, 'docs', 'forgemind', 'xray-report.md'), renderXrayMarkdown(report));
+  return {
+    ...report,
+    evidencePath: '.codex-orchestrator/xray/report-latest.json',
+    projectDocuments: ['docs/forgemind/xray-report.md'],
+  };
+}
+
+export async function getXrayStatus({ workspace }) {
+  try {
+    const report = JSON.parse(await readFile(artifactStatePath(workspace, 'xray', 'report-latest.json'), 'utf8'));
+    return {
+      ...report,
+      evidencePath: '.codex-orchestrator/xray/report-latest.json',
+      projectDocuments: ['docs/forgemind/xray-report.md'],
+    };
+  } catch (error) {
+    if (error?.code === 'ENOENT') {
+      return { schemaVersion: 1, status: 'missing', nextAction: 'Run xray run first.', errors: [] };
+    }
+    throw error;
+  }
+}
+
+export function renderXrayMarkdown(report) {
+  const lines = [
+    '# ForgeMind Xray report',
+    '',
+    `Generated: ${report.generatedAt}`,
+    `Status: ${report.status}`,
+    '',
+    '## Quality score',
+    '',
+    `${report.score.value}/100 (${report.score.status})`,
+    '',
+    '### Components',
+    '',
+    '| Component | Weight | Status | Score | Deductions |',
+    '| --- | ---: | --- | ---: | --- |',
+    ...report.score.components.map((component) => `| ${component.label} | ${formatWeight(component.effectiveWeight)} | ${component.status} | ${component.score ?? '—'} | ${component.deductions.map(({ severity, value }) => `${severity} -${value}`).join(', ') || '—'} |`),
+    '',
+    '## Findings',
+    '',
+    ...(report.findings.length ? report.findings.map((finding) => `- **${finding.severity}** ${finding.title} (${finding.evidence.join(', ')})`) : ['No verified failures.']),
+    '',
+    '## Test gaps',
+    '',
+    ...(report.gaps.length ? report.gaps.map((gap) => `- ${gap.code}${gap.message ? `: ${gap.message}` : ''}`) : ['No test gaps recorded.']),
+    '',
+  ];
+  return lines.join('\n');
+}
+
+function isUnsafeCommand(command) {
+  return UNSAFE_COMMAND_PATTERN.test(String(command ?? ''));
+}
+
+function classifyPackageScript(scripts, scriptName) {
+  if (!scriptName || !scripts[scriptName]) return [];
+  const reasons = new Set();
+  const visited = new Set();
+
+  const visit = (name) => {
+    if (visited.has(name)) return;
+    visited.add(name);
+    for (const lifecycleName of [`pre${name}`, name, `post${name}`]) {
+      const body = String(scripts[lifecycleName] ?? '');
+      if (!body) continue;
+      for (const reason of unsafeScriptReasons(body)) reasons.add(`${lifecycleName}:${reason}`);
+      for (const referencedName of referencedPackageScripts(body)) {
+        if (scripts[referencedName]) visit(referencedName);
+        else reasons.add(`${lifecycleName}:unresolved-script-reference:${referencedName}`);
+      }
+    }
+  };
+
+  visit(scriptName);
+  return [...reasons];
+}
+
+function unsafeScriptReasons(body) {
+  const reasons = [];
+  if (UNSAFE_COMMAND_PATTERN.test(body)) reasons.push('destructive-or-production-operation');
+  if (DESTRUCTIVE_OPERATION_PATTERN.test(body)) reasons.push('destructive-filesystem-operation');
+  if (CREDENTIAL_PATTERN.test(body)) reasons.push('credential-access');
+  if (EXTERNAL_SPEND_PATTERN.test(body)) reasons.push('external-spend');
+  if (hasUnverifiedRemoteTarget(body)) reasons.push('unverified-remote-target');
+  if (ENVIRONMENT_TARGET_PATTERN.test(body)) reasons.push('environment-derived-target');
+  if (!isRecognizedReadOnlyScript(body)) reasons.push('unclassified-script-operation');
+  return reasons;
+}
+
+function isRecognizedReadOnlyScript(body) {
+  const commands = String(body).split(/\s*(?:&&|\|\||;)\s*/).filter(Boolean);
+  return commands.length > 0 && commands.every((rawCommand) => {
+    const command = rawCommand
+      .replace(/^cross-env\s+(?:[A-Z_][A-Z0-9_]*=[^\s]+\s+)*/i, '')
+      .replace(/^(?:[A-Z_][A-Z0-9_]*=[^\s]+\s+)+/i, '')
+      .trim();
+    if (/^(?:npm|pnpm|yarn)\s+(?:run\s+)?[\w:.-]+(?:\s+--.*)?$/i.test(command)) return true;
+    return /^(?:node\s+(?:--test|--check)\b|(?:npx\s+)?(?:vitest|jest|mocha|ava|tap|eslint|tsc)\b|(?:npx\s+)?playwright\s+test\b|(?:npx\s+)?cypress\s+run\b|(?:vite|next)\s+build\b|(?:webpack|rollup)\b|dotnet\s+(?:test|build)\b|python\s+-m\s+pytest\b|pytest\b|cargo\s+test\b|go\s+test\b|\.\/?gradlew(?:\.bat)?\s+test\b)/i.test(command);
+  });
+}
+
+function commandComponentIds(check, scriptBody) {
+  const componentIds = ['functional-correctness'];
+  if (/\b(?:error|exception|negative|failure|fault|resilien|robust|edge[- ]?case|timeout)\b/i.test(`${check.source ?? ''} ${scriptBody ?? ''}`)) {
+    componentIds.push('robustness-error-paths');
+  }
+  return componentIds;
+}
+
+function isRecognizedWebStart(command) {
+  return /\b(?:vite|next(?:\s+dev)?|react-scripts\s+start|webpack(?:-dev-server)?|ng\s+serve|svelte-kit\s+dev|astro\s+dev|remix\s+dev|nuxt\s+dev)\b/i.test(String(command ?? ''));
+}
+
+function referencedPackageScripts(body) {
+  const names = [];
+  const pattern = /\b(?:npm|pnpm|yarn)\s+(?:run\s+)?([\w:.-]+)/gi;
+  for (const match of body.matchAll(pattern)) {
+    if (!['run', 'exec', 'install', 'add', 'dlx'].includes(match[1])) names.push(match[1]);
+  }
+  return names;
+}
+
+function hasUnverifiedRemoteTarget(body) {
+  for (const match of body.matchAll(/\bhttps?:\/\/[^\s'"`]+/gi)) {
+    try {
+      const hostname = new URL(match[0]).hostname.toLowerCase();
+      if (!['localhost', '127.0.0.1', '::1'].includes(hostname)) return true;
+    } catch {
+      return true;
+    }
+  }
+  return /\b(?:ssh|scp|sftp|ftp)\b/i.test(body)
+    || (/\b(?:curl|wget)\b/i.test(body) && !/\b(?:localhost|127\.0\.0\.1|\[?::1\]?)\b/i.test(body));
+}
+
+function classifyPrerequisiteFailure(result) {
+  const output = `${result?.stderr ?? ''}\n${result?.stdout ?? ''}`;
+  if (result?.exitCode === 127 || /\b(?:ENOENT|command not found|not recognized as an internal or external command|cannot find (?:the )?(?:file|command|executable))\b/i.test(output)) {
+    return 'tool';
+  }
+  const localServiceUnavailable = /(?:\b(?:localhost|127\.0\.0\.1|\[?::1\]?|local (?:service|server|database))\b[^\n]*(?:unavailable|not running|failed to connect|ECONNREFUSED|connection refused)|(?:unavailable|not running|failed to connect|ECONNREFUSED|connection refused)[^\n]*\b(?:localhost|127\.0\.0\.1|\[?::1\]?|local (?:service|server|database))\b)/i.test(output);
+  if (/\b(?:no (?:running )?(?:emulator|simulator|device)|(?:credential|api[_-]?key|token).*(?:missing|not configured|unavailable|required))\b/i.test(output)
+    || localServiceUnavailable) {
+    return 'prerequisite';
+  }
+  return null;
+}
+
+function prerequisiteGap(check, kind) {
+  return {
+    code: kind === 'tool' ? 'FM_XRAY_TOOL_UNAVAILABLE' : 'FM_XRAY_PREREQUISITE_UNAVAILABLE',
+    checkId: check.id,
+    message: kind === 'tool'
+      ? 'The detected check could not start because its executable is unavailable.'
+      : 'The detected check could not assess application behavior because a local prerequisite is unavailable.',
+  };
+}
+
+function createGuiChecks(surfaces, guiControl = {}, guiReceipts = []) {
+  const guiSurfaces = new Map(surfaces.filter(({ id }) => GUI_SURFACE_IDS.has(id)).map((surface) => [surface.id, surface]));
+  const checks = [];
+  for (const candidate of Array.isArray(guiReceipts) ? guiReceipts : []) {
+    const surface = guiSurfaces.get(candidate?.surfaceId);
+    const componentIds = [...new Set((candidate?.componentIds ?? []).filter((id) => GUI_COMPONENT_IDS.has(id)))];
+    const evidence = (candidate?.evidence ?? [])
+      .filter((item) => typeof item === 'string' && item.trim())
+      .map((item) => redactText(item).text);
+    if (!surface || candidate.control !== surface.control || !['passed', 'failed'].includes(candidate.status)
+      || componentIds.length === 0 || evidence.length === 0) continue;
+    checks.push({
+      id: `gui-${checks.length + 1}`,
+      kind: 'gui-control',
+      control: surface.control,
+      surfaceIds: [surface.id],
+      componentIds,
+      importedReceipt: {
+        status: candidate.status,
+        control: candidate.control,
+        surfaceId: candidate.surfaceId,
+        componentIds,
+        evidence,
+        ...(candidate.severity ? { severity: candidate.severity } : {}),
+      },
+    });
+  }
+  for (const surface of guiSurfaces.values()) {
+    if (checks.some((check) => check.surfaceIds.includes(surface.id))) continue;
+    const available = surface.control === 'browser' ? guiControl.browser : guiControl.computerUse;
+    if (available) checks.push({
+      id: `gui-${checks.length + 1}`,
+      kind: 'gui-control',
+      control: surface.control,
+      surfaceIds: [surface.id],
+      componentIds: [...GUI_COMPONENT_IDS],
+    });
+  }
+  return checks;
+}
+
+function enrichMission(mission, receipts, gaps) {
+  const receiptById = new Map(receipts.map((receipt) => [receipt.id, receipt]));
+  const checks = (mission.checks ?? []).map((check) => {
+    const { importedReceipt, ...persistedCheck } = check;
+    const receipt = receiptById.get(check.id);
+    return {
+      ...persistedCheck,
+      selection: receipt?.status === 'skipped' ? 'skipped' : 'selected',
+      outcome: receipt?.status ?? 'not-run',
+      receiptId: receipt ? receipt.id : null,
+    };
+  });
+  return {
+    ...mission,
+    checks,
+    selectedChecks: checks.filter(({ selection }) => selection === 'selected').map(({ id }) => id),
+    skippedChecks: checks.filter(({ selection }) => selection === 'skipped').map(({ id }) => id),
+    receipts,
+    gaps,
+  };
+}
+
+function deduplicateGaps(gaps) {
+  const unique = new Map();
+  for (const gap of gaps) {
+    const key = JSON.stringify([gap.code, gap.checkId ?? null, gap.surfaceId ?? null, gap.componentId ?? null]);
+    if (!unique.has(key)) unique.set(key, gap);
+  }
+  return [...unique.values()];
+}
+
+function findingAppliesToComponent(finding, componentId) {
+  const surfaces = new Set(finding.surfaces ?? []);
+  if (componentId === 'api-contracts') return surfaces.has('api') || surfaces.has('cli');
+  if (componentId === 'gui-usability' || componentId === 'accessibility-visual') {
+    const matchesGui = surfaces.has('web-gui') || surfaces.has('native-gui') || surfaces.has('mobile-gui');
+    return matchesGui && (!finding.componentIds?.length || finding.componentIds.includes(componentId));
+  }
+  if (componentId === 'functional-correctness') {
+    return finding.componentIds?.length ? finding.componentIds.includes(componentId) : true;
+  }
+  if (componentId === 'robustness-error-paths') {
+    return finding.componentIds?.length
+      ? finding.componentIds.includes(componentId)
+      : /error|exception|timeout|resilien|robust/i.test(`${finding.title ?? ''} ${finding.actual ?? ''}`);
+  }
+  return false;
+}
+
+function componentEvidence(componentId, receipts, gaps, surfaceIds, functionalEvidence, robustnessEvidence, apiOrCliEvidence, guiEvidence, accessibilityEvidence) {
+  if (componentId === 'functional-correctness') return functionalEvidence;
+  if (componentId === 'robustness-error-paths') return robustnessEvidence;
+  if (componentId === 'api-contracts') return apiOrCliEvidence;
+  if (componentId === 'gui-usability') return guiEvidence;
+  if (componentId === 'accessibility-visual') return accessibilityEvidence;
+  if (componentId === 'evidence-coverage') return { receipts: receipts.map(({ id }) => id), gaps: gaps.map(({ code }) => code) };
+  return receipts.map(({ id }) => id);
+}
+
+function deriveStatus(execution, score) {
+  if (execution.findings.length) return 'issues-found';
+  if (execution.gaps.length || score.status === 'insufficient-evidence') return 'gaps-found';
+  return 'passed';
+}
+
+function formatWeight(value) {
+  return Number.isInteger(value) ? String(value) : value.toFixed(2);
+}
+
+function isExecutionReceipt(receipt) {
+  return receipt.status === 'passed' || receipt.status === 'failed';
+}
+
+function componentStatus(hasSurface, evidenceCount) {
+  if (!hasSurface) return 'not-applicable';
+  return evidenceCount > 0 ? 'applicable' : 'insufficient-evidence';
+}
+
+function receiptIdsForSurfaces(mission, receiptIds, targetSurfaceIds) {
+  const targets = new Set(targetSurfaceIds);
+  return (mission?.checks ?? [])
+    .filter((check) => receiptIds.has(check.id) && (check.surfaceIds ?? []).some((id) => targets.has(id)))
+    .map(({ id }) => id);
+}
+
+function receiptIdsForGuiComponent(mission, receiptIds, componentId) {
+  return (mission?.checks ?? [])
+    .filter((check) => check.kind === 'gui-control'
+      && receiptIds.has(check.id)
+      && (check.surfaceIds ?? []).some((id) => GUI_SURFACE_IDS.has(id))
+      && (check.componentIds ?? []).includes(componentId))
+    .map(({ id }) => id);
+}
+
+function receiptIdsForComponent(mission, receiptIds, componentId) {
+  return (mission?.checks ?? [])
+    .filter((check) => receiptIds.has(check.id)
+      && ((check.componentIds ?? []).includes(componentId)
+        || (componentId === 'functional-correctness' && check.kind !== 'gui-control' && !check.componentIds?.length)))
+    .map(({ id }) => id);
+}
+
+function evidenceCoverage(mission, surfaces, receiptIds) {
+  const units = surfaces.flatMap(({ id }) => GUI_SURFACE_IDS.has(id)
+    ? [{ id, componentId: 'gui-usability' }, { id, componentId: 'accessibility-visual' }]
+    : [{ id, componentId: null }]);
+  const covered = units.filter(({ id, componentId }) => componentId
+    ? (mission?.checks ?? []).some((check) => check.kind === 'gui-control'
+      && receiptIds.has(check.id)
+      && check.surfaceIds?.includes(id)
+      && check.componentIds?.includes(componentId))
+    : receiptIdsForSurfaces(mission, receiptIds, [id]).length > 0);
+  return { covered: covered.length, total: units.length, score: units.length ? Math.round((covered.length / units.length) * 100) : 0 };
+}
+
+function missingSurfaceEvidenceGaps(mission, surfaces, receiptIds) {
+  return surfaces.flatMap(({ id }) => {
+    if (!GUI_SURFACE_IDS.has(id)) {
+      return receiptIdsForSurfaces(mission, receiptIds, [id]).length === 0 ? [{
+        code: 'FM_XRAY_SURFACE_EVIDENCE_UNAVAILABLE',
+        surfaceId: id,
+        message: `No executed check produced evidence for the detected ${id} surface.`,
+      }] : [];
+    }
+    return [...GUI_COMPONENT_IDS]
+      .filter((componentId) => !(mission?.checks ?? []).some((check) => check.kind === 'gui-control'
+        && receiptIds.has(check.id)
+        && check.surfaceIds?.includes(id)
+        && check.componentIds?.includes(componentId)))
+      .map((componentId) => ({
+        code: 'FM_XRAY_GUI_COMPONENT_EVIDENCE_UNAVAILABLE',
+        surfaceId: id,
+        componentId,
+        message: `No surface-specific receipt covers ${componentId} for the detected ${id} surface.`,
+      }));
+  });
+}
+
+function redistributedWeights(applicability, applicableWeight) {
+  const applicable = SCORE_COMPONENTS.filter(({ id }) => applicability[id] === 'applicable');
+  const weights = new Map();
+  let assigned = 0;
+  applicable.forEach((component, index) => {
+    const weight = index === applicable.length - 1
+      ? 100 - assigned
+      : (component.configuredWeight / applicableWeight) * 100;
+    weights.set(component.id, weight);
+    assigned += weight;
+  });
+  return weights;
+}
+
+async function readPackageManifest(workspace) {
+  try {
+    return JSON.parse(await readFile(path.join(workspace, 'package.json'), 'utf8'));
+  } catch {
+    return {};
+  }
+}
+
+async function detectGuiProjectSignals(root, files, manifest, profile) {
+  const normalizedFiles = files.map((name) => name.replaceAll('\\', '/'));
+  const dependencies = new Set([
+    ...Object.keys(manifest.dependencies ?? {}),
+    ...Object.keys(manifest.devDependencies ?? {}),
+  ]);
+  const descriptorFiles = normalizedFiles.filter((name) => /\.(?:csproj|fsproj|pubspec\.yaml)$/i.test(name) || /(?:^|\/)pubspec\.yaml$/i.test(name));
+  const descriptorText = (await Promise.all(descriptorFiles.map(async (name) => {
+    try {
+      return await readFile(path.join(root, name), 'utf8');
+    } catch {
+      return '';
+    }
+  }))).join('\n');
+  const windowsDesktop = /Microsoft\.NET\.Sdk\.WindowsDesktop|<UseWPF>\s*true|<UseWindowsForms>\s*true/i.test(descriptorText);
+  const androidProject = normalizedFiles.some((name) => /(?:^|\/)AndroidManifest\.xml$/i.test(name))
+    && normalizedFiles.some((name) => /(?:^|\/)(?:gradlew(?:\.bat)?|build\.gradle(?:\.kts)?)$/i.test(name));
+  const iosProject = normalizedFiles.some((name) => /\.xcodeproj\/project\.pbxproj$|(?:^|\/)Podfile$|\.xcworkspace\//i.test(name));
+  const mauiMobile = /<TargetFrameworks?>[^<]*(?:android|ios|maccatalyst)/i.test(descriptorText);
+  const flutterMobile = /(?:^|\n)\s*flutter\s*:/i.test(descriptorText);
+  const scriptedMobile = hasKnownDependency(dependencies, MOBILE_GUI_DEPENDENCIES)
+    && Boolean(manifest.scripts?.android || manifest.scripts?.ios || manifest.scripts?.test || manifest.scripts?.start);
+  return {
+    nativeGui: windowsDesktop && (profile.stacks?.includes('dotnet') || normalizedFiles.some((name) => /\.(?:sln|csproj|fsproj)$/i.test(name))),
+    mobileGui: androidProject || iosProject || mauiMobile || flutterMobile || scriptedMobile,
+  };
+}
+
+async function projectFileNames(root, relative = '') {
+  try {
+    const entries = await readdir(path.join(root, relative), { withFileTypes: true });
+    const names = [];
+    for (const entry of entries) {
+      if (entry.name === '.git' || entry.name === 'node_modules') continue;
+      const child = path.join(relative, entry.name);
+      if (entry.isDirectory()) names.push(...await projectFileNames(root, child));
+      else if (entry.isFile()) names.push(child);
+    }
+    return names;
+  } catch {
+    return [];
+  }
+}
+
+function hasKnownDependency(dependencies, knownDependencies) {
+  return [...knownDependencies].some((dependency) => dependencies.has(dependency));
+}
+
+function hasRouteFile(profile) {
+  return (profile.files ?? []).some((name) => /(?:^|\/|\\)(?:routes?|controllers?)(?:\.|\/|\\)/i.test(name));
+}

@@ -17,5 +17,6 @@ Run `node <plugin-root>/bin/forgemind.mjs compass run --goal "<outcome>" --artif
 - `$forgemind-council`: make one difficult, evidence-labelled decision.
 - `$forgemind-ship`: implement, test, and prepare a bounded release.
 - `$forgemind-leap`: developer automode from idea or app to a disruptive MVP.
+- `$forgemind-xray`: independently assess an existing application with read-only quality QA.
 
 For a fast but bounded developer run, select Leap. It proceeds without routine questions and pauses only for a hard safety or authority boundary.

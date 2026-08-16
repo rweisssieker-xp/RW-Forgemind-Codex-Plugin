@@ -73,6 +73,7 @@ const PRIMARY_COMMANDS = [
   'install',
   'selftest',
   'uninstall',
+  'xray',
 ];
 
 const HELP = `ForgeMind — vendor-neutral trust and evidence-driven delivery for Codex
@@ -264,6 +265,17 @@ export async function runCli(argv, context = {}) {
       if (action !== 'run') throw invalidInput('FM_COMPASS_ACTION_INVALID', 'Compass supports run.');
       const { runCompass } = await import('./primary-journeys.mjs');
       data = await runCompass({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), goal: options.goal });
+    } else if (command === 'xray') {
+      const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
+      const action = positionals[0] ?? 'run';
+      const xray = await import('./xray.mjs');
+      if (action === 'run') data = await xray.runXray({
+        workspace,
+        goal: options.goal,
+        guiReceipts: parseJsonArray(options['gui-receipts'], 'FM_XRAY_GUI_RECEIPTS_INVALID'),
+      });
+      else if (action === 'status') data = await xray.getXrayStatus({ workspace });
+      else throw invalidInput('FM_XRAY_ACTION_INVALID', 'Xray supports run and status.');
     } else if (command === 'leap') {
       const action = positionals[0] ?? 'run';
       const { advanceLeap, continueLeap, getLeapStatus, runLeap } = await import('./leap.mjs');
@@ -486,14 +498,15 @@ export async function runCli(argv, context = {}) {
       data = await buildPackages({ pluginRoot, outputRoot: options.output });
     } else if (command === 'install') {
       const { installPlugin } = await import('./lifecycle.mjs');
-      data = await installPlugin({ packagePath: options.package ?? options.source, home: options.home ?? options.destination ?? await defaultHome() });
+      data = await installPlugin({ packagePath: options.package ?? options.source, home: options.home ?? options.destination ?? await defaultHome(), pluginPath: options['plugin-path'] });
     } else if (command === 'selftest') {
       const { runInstallationSelfTest } = await import('./lifecycle.mjs');
-      data = await runInstallationSelfTest({ home: options.home ?? options.destination ?? await defaultHome() });
+      data = await runInstallationSelfTest({ home: options.home ?? options.destination ?? await defaultHome(), pluginPath: options['plugin-path'] });
     } else if (command === 'uninstall') {
       const { uninstallPlugin } = await import('./lifecycle.mjs');
       data = await uninstallPlugin({
         home: options.home ?? options.destination ?? await defaultHome(),
+        pluginPath: options['plugin-path'],
         workspace: options.workspace,
         purgeData: Boolean(options['purge-data']),
         approvedPurge: Boolean(options.approved),
@@ -549,6 +562,7 @@ function splitList(value) {
   return value ? String(value).split('|').map((item) => item.trim()).filter(Boolean) : [];
 }
 function parseJson(value, code) { if (!value) return {}; try { const parsed = JSON.parse(value); return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {}; } catch { throw invalidInput(code, '--autonomy must be a JSON object.'); } }
+function parseJsonArray(value, code) { if (!value) return []; try { const parsed = JSON.parse(value); if (Array.isArray(parsed)) return parsed; throw new Error('not array'); } catch { throw invalidInput(code, '--gui-receipts must be a JSON array.'); } }
 
 function parseOptions(args) {
   const options = {};

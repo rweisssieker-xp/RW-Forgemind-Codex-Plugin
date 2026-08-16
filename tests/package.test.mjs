@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { cp, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
+import { access, cp, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
@@ -26,6 +26,17 @@ test('build creates reproducible standalone and marketplace packages', async (t)
   assert.equal((await verifyPackage(path.join(first.marketplacePath, 'plugins', 'forgemind-trust-fabric'))).status, 'passed');
   await assert.rejects(readFile(path.join(first.pluginPath, 'templates', 'forge', 'trust-contract.example.json'), 'utf8'));
   assert.equal(JSON.parse(await readFile(path.join(first.marketplacePath, 'plugins', 'forgemind-trust-fabric', 'templates', 'forge', 'trust-contract.example.json'), 'utf8')).title, 'Portable agent delivery contract');
+});
+
+test('built Marketplace package exposes the Xray skill and CLI runtime', async (t) => {
+  const root = await mkdtemp(path.join(tmpdir(), 'forgemind-xray-package-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const pluginRoot = path.join(await resolvePluginRoot(), 'plugins', 'forgemind');
+
+  const built = await buildPackages({ pluginRoot, outputRoot: path.join(root, 'dist') });
+
+  await access(path.join(built.marketplacePath, 'plugins', 'forgemind', 'entry-skills', 'forgemind-xray', 'SKILL.md'));
+  await access(path.join(built.marketplacePath, 'plugins', 'forgemind', 'src', 'xray.mjs'));
 });
 
 test('package verification rejects files outside the checksum allowlist', async (t) => {

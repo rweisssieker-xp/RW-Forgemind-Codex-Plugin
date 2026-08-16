@@ -3,15 +3,14 @@ import { spawn } from 'node:child_process';
 import path from 'node:path';
 
 import { loadConfig } from './config.mjs';
-import { ForgeMindError } from './errors.mjs';
+import { ForgeMindError, invalidInput } from './errors.mjs';
 import { assertContained } from './paths.mjs';
 import { evaluateAction } from './policy.mjs';
 import { verifyPackage } from './package.mjs';
 
-export async function installPlugin({ packagePath, home, requestedStatus, injectFailure }) {
+export async function installPlugin({ packagePath, home, pluginPath, requestedStatus, injectFailure }) {
   const source = path.resolve(packagePath);
-  const root = path.resolve(home);
-  const target = assertContained(root, path.join(root, 'plugins', 'forgemind'));
+  const { home: root, target } = await resolveInstallationTarget({ home, pluginPath });
   const sourceReport = await verifyPackage(source);
   if (sourceReport.status !== 'passed') throw new ForgeMindError('FM_PACKAGE_INVALID', 'Installation package validation failed.', { details: sourceReport.errors });
   await mkdir(root, { recursive: true });
@@ -65,9 +64,8 @@ export async function installPlugin({ packagePath, home, requestedStatus, inject
   }
 }
 
-export async function uninstallPlugin({ home, workspace, purgeData = false, approvedPurge = false }) {
-  const root = path.resolve(home);
-  const target = assertContained(root, path.join(root, 'plugins', 'forgemind'));
+export async function uninstallPlugin({ home, pluginPath, workspace, purgeData = false, approvedPurge = false }) {
+  const { home: root, target } = await resolveInstallationTarget({ home, pluginPath });
   await removeManagedCommandWrapper(root);
   await rm(target, { recursive: true, force: true });
   let dataPurged = false;
@@ -83,9 +81,8 @@ export async function uninstallPlugin({ home, workspace, purgeData = false, appr
   return { schemaVersion: 1, status: 'uninstalled', installPath: target, dataPurged };
 }
 
-export async function runInstallationSelfTest({ home }) {
-  const root = path.resolve(home);
-  const target = assertContained(root, path.join(root, 'plugins', 'forgemind'));
+export async function runInstallationSelfTest({ home, pluginPath }) {
+  const { home: root, target } = await resolveInstallationTarget({ home, pluginPath });
   const manifest = await readManifest(target);
   if (!manifest) throw new ForgeMindError('FM_INSTALLATION_MISSING', 'ForgeMind is not installed in this Codex home.');
   const bin = assertContained(root, path.join(root, 'bin'));
@@ -108,6 +105,19 @@ export async function runInstallationSelfTest({ home }) {
     reloadRequired: true,
     errors: packageReport.errors,
   };
+}
+
+export async function resolveInstallationTarget({ home, pluginPath }) {
+  if (pluginPath) {
+    const target = path.resolve(pluginPath);
+    if (path.basename(target) !== 'forgemind' || path.basename(path.dirname(target)) !== 'plugins') {
+      throw invalidInput('FM_INSTALL_TARGET_INVALID', '--plugin-path must end in plugins/forgemind.');
+    }
+    const root = path.dirname(path.dirname(target));
+    return { home: root, target: assertContained(root, target) };
+  }
+  const root = path.resolve(home);
+  return { home: root, target: assertContained(root, path.join(root, 'plugins', 'forgemind')) };
 }
 
 async function installCommandWrapper({ home, target }) {

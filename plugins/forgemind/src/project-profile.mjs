@@ -22,7 +22,9 @@ export async function deriveProjectProfile({ workspace }) {
   const [pkg, readme, documents, sources, config, signals, research, telemetry, outcomes] = await Promise.all([
     readJson(path.join(root, 'package.json')), readText(path.join(root, 'README.md')), readDocs(path.join(root, 'docs', 'forgemind')), readSourceSignals(root), readConfig(root), listSignals({ workspace: root }), readJson(artifactStatePath(root, 'product-ops', 'research-latest.json')), readJson(artifactStatePath(root, 'product-ops', 'telemetry-latest.json')), listOutcomes({ workspace: root }),
   ]);
-  const corpus = `${pkg ? JSON.stringify(pkg) : ''}\n${readme}\n${documents.join('\n')}\n${sources.join('\n')}`.toLowerCase();
+  // Historical ForgeMind reports often contain examples of other products. They
+  // are useful context but must never decide what the current repository is.
+  const corpus = `${pkg ? JSON.stringify(pkg) : ''}\n${readme}\n${sources.join('\n')}`.toLowerCase();
   const category = configuredCategory(config?.value?.projectProfile?.productCategory, corpus);
   const categorySources = category.matches.length ? category.matches : ['no category-specific project signal'];
   const deployment = deriveDeployment(corpus, pkg);

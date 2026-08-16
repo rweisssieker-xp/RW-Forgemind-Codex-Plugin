@@ -4,9 +4,9 @@ import path from 'node:path';
 import test from 'node:test';
 
 const root = path.resolve(import.meta.dirname, '..');
-const JOURNEYS = ['forgemind-compass', 'forgemind-leap', 'forgemind-council', 'forgemind-venture', 'forgemind-spark', 'forgemind-evolve', 'forgemind-ship', 'forgemind-autopilot', 'forgemind-portfolio', 'forgemind-transform', 'forgemind-twin', 'forgemind-evolve-ui', 'forgemind-growth'];
+const JOURNEYS = ['forgemind-compass', 'forgemind-leap', 'forgemind-council', 'forgemind-venture', 'forgemind-spark', 'forgemind-evolve', 'forgemind-ship', 'forgemind-autopilot', 'forgemind-portfolio', 'forgemind-transform', 'forgemind-twin', 'forgemind-evolve-ui', 'forgemind-growth', 'forgemind-xray'];
 
-test('thirteen journeys are the complete primary skill hierarchy', async () => {
+test('fourteen journeys are the complete primary skill hierarchy', async () => {
   const directories = [];
   for (const entry of (await readdir(path.join(root, 'entry-skills'), { withFileTypes: true })).filter((item) => item.isDirectory())) {
     try { await readFile(path.join(root, 'entry-skills', entry.name, 'SKILL.md'), 'utf8'); directories.push(entry.name); } catch {}
