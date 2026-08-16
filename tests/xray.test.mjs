@@ -114,6 +114,31 @@ test('Xray recursively holds package scripts whose aliases hide unsafe or remote
   }
 });
 
+test('Xray defaults destructive shell, unresolved runtime, and environment-derived target scripts to a hold', async (t) => {
+  const destructiveBodies = [
+    'rm -rf important-data',
+    'rimraf important-data',
+    'powershell -Command Remove-Item -Recurse important-data',
+    'node scripts/cleanup.mjs',
+    'playwright test $TARGET_URL',
+  ];
+
+  for (const verify of destructiveBodies) {
+    const root = await fixture(t, { packageJson: { scripts: { test: 'npm run verify', verify } } });
+    const mission = await discoverXrayMission({ workspace: root });
+    let executed = false;
+    const result = await executeXrayMission({
+      workspace: root,
+      mission,
+      runCommand: async () => { executed = true; return { exitCode: 0, stdout: '', stderr: '' }; },
+    });
+
+    assert.equal(executed, false, verify);
+    assert.equal(mission.checks[0].unsafe, true, verify);
+    assert.equal(result.receipts[0].status, 'skipped', verify);
+  }
+});
+
 test('Xray turns a failed imported GUI receipt into an evidence-backed surface finding', async (t) => {
   const result = await executeXrayMission({
     workspace: await fixture(t),
@@ -166,6 +191,23 @@ test('Xray classifies an unavailable local service or credential as a gap', asyn
   }
 });
 
+test('Xray keeps ambiguous application error assertions as product failures', async (t) => {
+  for (const stderr of [
+    'AssertionError: expected 200, received 503 Service Unavailable',
+    'AssertionError: expected connection refused but request succeeded',
+  ]) {
+    const result = await executeXrayMission({
+      workspace: await fixture(t),
+      mission: { checks: [{ id: 'command-1', kind: 'command', command: 'npm test', componentIds: ['functional-correctness'], surfaceIds: ['api'] }], gaps: [] },
+      runCommand: async () => ({ exitCode: 1, stdout: '', stderr }),
+    });
+
+    assert.equal(result.receipts[0].status, 'failed', stderr);
+    assert.equal(result.findings.length, 1, stderr);
+    assert.deepEqual(result.gaps, [], stderr);
+  }
+});
+
 test('Xray deduplicates findings with identical surfaces and command outcomes', async (t) => {
   const result = await executeXrayMission({
     workspace: await fixture(t),
@@ -191,12 +233,13 @@ test('Xray redistributes not-applicable weights and deducts high severity determ
     findings: [{ severity: 'high', surfaces: ['api'] }],
   });
 
-  assert.equal(score.value, 82);
+  assert.equal(score.value, 79);
   assert.deepEqual(
     score.components.filter(({ status }) => status === 'not-applicable').map(({ id }) => id).sort(),
     ['accessibility-visual', 'gui-usability'],
   );
   assert.deepEqual(score.components.find(({ id }) => id === 'api-contracts').deductions, [{ findingId: null, severity: 'high', value: 25 }]);
+  assert.equal(score.components.find(({ id }) => id === 'robustness-error-paths').status, 'insufficient-evidence');
 });
 
 test('Xray marks an API surface without an execution receipt as an evidence gap', () => {
@@ -255,6 +298,36 @@ test('Xray counts only explicit surface-specific GUI receipt aspects', () => {
   assert.deepEqual(score.components.find(({ id }) => id === 'gui-usability').evidence, ['gui-1']);
 });
 
+test('Xray does not use an accessibility-only GUI receipt for functional or robustness scoring', () => {
+  const score = scoreXrayQuality({
+    mission: {
+      surfaces: [{ id: 'web-gui' }],
+      checks: [{
+        id: 'gui-1',
+        kind: 'gui-control',
+        surfaceIds: ['web-gui'],
+        componentIds: ['accessibility-visual'],
+      }],
+    },
+    receipts: [{ id: 'gui-1', status: 'failed', evidence: ['axe:button-name'] }],
+    gaps: [],
+    findings: [{
+      id: 'finding-gui-1',
+      severity: 'high',
+      surfaces: ['web-gui'],
+      componentIds: ['accessibility-visual'],
+    }],
+  });
+
+  assert.equal(score.components.find(({ id }) => id === 'functional-correctness').status, 'insufficient-evidence');
+  assert.equal(score.components.find(({ id }) => id === 'robustness-error-paths').status, 'insufficient-evidence');
+  assert.deepEqual(score.components.find(({ id }) => id === 'functional-correctness').deductions, []);
+  assert.deepEqual(score.components.find(({ id }) => id === 'robustness-error-paths').deductions, []);
+  assert.deepEqual(score.components.find(({ id }) => id === 'accessibility-visual').deductions, [{
+    findingId: 'finding-gui-1', severity: 'high', value: 25,
+  }]);
+});
+
 test('Xray discovers standalone native, mobile-emulator, and hybrid GUI surfaces from local signals', async (t) => {
   const native = await fixture(t, {
     files: {
@@ -282,6 +355,20 @@ test('Xray discovers standalone native, mobile-emulator, and hybrid GUI surfaces
     ['api', 'mobile-gui', 'web-gui'],
   );
   assert.ok((await discoverXrayMission({ workspace: native })).gaps.some(({ code }) => code === 'FM_XRAY_GUI_CONTROL_UNAVAILABLE'));
+});
+
+test('Xray treats a standalone React Native start script as mobile-only', async (t) => {
+  const root = await fixture(t, {
+    packageJson: {
+      scripts: { start: 'react-native start', test: 'jest' },
+      dependencies: { react: '^19', 'react-native': '^0.81' },
+    },
+  });
+
+  const mission = await discoverXrayMission({ workspace: root });
+
+  assert.deepEqual(mission.surfaces.map(({ id }) => id), ['mobile-gui']);
+  assert.equal(mission.gaps[0].control, 'computer-use');
 });
 
 test('Xray effective component weights total exactly 100 after redistribution', () => {

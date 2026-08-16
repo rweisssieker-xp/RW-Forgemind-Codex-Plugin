@@ -19,8 +19,10 @@ const MOBILE_GUI_DEPENDENCIES = new Set([
 const GUI_SURFACE_IDS = new Set(['web-gui', 'native-gui', 'mobile-gui']);
 const GUI_COMPONENT_IDS = new Set(['gui-usability', 'accessibility-visual']);
 const UNSAFE_COMMAND_PATTERN = /\b(?:migrate|deploy|publish|seed|reset|delete|destroy|drop|truncate|production)\b/i;
+const DESTRUCTIVE_OPERATION_PATTERN = /(?:\brm\s+(?:-[a-z]*[rf][a-z]*\s+)+|\brimraf\b|\bRemove-Item\b|\b(?:del|erase|rmdir|rd|shred)\s+|\b(?:fs\.)?(?:rm|rmSync|unlink|unlinkSync|rmdir|rmdirSync)\s*\(|\b(?:File|Directory)\.Delete\s*\(|\b(?:shutil\.rmtree|os\.remove|Deno\.remove)\s*\()/i;
 const CREDENTIAL_PATTERN = /\b(?:credentials?|secrets?|passwords?|api[_-]?keys?|auth[_-]?tokens?)\b/i;
 const EXTERNAL_SPEND_PATTERN = /\b(?:terraform\s+apply|pulumi\s+up|stripe\s+(?:charge|payment)|aws\s+.*\bcreate)\b/i;
+const ENVIRONMENT_TARGET_PATTERN = /(?:\$(?:env:)?\{?[A-Z_][A-Z0-9_]*(?:URL|URI|HOST|ENDPOINT|TARGET)[A-Z0-9_]*\}?|%[A-Z_][A-Z0-9_]*(?:URL|URI|HOST|ENDPOINT|TARGET)[A-Z0-9_]*%|process\.env\.[A-Z_][A-Z0-9_]*(?:URL|URI|HOST|ENDPOINT|TARGET)[A-Z0-9_]*)/i;
 const SCORE_COMPONENTS = [
   { id: 'functional-correctness', label: 'Functional correctness and regressions', configuredWeight: 30 },
   { id: 'api-contracts', label: 'API, CLI, and integration contracts', configuredWeight: 20 },
@@ -54,6 +56,7 @@ export async function discoverXrayMission({
         ...check,
         scriptName: check.category,
         scriptBody,
+        componentIds: commandComponentIds(check, scriptBody),
         safetyReasons,
         unsafe: safetyReasons.length > 0,
       };
@@ -81,7 +84,12 @@ export function detectSurfaces(profile) {
 
   if (manifest.bin || scripts.cli || scripts.command) surfaces.push({ id: 'cli', label: 'Command-line interface' });
   if (hasKnownDependency(dependencies, API_DEPENDENCIES) || hasRouteFile(profile)) surfaces.push({ id: 'api', label: 'API' });
-  if (hasKnownDependency(dependencies, WEB_GUI_DEPENDENCIES) || scripts.dev || scripts.start) {
+  const hasMobileDependency = hasKnownDependency(dependencies, MOBILE_GUI_DEPENDENCIES);
+  const hasWebDependency = [...WEB_GUI_DEPENDENCIES]
+    .some((dependency) => dependencies.has(dependency)
+      && !(hasMobileDependency && (dependency === 'react' || dependency === 'react-dom')));
+  const hasWebStart = [scripts.dev, scripts.start].some((command) => isRecognizedWebStart(command));
+  if (hasWebDependency || hasWebStart) {
     surfaces.push({ id: 'web-gui', label: 'Web GUI', control: 'browser' });
   }
   if (profile.nativeGui) surfaces.push({ id: 'native-gui', label: 'Native desktop GUI', control: 'computer-use' });
@@ -171,6 +179,7 @@ export function commandFinding(check, result) {
     id: `finding-${check.id}`,
     severity: 'high',
     surfaces: [...(check.surfaceIds ?? [])],
+    componentIds: [...(check.componentIds ?? ['functional-correctness'])],
     title: `Detected command failed: ${command}`,
     reproduction: `Run ${command} from the workspace root.`,
     expected: `Command succeeds: ${command}`,
@@ -218,16 +227,18 @@ export function scoreXrayQuality({ mission, findings = [], receipts = [], gaps =
   const hasApiOrCli = surfaceIds.has('api') || surfaceIds.has('cli');
   const executedReceiptIds = new Set(receipts.filter(isExecutionReceipt).map(({ id }) => id));
   const hasReceipts = executedReceiptIds.size > 0;
+  const functionalEvidence = receiptIdsForComponent(mission, executedReceiptIds, 'functional-correctness');
+  const robustnessEvidence = receiptIdsForComponent(mission, executedReceiptIds, 'robustness-error-paths');
   const apiOrCliEvidence = receiptIdsForSurfaces(mission, executedReceiptIds, ['api', 'cli']);
   const guiEvidence = receiptIdsForGuiComponent(mission, executedReceiptIds, 'gui-usability');
   const accessibilityEvidence = receiptIdsForGuiComponent(mission, executedReceiptIds, 'accessibility-visual');
   const coverage = evidenceCoverage(mission, surfaces, executedReceiptIds);
   const applicability = {
-    'functional-correctness': hasReceipts ? 'applicable' : 'insufficient-evidence',
+    'functional-correctness': functionalEvidence.length ? 'applicable' : 'insufficient-evidence',
     'api-contracts': componentStatus(hasApiOrCli, apiOrCliEvidence.length),
     'gui-usability': componentStatus(hasGui, guiEvidence.length),
     'accessibility-visual': componentStatus(hasGui, accessibilityEvidence.length),
-    'robustness-error-paths': hasReceipts ? 'applicable' : 'insufficient-evidence',
+    'robustness-error-paths': robustnessEvidence.length ? 'applicable' : 'insufficient-evidence',
     'evidence-coverage': hasReceipts ? 'applicable' : 'insufficient-evidence',
   };
   const applicableWeight = SCORE_COMPONENTS
@@ -248,7 +259,7 @@ export function scoreXrayQuality({ mission, findings = [], receipts = [], gaps =
       ...definition,
       effectiveWeight,
       status,
-      evidence: componentEvidence(definition.id, receipts, gaps, surfaceIds, apiOrCliEvidence, guiEvidence, accessibilityEvidence),
+      evidence: componentEvidence(definition.id, receipts, gaps, surfaceIds, functionalEvidence, robustnessEvidence, apiOrCliEvidence, guiEvidence, accessibilityEvidence),
       deductions,
       score: status === 'applicable'
         ? definition.id === 'evidence-coverage' ? coverage.score : Math.max(0, 100 - deductionTotal)
@@ -368,7 +379,10 @@ function classifyPackageScript(scripts, scriptName) {
       const body = String(scripts[lifecycleName] ?? '');
       if (!body) continue;
       for (const reason of unsafeScriptReasons(body)) reasons.add(`${lifecycleName}:${reason}`);
-      for (const referencedName of referencedPackageScripts(body)) visit(referencedName);
+      for (const referencedName of referencedPackageScripts(body)) {
+        if (scripts[referencedName]) visit(referencedName);
+        else reasons.add(`${lifecycleName}:unresolved-script-reference:${referencedName}`);
+      }
     }
   };
 
@@ -379,10 +393,37 @@ function classifyPackageScript(scripts, scriptName) {
 function unsafeScriptReasons(body) {
   const reasons = [];
   if (UNSAFE_COMMAND_PATTERN.test(body)) reasons.push('destructive-or-production-operation');
+  if (DESTRUCTIVE_OPERATION_PATTERN.test(body)) reasons.push('destructive-filesystem-operation');
   if (CREDENTIAL_PATTERN.test(body)) reasons.push('credential-access');
   if (EXTERNAL_SPEND_PATTERN.test(body)) reasons.push('external-spend');
   if (hasUnverifiedRemoteTarget(body)) reasons.push('unverified-remote-target');
+  if (ENVIRONMENT_TARGET_PATTERN.test(body)) reasons.push('environment-derived-target');
+  if (!isRecognizedReadOnlyScript(body)) reasons.push('unclassified-script-operation');
   return reasons;
+}
+
+function isRecognizedReadOnlyScript(body) {
+  const commands = String(body).split(/\s*(?:&&|\|\||;)\s*/).filter(Boolean);
+  return commands.length > 0 && commands.every((rawCommand) => {
+    const command = rawCommand
+      .replace(/^cross-env\s+(?:[A-Z_][A-Z0-9_]*=[^\s]+\s+)*/i, '')
+      .replace(/^(?:[A-Z_][A-Z0-9_]*=[^\s]+\s+)+/i, '')
+      .trim();
+    if (/^(?:npm|pnpm|yarn)\s+(?:run\s+)?[\w:.-]+(?:\s+--.*)?$/i.test(command)) return true;
+    return /^(?:node\s+(?:--test|--check)\b|(?:npx\s+)?(?:vitest|jest|mocha|ava|tap|eslint|tsc)\b|(?:npx\s+)?playwright\s+test\b|(?:npx\s+)?cypress\s+run\b|(?:vite|next)\s+build\b|(?:webpack|rollup)\b|dotnet\s+(?:test|build)\b|python\s+-m\s+pytest\b|pytest\b|cargo\s+test\b|go\s+test\b|\.\/?gradlew(?:\.bat)?\s+test\b)/i.test(command);
+  });
+}
+
+function commandComponentIds(check, scriptBody) {
+  const componentIds = ['functional-correctness'];
+  if (/\b(?:error|exception|negative|failure|fault|resilien|robust|edge[- ]?case|timeout)\b/i.test(`${check.source ?? ''} ${scriptBody ?? ''}`)) {
+    componentIds.push('robustness-error-paths');
+  }
+  return componentIds;
+}
+
+function isRecognizedWebStart(command) {
+  return /\b(?:vite|next(?:\s+dev)?|react-scripts\s+start|webpack(?:-dev-server)?|ng\s+serve|svelte-kit\s+dev|astro\s+dev|remix\s+dev|nuxt\s+dev)\b/i.test(String(command ?? ''));
 }
 
 function referencedPackageScripts(body) {
@@ -412,7 +453,9 @@ function classifyPrerequisiteFailure(result) {
   if (result?.exitCode === 127 || /\b(?:ENOENT|command not found|not recognized as an internal or external command|cannot find (?:the )?(?:file|command|executable))\b/i.test(output)) {
     return 'tool';
   }
-  if (/\b(?:ECONNREFUSED|connection refused|service unavailable|failed to connect|no (?:running )?(?:emulator|simulator|device)|(?:credential|api[_-]?key|token).*(?:missing|not configured|unavailable|required))\b/i.test(output)) {
+  const localServiceUnavailable = /(?:\b(?:localhost|127\.0\.0\.1|\[?::1\]?|local (?:service|server|database))\b[^\n]*(?:unavailable|not running|failed to connect|ECONNREFUSED|connection refused)|(?:unavailable|not running|failed to connect|ECONNREFUSED|connection refused)[^\n]*\b(?:localhost|127\.0\.0\.1|\[?::1\]?|local (?:service|server|database))\b)/i.test(output);
+  if (/\b(?:no (?:running )?(?:emulator|simulator|device)|(?:credential|api[_-]?key|token).*(?:missing|not configured|unavailable|required))\b/i.test(output)
+    || localServiceUnavailable) {
     return 'prerequisite';
   }
   return null;
@@ -507,12 +550,20 @@ function findingAppliesToComponent(finding, componentId) {
     const matchesGui = surfaces.has('web-gui') || surfaces.has('native-gui') || surfaces.has('mobile-gui');
     return matchesGui && (!finding.componentIds?.length || finding.componentIds.includes(componentId));
   }
-  if (componentId === 'functional-correctness') return true;
-  if (componentId === 'robustness-error-paths') return /error|exception|timeout|resilien|robust/i.test(`${finding.title ?? ''} ${finding.actual ?? ''}`);
+  if (componentId === 'functional-correctness') {
+    return finding.componentIds?.length ? finding.componentIds.includes(componentId) : true;
+  }
+  if (componentId === 'robustness-error-paths') {
+    return finding.componentIds?.length
+      ? finding.componentIds.includes(componentId)
+      : /error|exception|timeout|resilien|robust/i.test(`${finding.title ?? ''} ${finding.actual ?? ''}`);
+  }
   return false;
 }
 
-function componentEvidence(componentId, receipts, gaps, surfaceIds, apiOrCliEvidence, guiEvidence, accessibilityEvidence) {
+function componentEvidence(componentId, receipts, gaps, surfaceIds, functionalEvidence, robustnessEvidence, apiOrCliEvidence, guiEvidence, accessibilityEvidence) {
+  if (componentId === 'functional-correctness') return functionalEvidence;
+  if (componentId === 'robustness-error-paths') return robustnessEvidence;
   if (componentId === 'api-contracts') return apiOrCliEvidence;
   if (componentId === 'gui-usability') return guiEvidence;
   if (componentId === 'accessibility-visual') return accessibilityEvidence;
@@ -552,6 +603,14 @@ function receiptIdsForGuiComponent(mission, receiptIds, componentId) {
       && receiptIds.has(check.id)
       && (check.surfaceIds ?? []).some((id) => GUI_SURFACE_IDS.has(id))
       && (check.componentIds ?? []).includes(componentId))
+    .map(({ id }) => id);
+}
+
+function receiptIdsForComponent(mission, receiptIds, componentId) {
+  return (mission?.checks ?? [])
+    .filter((check) => receiptIds.has(check.id)
+      && ((check.componentIds ?? []).includes(componentId)
+        || (componentId === 'functional-correctness' && check.kind !== 'gui-control' && !check.componentIds?.length)))
     .map(({ id }) => id);
 }
 

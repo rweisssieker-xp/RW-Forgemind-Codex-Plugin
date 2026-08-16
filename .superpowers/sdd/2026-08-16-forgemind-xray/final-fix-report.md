@@ -63,3 +63,22 @@ The initial focused Xray run after adding the regressions produced 7 expected fa
 - `npm run build` — passed.
 - `node bin/forgemind.mjs validate --plugin dist/plugin --strict-release` — passed.
 - SHA-256 comparisons confirmed `src/xray.mjs` and `src/cli.mjs` are byte-equivalent to their `plugins/forgemind/src/` copies.
+
+## Final re-review follow-up
+
+The follow-up review identified two remaining P1 boundaries and two P2 report-accuracy issues. All four are addressed:
+
+- Package-script recursion now uses a conservative read-only leaf allowlist. Destructive shell operations (`rm -rf`, `rimraf`, PowerShell `Remove-Item`, and common runtime filesystem-deletion APIs), unresolved local runtime scripts, missing nested script references, and environment-derived URL/host/endpoint/target values default to an unsafe hold. Regression fixtures verify that none reaches `runCommand`.
+- Prerequisite classification no longer treats the generic phrase `Service Unavailable` as infrastructure evidence. It requires a concrete launch/tool failure, connection refusal, named missing credential/device, or explicit loopback/local-service context. An asserted HTTP 503 response remains a failed receipt and evidence-backed product finding.
+- Functional-correctness and robustness applicability now come from checks that explicitly exercise those components. GUI findings apply only to their declared GUI/accessibility component IDs; an accessibility-only receipt neither verifies nor deducts functional or robustness scores.
+- Web discovery now distinguishes recognized web development servers from mobile packagers and ignores React/React DOM as web-only evidence when a mobile framework dependency is present. A standalone `react-native start` fixture emits only `mobile-gui` and a Computer Use gap, while the existing Vite/React Native hybrid still emits both surfaces.
+
+TDD red evidence: the new focused run initially failed exactly four regressions (destructive/unresolved scripts executed, HTTP 503 swallowed, GUI receipt over-applied, and React Native web false positive). After implementation, the focused release surface passed 38/38.
+
+Fresh verification for this follow-up:
+
+- `node --test tests/xray.test.mjs tests/cli.test.mjs tests/journey-surface.test.mjs tests/package.test.mjs` — 38 passed, 0 failed.
+- `npm test` — 190 passed, 0 failed.
+- `npm run build` — passed.
+- Strict validation of both `plugins/forgemind` and `dist/plugin` — passed.
+- `git diff --check` — passed.
