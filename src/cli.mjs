@@ -73,6 +73,7 @@ const PRIMARY_COMMANDS = [
   'install',
   'selftest',
   'uninstall',
+  'xray',
 ];
 
 const HELP = `ForgeMind — vendor-neutral trust and evidence-driven delivery for Codex
@@ -264,6 +265,13 @@ export async function runCli(argv, context = {}) {
       if (action !== 'run') throw invalidInput('FM_COMPASS_ACTION_INVALID', 'Compass supports run.');
       const { runCompass } = await import('./primary-journeys.mjs');
       data = await runCompass({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), goal: options.goal });
+    } else if (command === 'xray') {
+      const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
+      const action = positionals[0] ?? 'run';
+      const xray = await import('./xray.mjs');
+      if (action === 'run') data = await xray.runXray({ workspace, goal: options.goal });
+      else if (action === 'status') data = await xray.getXrayStatus({ workspace });
+      else throw invalidInput('FM_XRAY_ACTION_INVALID', 'Xray supports run and status.');
     } else if (command === 'leap') {
       const action = positionals[0] ?? 'run';
       const { advanceLeap, continueLeap, getLeapStatus, runLeap } = await import('./leap.mjs');
