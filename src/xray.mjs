@@ -153,12 +153,15 @@ export function scoreXrayQuality({ mission, findings = [], receipts = [], gaps =
   const surfaceIds = new Set(surfaces.map(({ id }) => id));
   const hasGui = surfaceIds.has('web-gui') || surfaceIds.has('native-gui') || surfaceIds.has('mobile-gui');
   const hasApiOrCli = surfaceIds.has('api') || surfaceIds.has('cli');
-  const hasReceipts = receipts.length > 0;
+  const executedReceiptIds = new Set(receipts.filter(isExecutionReceipt).map(({ id }) => id));
+  const hasReceipts = executedReceiptIds.size > 0;
+  const apiOrCliEvidence = receiptIdsForSurfaces(mission, executedReceiptIds, ['api', 'cli']);
+  const guiEvidence = receiptIdsForSurfaces(mission, executedReceiptIds, ['web-gui', 'native-gui', 'mobile-gui']);
   const applicability = {
     'functional-correctness': hasReceipts ? 'applicable' : 'insufficient-evidence',
-    'api-contracts': hasApiOrCli ? 'applicable' : 'not-applicable',
-    'gui-usability': hasGui ? 'applicable' : 'not-applicable',
-    'accessibility-visual': hasGui ? 'applicable' : 'not-applicable',
+    'api-contracts': componentStatus(hasApiOrCli, apiOrCliEvidence.length),
+    'gui-usability': componentStatus(hasGui, guiEvidence.length),
+    'accessibility-visual': componentStatus(hasGui, guiEvidence.length),
     'robustness-error-paths': hasReceipts ? 'applicable' : 'insufficient-evidence',
     'evidence-coverage': hasReceipts ? 'applicable' : 'insufficient-evidence',
   };
@@ -180,13 +183,15 @@ export function scoreXrayQuality({ mission, findings = [], receipts = [], gaps =
       ...definition,
       effectiveWeight,
       status,
-      evidence: componentEvidence(definition.id, receipts, gaps, surfaceIds),
+      evidence: componentEvidence(definition.id, receipts, gaps, surfaceIds, apiOrCliEvidence, guiEvidence),
       deductions,
       score: status === 'applicable' ? Math.max(0, 100 - deductionTotal) : null,
     };
   });
   const noSurface = surfaces.length === 0;
-  const scoreGaps = noSurface ? [{ code: 'FM_XRAY_NO_TEST_SURFACE' }] : [];
+  const scoreGaps = noSurface
+    ? [{ code: 'FM_XRAY_NO_TEST_SURFACE' }]
+    : missingSurfaceEvidenceGaps(mission, surfaces, executedReceiptIds);
   const value = applicableWeight === 0
     ? 0
     : Math.round(components.reduce((total, component) => total + ((component.score ?? 0) * component.effectiveWeight), 0) / 100);
@@ -285,9 +290,9 @@ function findingAppliesToComponent(finding, componentId) {
   return false;
 }
 
-function componentEvidence(componentId, receipts, gaps, surfaceIds) {
-  if (componentId === 'api-contracts') return surfaceIds.has('api') || surfaceIds.has('cli') ? receipts.map(({ id }) => id) : [];
-  if (componentId === 'gui-usability' || componentId === 'accessibility-visual') return receipts.map(({ id }) => id);
+function componentEvidence(componentId, receipts, gaps, surfaceIds, apiOrCliEvidence, guiEvidence) {
+  if (componentId === 'api-contracts') return apiOrCliEvidence;
+  if (componentId === 'gui-usability' || componentId === 'accessibility-visual') return guiEvidence;
   if (componentId === 'evidence-coverage') return { receipts: receipts.map(({ id }) => id), gaps: gaps.map(({ code }) => code) };
   return receipts.map(({ id }) => id);
 }
@@ -300,6 +305,32 @@ function deriveStatus(execution, score) {
 
 function formatWeight(value) {
   return Number.isInteger(value) ? String(value) : value.toFixed(2);
+}
+
+function isExecutionReceipt(receipt) {
+  return receipt.status === 'passed' || receipt.status === 'failed';
+}
+
+function componentStatus(hasSurface, evidenceCount) {
+  if (!hasSurface) return 'not-applicable';
+  return evidenceCount > 0 ? 'applicable' : 'insufficient-evidence';
+}
+
+function receiptIdsForSurfaces(mission, receiptIds, targetSurfaceIds) {
+  const targets = new Set(targetSurfaceIds);
+  return (mission?.checks ?? [])
+    .filter((check) => receiptIds.has(check.id) && (check.surfaceIds ?? []).some((id) => targets.has(id)))
+    .map(({ id }) => id);
+}
+
+function missingSurfaceEvidenceGaps(mission, surfaces, receiptIds) {
+  return surfaces
+    .filter(({ id }) => receiptIdsForSurfaces(mission, receiptIds, [id]).length === 0)
+    .map(({ id }) => ({
+      code: 'FM_XRAY_SURFACE_EVIDENCE_UNAVAILABLE',
+      surfaceId: id,
+      message: `No executed check produced evidence for the detected ${id} surface.`,
+    }));
 }
 
 function redistributedWeights(applicability, applicableWeight) {

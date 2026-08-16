@@ -110,18 +110,35 @@ test('Xray deduplicates findings with identical surfaces and command outcomes', 
 
 test('Xray redistributes not-applicable weights and deducts high severity deterministically', () => {
   const score = scoreXrayQuality({
-    mission: { surfaces: [{ id: 'api' }], checks: [] },
-    receipts: [],
+    mission: { surfaces: [{ id: 'api' }], checks: [{ id: 'command-1', surfaceIds: ['api'] }] },
+    receipts: [{ id: 'command-1', status: 'failed' }],
     gaps: [],
     findings: [{ severity: 'high', surfaces: ['api'] }],
   });
 
-  assert.equal(score.value, 75);
+  assert.equal(score.value, 82);
   assert.deepEqual(
     score.components.filter(({ status }) => status === 'not-applicable').map(({ id }) => id).sort(),
     ['accessibility-visual', 'gui-usability'],
   );
-  assert.equal(score.components.find(({ id }) => id === 'api-contracts').effectiveWeight, 100);
+  assert.deepEqual(score.components.find(({ id }) => id === 'api-contracts').deductions, [{ findingId: null, severity: 'high', value: 25 }]);
+});
+
+test('Xray marks an API surface without an execution receipt as an evidence gap', () => {
+  const score = scoreXrayQuality({
+    mission: { surfaces: [{ id: 'api' }], checks: [{ id: 'command-1', surfaceIds: ['api'] }] },
+    receipts: [],
+    gaps: [],
+    findings: [],
+  });
+
+  assert.equal(score.value, 0);
+  assert.equal(score.status, 'insufficient-evidence');
+  assert.equal(score.components.find(({ id }) => id === 'api-contracts').status, 'insufficient-evidence');
+  assert.deepEqual(score.components.find(({ id }) => id === 'api-contracts').evidence, []);
+  assert.equal(score.components.find(({ id }) => id === 'api-contracts').score, null);
+  assert.equal(score.gaps[0].code, 'FM_XRAY_SURFACE_EVIDENCE_UNAVAILABLE');
+  assert.equal(score.gaps[0].surfaceId, 'api');
 });
 
 test('Xray effective component weights total exactly 100 after redistribution', () => {
