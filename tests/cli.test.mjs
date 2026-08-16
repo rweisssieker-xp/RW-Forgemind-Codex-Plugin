@@ -74,3 +74,28 @@ test('xray rejects unsupported actions', async () => {
   assert.equal(result.exitCode, 2);
   assert.match(result.data.error, /FM_XRAY_ACTION_INVALID/);
 });
+
+test('xray run accepts surface-specific GUI receipts for the canonical report', async (t) => {
+  const workspace = await mkdtemp(path.join(tmpdir(), 'forgemind-xray-cli-gui-'));
+  await writeFile(path.join(workspace, 'package.json'), JSON.stringify({
+    scripts: { dev: 'vite' },
+    dependencies: { vite: '^6' },
+  }, null, 2));
+  t.after(() => rm(workspace, { recursive: true, force: true }));
+  const receipts = JSON.stringify([{
+    surfaceId: 'web-gui',
+    control: 'browser',
+    status: 'passed',
+    componentIds: ['gui-usability'],
+    evidence: ['screenshots/home.png'],
+  }]);
+
+  const result = await runCli(
+    ['xray', 'run', '--workspace', workspace, '--gui-receipts', receipts, '--json'],
+    { stdout: outputBuffer().stream, stderr: outputBuffer().stream },
+  );
+
+  assert.equal(result.exitCode, 0);
+  assert.equal(result.data.receipts[0].surfaceId, 'web-gui');
+  assert.equal(result.data.score.components.find(({ id }) => id === 'gui-usability').status, 'applicable');
+});
