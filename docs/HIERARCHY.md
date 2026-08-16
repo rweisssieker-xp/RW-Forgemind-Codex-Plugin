@@ -1,6 +1,6 @@
 # ForgeMind Journey Hierarchy
 
-ForgeMind has thirteen primary entry points. They are the complete Marketplace surface; supporting commands are called by the relevant journey and remain available to advanced users.
+ForgeMind has fourteen primary entry points. They are the complete Marketplace surface; supporting commands are called by the relevant journey and remain available to advanced users.
 
 ```text
 Compass — choose the smallest safe path
@@ -10,6 +10,7 @@ Compass — choose the smallest safe path
 ├── Council — make a difficult, evidence-labelled decision
 ├── Ship    — implement, test, and release a bounded outcome
 ├── Leap    — developer automode: idea or app to disruptive MVP
+├── Xray    — autonomous, read-only quality QA
 └── Autopilot — goal-driven autonomous delivery
     ├── Portfolio — discover all AI-native USP candidates
     ├── Transform — run isolated disruptive MVP experiments
@@ -29,6 +30,7 @@ Compass — choose the smallest safe path
 | Council | `$forgemind-council` | A decision that needs product, customer, technical, risk, and contrarian views. |
 | Ship | `$forgemind-ship` | Bounded implementation, GUI/testing expectations, and release readiness. |
 | Leap | `$forgemind-leap` | Autonomous developer delivery without routine questions. |
+| Xray | `$forgemind-xray` | Evidence-backed, read-only QA across detected local surfaces. |
 | Autopilot | `$forgemind-autopilot` | Persistent Codex-goal delivery with scoped adapters and recovery. |
 | Portfolio | `$forgemind-portfolio` | Discover and prioritize every evidence-labelled AI-native USP. |
 | Transform | `$forgemind-transform` | Transform the repository through autonomous reversible experiments. |

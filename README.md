@@ -13,6 +13,7 @@ ForgeMind is an evidence-first product innovation and delivery plugin for Codex,
 | Council | `$forgemind-council Decide whether we should …` | One decision with visible dissent, metric, and kill condition. |
 | Ship | `$forgemind-ship Implement and prove …` | Delivery contract, UX test surface, and release path. |
 | Leap | `$forgemind-leap Autonomously turn this app or idea into a disruptive MVP: …` | Developer automode from idea/app to bounded MVP. |
+| Xray | `$forgemind-xray Assess this application with read-only local QA.` | Evidence-backed quality findings, explicit test gaps, and an informative score. |
 | Autopilot | `$forgemind-autopilot Autonomously achieve this Codex goal end to end.` | Persistent goal-driven delivery with adapters, recovery, and evidence gates. |
 | Portfolio | `$forgemind-portfolio` | All evidence-labelled AI-native USP opportunities in the active repository. |
 | Transform | `$forgemind-transform` | Autonomous, reversible portfolio transformation of the active repository. |
@@ -35,6 +36,8 @@ Autopilot persists its mission, checkpoint and action receipts below `.codex-orc
 Use **Portfolio** and **Transform** to discover every defensible AI-native USP in the repository and run the eligible candidates as isolated child missions. The scheduler defaults to three concurrent, non-conflicting candidates; all candidates are retained as hypotheses with metrics, guardrails, kill conditions, and rollback paths.
 
 Use **Twin** before broad product work to map repository-derived workflows and knowledge gaps. **Evolve UI** stages a feature-flagged, reversible outcome-flow experiment. **Growth** creates non-contact, non-spend experiment plans. Portfolio invokes a six-perspective Product Lab, Autopilot retains verified Outcome Memory, and Transform prepares an Integration Mesh; none of these capabilities makes market, user, or production claims without evidence and an authorized adapter.
+
+Use **Xray** for an independent, read-only QA pass across detected local CLI, API, integration, and GUI surfaces. It runs only safe local checks, uses the internal Browser for a reachable local web GUI and Computer Use for a local native or emulator GUI, and records unavailable controls as test gaps rather than claiming coverage.
 
 Use **Leap** for fast autonomous MVP work:
 
