@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 
-import { discoverXrayMission } from '../src/xray.mjs';
+import { discoverXrayMission, executeXrayMission } from '../src/xray.mjs';
 
 async function fixture(t, { packageJson, files = {} } = {}) {
   const root = await mkdtemp(path.join(tmpdir(), 'forgemind-xray-'));
@@ -53,4 +53,57 @@ test('Xray identifies an API route without creating an inferred runnable check',
 
   assert.deepEqual(mission.surfaces.map(({ id }) => id), ['api']);
   assert.deepEqual(mission.checks, []);
+});
+
+test('Xray turns a failed local command into a detailed functional finding', async (t) => {
+  const mission = {
+    checks: [{ id: 'command-1', kind: 'command', command: 'npm test', surfaceIds: ['api'] }],
+    gaps: [],
+  };
+  const result = await executeXrayMission({
+    workspace: await fixture(t),
+    mission,
+    runCommand: async () => ({
+      exitCode: 1,
+      stdout: 'TOKEN=secret-value',
+      stderr: 'expected 200, got 500',
+      startedAt: '2026-08-16T00:00:00.000Z',
+      endedAt: '2026-08-16T00:00:01.000Z',
+    }),
+  });
+
+  assert.equal(result.findings[0].severity, 'high');
+  assert.deepEqual(result.findings[0].surfaces, ['api']);
+  assert.equal(result.findings[0].expected, 'Command succeeds: npm test');
+  assert.equal(result.findings[0].actual, 'Command exited with 1');
+  assert.match(result.findings[0].evidence[0], /command-1/);
+  assert.match(result.receipts[0].stdout, /\[REDACTED:SECRET_ASSIGNMENT\]/);
+});
+
+test('Xray does not execute a command marked unsafe and records a test gap', async (t) => {
+  const result = await executeXrayMission({
+    workspace: await fixture(t),
+    mission: { checks: [{ id: 'command-1', command: 'npm run migrate' }], gaps: [] },
+    runCommand: async () => { throw new Error('must not execute'); },
+  });
+
+  assert.equal(result.receipts[0].status, 'skipped');
+  assert.deepEqual(result.gaps.map(({ code }) => code), ['FM_XRAY_UNSAFE_CHECK_SKIPPED']);
+});
+
+test('Xray deduplicates findings with identical surfaces and command outcomes', async (t) => {
+  const result = await executeXrayMission({
+    workspace: await fixture(t),
+    mission: {
+      checks: [
+        { id: 'command-1', command: 'npm test', surfaceIds: ['api'] },
+        { id: 'command-2', command: 'npm test', surfaceIds: ['api'] },
+      ],
+      gaps: [],
+    },
+    runCommand: async () => ({ exitCode: 1, stdout: '', stderr: '' }),
+  });
+
+  assert.equal(result.findings.length, 1);
+  assert.deepEqual(result.findings[0].evidence, ['command-1', 'command-2']);
 });
