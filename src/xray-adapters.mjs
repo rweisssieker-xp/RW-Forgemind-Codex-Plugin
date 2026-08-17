@@ -27,10 +27,10 @@ export async function executeAndroidAdapter({ workspace, profile = {}, runProces
   if (isUnavailableTool(devices)) {
     return androidGapResult('FM_XRAY_ADB_UNAVAILABLE', 'Android Debug Bridge (adb) is unavailable, so Xray cannot test the Android emulator.', 'Install Android platform-tools, ensure `adb` is on PATH, then rerun Xray.');
   }
-  const serial = selectAndroidDevice(devices);
-  if (!serial) {
-    return androidGapResult('FM_XRAY_ANDROID_EMULATOR_UNAVAILABLE', 'No Android emulator or authorized Android test device is available through adb.', 'Start an emulator (or connect an authorized test device), wait until it reports `device`, then rerun Xray.');
-  }
+  if (devices.truncated) return androidTruncationGap('device discovery');
+  const emulator = selectAndroidEmulator(devices);
+  if (emulator.gap) return emulator.gap;
+  const { serial } = emulator;
 
   const manifest = await findAndroidManifest(workspace, profile);
   if (!manifest?.packageName) {
@@ -38,33 +38,53 @@ export async function executeAndroidAdapter({ workspace, profile = {}, runProces
   }
 
   const baseArgs = ['-s', serial];
-  await executeAdb(runProcess, [...baseArgs, 'logcat', '-c'], workspace);
   const resolved = await executeAdb(runProcess, [...baseArgs, 'shell', 'cmd', 'package', 'resolve-activity', '--brief', manifest.packageName], workspace);
+  if (resolved.truncated) return androidTruncationGap('activity resolution', { serial, packageName: manifest.packageName });
   const activity = resolveAndroidActivity(resolved, manifest.packageName);
   if (!activity) {
     return androidGapResult('FM_XRAY_ANDROID_ACTIVITY_UNAVAILABLE', `The installed Android package ${manifest.packageName} has no resolvable launch activity on ${serial}.`, 'Install a runnable debug build on the selected emulator and verify its launch activity, then rerun Xray.', { serial, packageName: manifest.packageName });
   }
 
   const launched = await executeAdb(runProcess, [...baseArgs, 'shell', 'am', 'start', '-n', activity], workspace);
+  if (launched.truncated) return androidTruncationGap('activity launch', { serial, packageName: manifest.packageName, activity });
   if (launched.exitCode !== 0) {
     return androidGapResult('FM_XRAY_ANDROID_ACTIVITY_UNAVAILABLE', `Xray could not start the resolved Android activity ${activity} on ${serial}.`, 'Install a runnable debug build and verify its launch activity, then rerun Xray.', { serial, packageName: manifest.packageName, activity });
   }
 
   const pidResult = await executeAdb(runProcess, [...baseArgs, 'shell', 'pidof', '-s', manifest.packageName], workspace);
+  if (pidResult.truncated) return androidTruncationGap('process discovery', { serial, packageName: manifest.packageName, activity });
   const pid = String(pidResult.stdout ?? '').trim().match(/^\d+$/)?.[0] ?? null;
   if (!pid) {
     return androidGapResult('FM_XRAY_ANDROID_LOG_UNAVAILABLE', `The launched package ${manifest.packageName} did not expose a process id for package-scoped log collection.`, 'Keep the debug app running on the emulator and rerun Xray.', { serial, packageName: manifest.packageName, activity });
   }
 
-  const uiTree = await executeAdb(runProcess, [...baseArgs, 'exec-out', 'uiautomator', 'dump', '/dev/tty'], workspace);
-  if (uiTree.exitCode !== 0 || !String(uiTree.stdout ?? '').trim()) {
+  const beforeUiTree = await executeAdb(runProcess, [...baseArgs, 'exec-out', 'uiautomator', 'dump', '/dev/tty'], workspace);
+  if (beforeUiTree.truncated) return androidTruncationGap('pre-flow UI tree', { serial, packageName: manifest.packageName, activity });
+  if (beforeUiTree.exitCode !== 0 || !isAndroidUiTree(beforeUiTree.stdout)) {
     return androidGapResult('FM_XRAY_ANDROID_UI_EVIDENCE_UNAVAILABLE', `Xray could not capture the Android UI tree for ${activity} on ${serial}.`, 'Unlock the emulator, keep the app foregrounded, and rerun Xray.', { serial, packageName: manifest.packageName, activity });
   }
+  const controls = androidControls(String(beforeUiTree.stdout ?? ''));
+  const control = selectSafeAndroidControl(controls);
+  if (!control) {
+    return androidGapResult('FM_XRAY_ANDROID_SAFE_FLOW_UNAVAILABLE', `Xray found no non-destructive, UI-tree-derived control to exercise in ${activity} on ${serial}.`, 'Expose a safe help, details, menu, or view control in the debug app, then rerun Xray.', { serial, packageName: manifest.packageName, activity });
+  }
+  const tapped = await executeAdb(runProcess, [...baseArgs, 'shell', 'input', 'tap', String(control.center.x), String(control.center.y)], workspace);
+  if (tapped.truncated) return androidTruncationGap('safe UI interaction', { serial, packageName: manifest.packageName, activity });
+  if (tapped.exitCode !== 0) {
+    return androidGapResult('FM_XRAY_ANDROID_SAFE_FLOW_UNAVAILABLE', `Xray could not exercise the safe ${control.label} control in ${activity} on ${serial}.`, 'Unlock the emulator and verify that the safe control remains actionable, then rerun Xray.', { serial, packageName: manifest.packageName, activity });
+  }
+  const uiTree = await executeAdb(runProcess, [...baseArgs, 'exec-out', 'uiautomator', 'dump', '/dev/tty'], workspace);
+  if (uiTree.truncated) return androidTruncationGap('post-flow UI tree', { serial, packageName: manifest.packageName, activity });
+  if (uiTree.exitCode !== 0 || !isAndroidUiTree(uiTree.stdout)) {
+    return androidGapResult('FM_XRAY_ANDROID_SAFE_FLOW_UNAVAILABLE', `The ${control.label} interaction did not leave observable Android UI evidence.`, 'Inspect the safe interaction in the emulator and rerun Xray.', { serial, packageName: manifest.packageName, activity });
+  }
   const screenshot = await executeAdb(runProcess, [...baseArgs, 'exec-out', 'screencap', '-p'], workspace);
-  if (screenshot.exitCode !== 0 || !hasProcessOutput(screenshot)) {
+  if (screenshot.truncated) return androidTruncationGap('screenshot', { serial, packageName: manifest.packageName, activity });
+  if (screenshot.exitCode !== 0 || !isPngScreenshot(screenshot)) {
     return androidGapResult('FM_XRAY_ANDROID_SCREENSHOT_UNAVAILABLE', `Xray could not capture an Android screenshot for ${activity} on ${serial}.`, 'Unlock the emulator, keep the app foregrounded, and rerun Xray.', { serial, packageName: manifest.packageName, activity });
   }
   const logcat = await executeAdb(runProcess, [...baseArgs, 'logcat', '-d', '--pid', pid], workspace);
+  if (logcat.truncated) return androidTruncationGap('package-scoped logcat', { serial, packageName: manifest.packageName, activity });
   if (logcat.exitCode !== 0) {
     return androidGapResult('FM_XRAY_ANDROID_LOG_UNAVAILABLE', `Xray could not collect package-scoped logcat evidence for ${manifest.packageName} on ${serial}.`, 'Ensure the debug app process remains available and rerun Xray.', { serial, packageName: manifest.packageName, activity });
   }
@@ -76,18 +96,25 @@ export async function executeAndroidAdapter({ workspace, profile = {}, runProces
     writeFile(path.join(artifactDirectory, 'screenshot.png'), processOutputBuffer(screenshot)),
     writeFile(path.join(artifactDirectory, 'logcat.txt'), redactText(String(logcat.stdout ?? '')).text, 'utf8'),
   ]);
-  const controls = androidControls(String(uiTree.stdout ?? ''));
   const evidence = [`${ANDROID_EVIDENCE_PREFIX}/latest/ui-tree.xml`, `${ANDROID_EVIDENCE_PREFIX}/latest/screenshot.png`, `${ANDROID_EVIDENCE_PREFIX}/latest/logcat.txt`];
+  const logText = redactText(String(logcat.stdout ?? '')).text;
+  const logFailure = /(?:FATAL EXCEPTION|AndroidRuntime|\bE\/[A-Za-z0-9_.-]+\s*\()/i.test(logText);
   return {
     adapter: 'android-adb', control: 'computer-use', surfaceId: 'mobile-gui', surfaceIds: ['mobile-gui'],
-    componentIds: [...ANDROID_COMPONENT_IDS], status: 'passed', serial, packageName: manifest.packageName, activity,
+    componentIds: [...ANDROID_COMPONENT_IDS], status: logFailure ? 'failed' : 'passed', ...(logFailure ? { severity: 'high' } : {}), serial, packageName: manifest.packageName, activity,
     controls, evidence, screenshot: evidence[1], uiTree: evidence[0], log: evidence[2],
+    controlLabel: control.label, action: 'tap safe control',
+    expected: `The non-destructive ${control.label} control remains actionable and leaves observable UI evidence.`,
+    actual: logFailure ? 'Android logcat recorded an application error after the safe control interaction.' : `The ${control.label} control was tapped and the Android UI remained observable.`,
+    reproduction: `Launch ${activity} on ${serial}, then tap the UI-tree-derived ${control.label} control at ${control.bounds}.`,
   };
 }
 
 async function executeAdb(runProcess, args, workspace) {
   try {
-    return await runProcess('adb', args, { cwd: workspace, ...(args.includes('screencap') ? { binaryOutput: true } : {}) });
+    const capture = args.includes('screencap') ? { binaryOutput: true, maxOutputBytes: 8 * 1024 * 1024 }
+      : args.includes('uiautomator') || args.includes('logcat') ? { maxOutputBytes: 1024 * 1024 } : {};
+    return await runProcess('adb', args, { cwd: workspace, ...capture });
   } catch (error) {
     return { exitCode: 127, stdout: '', stderr: error?.message ?? String(error) };
   }
@@ -97,19 +124,22 @@ function isUnavailableTool(result = {}) {
   return result.exitCode === 127 || /\b(?:adb: command not found|ENOENT|not recognized as an internal or external command)\b/i.test(`${result.stdout ?? ''}\n${result.stderr ?? ''}`);
 }
 
-function selectAndroidDevice(result = {}) {
-  if (result.exitCode !== 0) return null;
-  for (const line of String(result.stdout ?? '').split(/\r?\n/)) {
-    const match = line.trim().match(/^(\S+)\s+device(?:\s|$)/);
-    if (match) return match[1];
+function selectAndroidEmulator(result = {}) {
+  if (result.exitCode !== 0) return { gap: androidGapResult('FM_XRAY_ANDROID_EMULATOR_UNAVAILABLE', 'adb could not enumerate an authorized Android emulator.', 'Start exactly one authorized Android emulator, then rerun Xray.') };
+  const emulators = String(result.stdout ?? '').split(/\r?\n/)
+    .map((line) => line.trim().match(/^(emulator-\d+)\s+device(?:\s|$)/)?.[1])
+    .filter(Boolean);
+  if (emulators.length === 1) return { serial: emulators[0] };
+  if (emulators.length > 1) {
+    return { gap: androidGapResult('FM_XRAY_ANDROID_EMULATOR_AMBIGUOUS', 'More than one authorized Android emulator is connected; Xray will not choose one autonomously.', 'Stop all but one emulator or provide an explicit approved emulator serial policy.') };
   }
-  return null;
+  return { gap: androidGapResult('FM_XRAY_ANDROID_EMULATOR_UNAVAILABLE', 'No authorized Android emulator is available through adb; physical devices are not selected autonomously.', 'Start exactly one Android emulator, then rerun Xray.') };
 }
 
 async function findAndroidManifest(workspace, profile) {
   const profileManifest = profile.androidManifest;
   if (typeof profileManifest === 'string') return parseAndroidManifest(profileManifest);
-  const manifests = await findFilesNamed(workspace, 'AndroidManifest.xml');
+  const manifests = (await findFilesNamed(workspace, 'AndroidManifest.xml')).toSorted((left, right) => left.localeCompare(right));
   for (const manifestPath of manifests) {
     try {
       const parsed = parseAndroidManifest(await readFile(manifestPath, 'utf8'));
@@ -166,8 +196,18 @@ function androidControls(xml) {
   return controls;
 }
 
-function hasProcessOutput(result = {}) {
-  return Boolean(result.stdoutBuffer?.length || String(result.stdout ?? '').length);
+function selectSafeAndroidControl(controls) {
+  const safe = /\b(?:back|cancel|close|details|help|learn|menu|more|show|toggle|view)\b/i;
+  return controls.find((control) => safe.test(control.label) && !DANGEROUS_BROWSER_CONTROL_PATTERN.test(control.label)) ?? null;
+}
+
+function isAndroidUiTree(value) {
+  return /<hierarchy\b[\s\S]*<\/hierarchy>|<hierarchy\b[^>]*\/>/i.test(String(value ?? '').trim());
+}
+
+function isPngScreenshot(result = {}) {
+  const output = processOutputBuffer(result);
+  return output.length >= 8 && output.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]));
 }
 
 function processOutputBuffer(result = {}) {
@@ -181,6 +221,10 @@ function androidGapResult(code, message, nextAction, details = {}) {
     componentIds: [...ANDROID_COMPONENT_IDS], status: 'blocked', evidence: [], ...details,
     gap: { code, surfaceId: 'mobile-gui', control: 'computer-use', message, nextAction },
   };
+}
+
+function androidTruncationGap(stage, details = {}) {
+  return androidGapResult('FM_XRAY_ANDROID_EVIDENCE_TRUNCATED', `Android ${stage} output exceeded Xray's bounded capture limit and cannot be treated as valid evidence.`, 'Reduce the captured surface or log volume and rerun Xray.', details);
 }
 
 export async function executeBrowserAdapter({

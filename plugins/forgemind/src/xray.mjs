@@ -419,9 +419,9 @@ export async function runXray({
   if (browserGaps.length > 0 || androidGaps.length > 0) {
     discoveredMission.gaps = [
       ...discoveredMission.gaps.filter((gap) => !(
-        (gap.code === 'FM_XRAY_GUI_CONTROL_UNAVAILABLE'
+        (browserGaps.length > 0 && gap.code === 'FM_XRAY_GUI_CONTROL_UNAVAILABLE'
           && gap.surfaceId === 'web-gui' && gap.control === 'browser')
-        || (gap.code === 'FM_XRAY_GUI_CONTROL_UNAVAILABLE'
+        || (androidGaps.length > 0 && gap.code === 'FM_XRAY_GUI_CONTROL_UNAVAILABLE'
           && gap.surfaceId === 'mobile-gui' && gap.control === 'computer-use')
       )),
       ...browserGaps,
@@ -673,6 +673,7 @@ function createGuiChecks(surfaces, guiControl = {}, guiReceipts = []) {
   for (const candidate of Array.isArray(guiReceipts) ? guiReceipts : []) {
     const surface = guiSurfaces.get(candidate?.surfaceId);
     const browserReceipt = ['browser', 'playwright'].includes(candidate?.control);
+    const androidReceipt = candidate?.adapter === 'android-adb';
     const componentIds = [...new Set((candidate?.componentIds ?? []).filter((id) => GUI_COMPONENT_IDS.has(id)))];
     const evidence = (candidate?.evidence ?? [])
       .filter((item) => typeof item === 'string' && item.trim())
@@ -695,6 +696,16 @@ function createGuiChecks(surfaces, guiControl = {}, guiReceipts = []) {
         control: candidate.control,
         status: candidate?.status,
         message: 'Browser GUI receipt targets must use a local or test URL.',
+      });
+      continue;
+    }
+    if (androidReceipt && !isValidAndroidReceipt(candidate, evidence)) {
+      gaps.push({
+        code: 'FM_XRAY_ANDROID_RECEIPT_INCOMPLETE',
+        surfaceId: candidate?.surfaceId,
+        control: candidate?.control,
+        status: candidate?.status,
+        message: 'Android ADB receipt is missing canonical emulator, flow, control, or artifact evidence.',
       });
       continue;
     }
@@ -728,6 +739,7 @@ function createGuiChecks(surfaces, guiControl = {}, guiReceipts = []) {
         evidence,
         ...(candidate.adapter ? { adapter: String(candidate.adapter) } : {}),
         ...(surface.control === 'browser' ? flow : {}),
+        ...(androidReceipt ? androidReceiptFields(candidate) : {}),
         ...(candidate.status === 'failed' ? { severity: normalizeFailureSeverity(candidate.severity) } : {}),
       },
     });
@@ -753,6 +765,57 @@ function browserFlowFields(candidate) {
     .map((key) => [key, String(candidate?.[key] ?? '').trim()])
     .filter(([, value]) => value));
   return { ...normalized, ...artifacts, complete: fields.every((key) => normalized[key]) };
+}
+
+function isValidAndroidReceipt(candidate, evidence) {
+  const fields = androidReceiptFields(candidate);
+  const expectedEvidence = [fields.uiTree, fields.screenshot, fields.log];
+  return candidate?.surfaceId === 'mobile-gui'
+    && candidate?.control === 'computer-use'
+    && ['passed', 'failed'].includes(candidate?.status)
+    && /^emulator-\d+$/.test(fields.serial)
+    && /^[A-Za-z][\w]*(?:\.[A-Za-z][\w]*)+$/.test(fields.packageName)
+    && fields.activity.startsWith(`${fields.packageName}/`)
+    && fields.controls.length > 0
+    && fields.controls.every(isAndroidControl)
+    && ['controlLabel', 'action', 'expected', 'actual', 'reproduction'].every((key) => fields[key])
+    && expectedEvidence.every((item) => isSafeAndroidEvidence(item) && evidence.includes(item));
+}
+
+function androidReceiptFields(candidate) {
+  const controls = Array.isArray(candidate?.controls) ? candidate.controls.map((control) => ({
+    label: redactText(String(control?.label ?? '').trim()).text,
+    bounds: String(control?.bounds ?? '').trim(),
+    center: { x: Number(control?.center?.x), y: Number(control?.center?.y) },
+  })) : [];
+  return {
+    serial: String(candidate?.serial ?? '').trim(),
+    packageName: String(candidate?.packageName ?? '').trim(),
+    activity: String(candidate?.activity ?? '').trim(),
+    controls,
+    screenshot: String(candidate?.screenshot ?? '').trim(),
+    uiTree: String(candidate?.uiTree ?? '').trim(),
+    log: String(candidate?.log ?? '').trim(),
+    controlLabel: redactText(String(candidate?.controlLabel ?? '').trim()).text,
+    action: redactText(String(candidate?.action ?? '').trim()).text,
+    expected: redactText(String(candidate?.expected ?? '').trim()).text,
+    actual: redactText(String(candidate?.actual ?? '').trim()).text,
+    reproduction: redactText(String(candidate?.reproduction ?? '').trim()).text,
+  };
+}
+
+function isAndroidControl(control) {
+  return Boolean(control?.label)
+    && /^\[-?\d+,-?\d+\]\[-?\d+,-?\d+\]$/.test(control?.bounds ?? '')
+    && Number.isInteger(control?.center?.x)
+    && Number.isInteger(control?.center?.y);
+}
+
+function isSafeAndroidEvidence(value) {
+  const normalized = String(value ?? '').replaceAll('\\', '/').replace(/^\.\//, '');
+  return normalized.startsWith('.codex-orchestrator/xray/android/')
+    && !normalized.includes('\0')
+    && !normalized.split('/').includes('..');
 }
 
 function canonicalBrowserUrl(value) {
