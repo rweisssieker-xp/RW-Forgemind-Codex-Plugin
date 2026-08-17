@@ -1,13 +1,15 @@
 import { readFile, readdir } from 'node:fs/promises';
-import { isIP } from 'node:net';
 import path from 'node:path';
 
+import { invalidInput } from './errors.mjs';
 import { inspectProject } from './project.mjs';
-import { runProcess } from './process.mjs';
+import { runProcess as runLocalProcess } from './process.mjs';
 import {
   classifyPrerequisiteFailure,
+  executeBrowserAdapter,
   executeCommandAdapter,
   formatCommandCandidate,
+  isSafeBrowserTarget,
   isSafeXrayCommandCandidate,
   prerequisiteGap,
 } from './xray-adapters.mjs';
@@ -46,25 +48,46 @@ const SEVERITY_DEDUCTIONS = new Map([
   ['low', 3],
 ]);
 const DEFAULT_FAILURE_SEVERITY = 'high';
+const SUPPORTED_XRAY_ADAPTERS = ['command', 'browser', 'android'];
+
+export function parseXrayAdapters(value) {
+  if (value === undefined || value === null) return [...SUPPORTED_XRAY_ADAPTERS];
+  const candidates = Array.isArray(value) ? value : String(value).split(',');
+  const adapters = candidates.map((candidate) => String(candidate).trim().toLowerCase());
+  if (adapters.length === 0 || adapters.some((adapter) => !adapter || !SUPPORTED_XRAY_ADAPTERS.includes(adapter))) {
+    throw invalidInput(
+      'FM_XRAY_ADAPTERS_INVALID',
+      `Xray adapters must be a comma-separated subset of: ${SUPPORTED_XRAY_ADAPTERS.join(', ')}.`,
+    );
+  }
+  return [...new Set(adapters)];
+}
 
 export async function discoverXrayMission({
   workspace,
   goal,
   guiControl = { browser: false, computerUse: false },
   guiReceipts = [],
+  adapters,
+  testUrl,
 }) {
+  const selectedAdapters = parseXrayAdapters(adapters);
   const profile = await inspectProject(workspace);
   const manifest = await readPackageManifest(profile.root);
   const files = await projectFileNames(profile.root);
   const guiSignals = await detectGuiProjectSignals(profile.root, files, manifest, profile);
   const surfaces = detectSurfaces({ ...profile, files, manifest, ...guiSignals });
-  const commandChecks = selectXrayChecks({ ...profile, manifest, surfaces });
+  const commandChecks = selectedAdapters.includes('command')
+    ? selectXrayChecks({ ...profile, manifest, surfaces })
+    : [];
   const { checks: guiChecks, gaps: guiReceiptGaps } = createGuiChecks(surfaces, guiControl, guiReceipts);
   const gaps = [...guiGap(surfaces, guiControl, guiChecks), ...guiReceiptGaps];
 
   return {
     id: `xray-${Date.now().toString(36)}`,
     goal: String(goal ?? '').trim() || 'Autonomously assess this software quality.',
+    adapters: selectedAdapters,
+    testUrl: canonicalBrowserUrl(testUrl),
     surfaces,
     checks: [...commandChecks, ...guiChecks],
     gaps,
@@ -199,7 +222,7 @@ export async function executeXrayMission({ workspace, mission, runCommand = exec
 }
 
 export async function executeDetectedCommand(check, workspace) {
-  return executeCommandAdapter({ candidate: check, workspace, runProcess });
+  return executeCommandAdapter({ candidate: check, workspace, runProcess: runLocalProcess });
 }
 
 export function redactReceipt(result) {
@@ -327,11 +350,42 @@ export async function runXray({
   workspace,
   goal,
   runCommand,
+  runProcess = runLocalProcess,
   now = new Date(),
   guiControl,
   guiReceipts = [],
+  adapters,
+  testUrl,
 }) {
-  const discoveredMission = await discoverXrayMission({ workspace, goal, guiControl, guiReceipts });
+  const selectedAdapters = parseXrayAdapters(adapters);
+  const normalizedTestUrl = canonicalBrowserUrl(testUrl);
+  const browserResults = normalizedTestUrl && selectedAdapters.includes('browser')
+    ? await executeBrowserAdapter({ url: normalizedTestUrl, workspace, runProcess })
+    : [];
+  const browserReceipts = browserResults.filter((result) => !result.gap);
+  const browserGaps = browserResults.filter((result) => result.gap).map((result) => ({
+    ...result.gap,
+    adapter: result.adapter,
+    evidence: [...(result.evidence ?? [])],
+    ...(result.exitCode === undefined ? {} : { exitCode: result.exitCode }),
+    ...(result.stdout ? { stdout: result.stdout } : {}),
+    ...(result.stderr ? { stderr: result.stderr } : {}),
+  }));
+  const discoveredMission = await discoverXrayMission({
+    workspace,
+    goal,
+    guiControl,
+    guiReceipts: [...guiReceipts, ...browserReceipts],
+    adapters: selectedAdapters,
+    testUrl: normalizedTestUrl,
+  });
+  if (browserGaps.length > 0) {
+    discoveredMission.gaps = [
+      ...discoveredMission.gaps.filter((gap) => !(gap.code === 'FM_XRAY_GUI_CONTROL_UNAVAILABLE'
+        && gap.surfaceId === 'web-gui' && gap.control === 'browser')),
+      ...browserGaps,
+    ];
+  }
   const execution = await executeXrayMission({ workspace, mission: discoveredMission, runCommand });
   const score = scoreXrayQuality({ mission: discoveredMission, ...execution });
   const gaps = deduplicateGaps([...execution.gaps, ...score.gaps]);
@@ -342,6 +396,11 @@ export async function runXray({
     schemaVersion: 1,
     status: deriveStatus({ ...execution, gaps }, score),
     generatedAt: now.toISOString(),
+    adapters: {
+      selected: selectedAdapters,
+      executed: [...new Set(execution.receipts.map((receipt) => receipt.adapter)
+        .filter(Boolean))],
+    },
     mission,
     receipts: execution.receipts,
     findings: execution.findings,
@@ -384,6 +443,11 @@ export function renderXrayMarkdown(report) {
     `Generated: ${report.generatedAt}`,
     `Status: ${report.status}`,
     '',
+    '## Adapters',
+    '',
+    `Selected: ${report.adapters?.selected?.join(', ') || 'none'}`,
+    `Executed: ${report.adapters?.executed?.join(', ') || 'none'}`,
+    '',
     '## Quality score',
     '',
     `${report.score.value}/100 (${report.score.status})`,
@@ -400,7 +464,7 @@ export function renderXrayMarkdown(report) {
     '',
     '## Test gaps',
     '',
-    ...(report.gaps.length ? report.gaps.map((gap) => `- ${gap.code}${gap.message ? `: ${gap.message}` : ''}`) : ['No test gaps recorded.']),
+    ...(report.gaps.length ? report.gaps.map((gap) => `- ${gap.code}${gap.message ? `: ${gap.message}` : ''}${gap.nextAction ? ` Next action: ${gap.nextAction}` : ''}`) : ['No test gaps recorded.']),
     '',
     '## GUI coverage',
     '',
@@ -416,7 +480,8 @@ export function renderXrayMarkdown(report) {
 
 function browserCoverage(receipts) {
   const areas = [...new Set(receipts
-    .filter(({ control, status, coverageArea }) => control === 'browser' && ['passed', 'failed'].includes(status) && coverageArea)
+    .filter(({ control, status, coverageArea }) => ['browser', 'playwright'].includes(control)
+      && ['passed', 'failed'].includes(status) && coverageArea)
     .map(({ coverageArea }) => coverageArea))].sort();
   return { areas, covered: areas.length };
 }
@@ -465,7 +530,8 @@ function gapRecommendation(gap) {
     benefit: gap.expected
       ? `Expected outcome: ${gap.expected}`
       : `Expected outcome: evidence resolves ${code} for ${area}.`,
-    verification: gap.reproduction || gap.nextVerification || `Verify that ${code} is closed for ${area} and capture the resulting evidence.`,
+    verification: gap.reproduction || gap.nextVerification || gap.nextAction
+      || `Verify that ${code} is closed for ${area} and capture the resulting evidence.`,
   };
 }
 
@@ -564,32 +630,35 @@ function createGuiChecks(surfaces, guiControl = {}, guiReceipts = []) {
   const gaps = [];
   for (const candidate of Array.isArray(guiReceipts) ? guiReceipts : []) {
     const surface = guiSurfaces.get(candidate?.surfaceId);
+    const browserReceipt = ['browser', 'playwright'].includes(candidate?.control);
     const componentIds = [...new Set((candidate?.componentIds ?? []).filter((id) => GUI_COMPONENT_IDS.has(id)))];
     const evidence = (candidate?.evidence ?? [])
       .filter((item) => typeof item === 'string' && item.trim())
       .map((item) => redactText(item).text);
     const { complete, ...flow } = browserFlowFields(candidate);
-    if (candidate?.control === 'browser' && !complete) {
+    if (browserReceipt && !complete) {
       gaps.push({
         code: 'FM_XRAY_GUI_RECEIPT_INCOMPLETE',
         surfaceId: candidate?.surfaceId,
-        control: 'browser',
+        control: candidate.control,
         status: candidate?.status,
         message: 'Browser GUI receipt does not establish a reproducible GUI flow.',
       });
       continue;
     }
-    if (candidate?.control === 'browser' && !isLocalOrTestBrowserUrl(flow.url)) {
+    if (browserReceipt && !isSafeBrowserTarget(flow.url)) {
       gaps.push({
         code: 'FM_XRAY_GUI_RECEIPT_TARGET_INVALID',
         surfaceId: candidate?.surfaceId,
-        control: 'browser',
+        control: candidate.control,
         status: candidate?.status,
         message: 'Browser GUI receipt targets must use a local or test URL.',
       });
       continue;
     }
-    if (!surface || candidate.control !== surface.control || !['passed', 'failed', 'blocked', 'skipped'].includes(candidate.status)
+    const compatibleControl = candidate?.control === surface?.control
+      || (surface?.control === 'browser' && candidate?.control === 'playwright');
+    if (!surface || !compatibleControl || !['passed', 'failed', 'blocked', 'skipped'].includes(candidate.status)
       || componentIds.length === 0 || evidence.length === 0) continue;
     const checkId = `gui-${checks.length + 1}`;
     if (['blocked', 'skipped'].includes(candidate.status)) {
@@ -615,6 +684,7 @@ function createGuiChecks(surfaces, guiControl = {}, guiReceipts = []) {
         surfaceId: candidate.surfaceId,
         componentIds,
         evidence,
+        ...(candidate.adapter ? { adapter: String(candidate.adapter) } : {}),
         ...(surface.control === 'browser' ? flow : {}),
         ...(candidate.status === 'failed' ? { severity: normalizeFailureSeverity(candidate.severity) } : {}),
       },
@@ -637,20 +707,18 @@ function createGuiChecks(surfaces, guiControl = {}, guiReceipts = []) {
 function browserFlowFields(candidate) {
   const fields = ['url', 'coverageArea', 'controlLabel', 'action', 'expected', 'actual', 'reproduction'];
   const normalized = Object.fromEntries(fields.map((key) => [key, String(candidate?.[key] ?? '').trim()]));
-  return { ...normalized, complete: fields.every((key) => normalized[key]) };
+  const artifacts = Object.fromEntries(['screenshot', 'trace']
+    .map((key) => [key, String(candidate?.[key] ?? '').trim()])
+    .filter(([, value]) => value));
+  return { ...normalized, ...artifacts, complete: fields.every((key) => normalized[key]) };
 }
 
-function isLocalOrTestBrowserUrl(value) {
+function canonicalBrowserUrl(value) {
+  if (value === undefined || value === null || String(value).trim() === '') return null;
   try {
-    const url = new URL(value);
-    const hostname = url.hostname.toLowerCase().replace(/^\[|\]$/g, '');
-    const isIpv4Loopback = isIP(hostname) === 4 && hostname.split('.')[0] === '127';
-    return ['http:', 'https:'].includes(url.protocol)
-      && (hostname === 'localhost' || hostname.endsWith('.localhost')
-        || hostname === '::1' || isIpv4Loopback
-        || hostname === 'test' || hostname.endsWith('.test'));
+    return new URL(String(value).trim()).href;
   } catch {
-    return false;
+    return String(value).trim();
   }
 }
 

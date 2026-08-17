@@ -74,6 +74,77 @@ test('Xray accepts complete browser-flow evidence and rejects incomplete GUI evi
   assert.ok(report.gaps.some(({ code }) => code === 'FM_XRAY_GUI_FLOW_BLOCKED'));
 });
 
+test('Xray executes selected Playwright flows and scores their browser evidence', async (t) => {
+  const root = await fixture(t, {
+    packageJson: {
+      scripts: { dev: 'vite' },
+      dependencies: { vite: '^6' },
+      devDependencies: { playwright: '^1' },
+    },
+    files: {
+      'node_modules/playwright/package.json': JSON.stringify({
+        name: 'playwright', version: '1.0.0', bin: { playwright: 'cli.js' },
+      }),
+      'node_modules/playwright/cli.js': 'process.exitCode = 0;\n',
+    },
+  });
+  const report = await runXray({
+    workspace: root,
+    testUrl: 'http://127.0.0.1:4173/',
+    adapters: ['browser'],
+    runProcess: async () => ({
+      exitCode: 0,
+      stderr: '',
+      stdout: `${JSON.stringify({
+        protocol: 'forgemind-xray-browser-v1',
+        type: 'receipt',
+        receipt: {
+          status: 'passed',
+          url: 'http://127.0.0.1:4173/',
+          coverageArea: 'home',
+          controlLabel: 'Home page',
+          action: 'open page',
+          expected: 'The local page loads.',
+          actual: 'The local page loaded.',
+          reproduction: 'Open the local test URL.',
+          evidence: [
+            '.codex-orchestrator/xray/browser/home-before.png',
+            '.codex-orchestrator/xray/browser/home-after.png',
+            '.codex-orchestrator/xray/browser/home-trace.zip',
+          ],
+          screenshot: '.codex-orchestrator/xray/browser/home-after.png',
+          trace: '.codex-orchestrator/xray/browser/home-trace.zip',
+        },
+      })}\n`,
+    }),
+  });
+
+  assert.equal(report.mission.testUrl, 'http://127.0.0.1:4173/');
+  assert.deepEqual(report.mission.adapters, ['browser']);
+  assert.equal(report.receipts.length, 1);
+  assert.equal(report.receipts[0].control, 'playwright');
+  assert.equal(report.receipts[0].adapter, 'browser');
+  assert.deepEqual(report.coverage.areas, ['home']);
+  assert.equal(report.score.components.find(({ id }) => id === 'gui-usability').status, 'applicable');
+  assert.equal(report.gaps.some(({ code }) => code === 'FM_XRAY_GUI_CONTROL_UNAVAILABLE'), false);
+});
+
+test('Xray keeps Browser prerequisite failures as specific report gaps', async (t) => {
+  const root = await fixture(t, {
+    packageJson: { scripts: { dev: 'vite' }, dependencies: { vite: '^6' } },
+  });
+  const report = await runXray({
+    workspace: root,
+    testUrl: 'http://127.0.0.1:4173/',
+    adapters: ['browser'],
+    runProcess: async () => { throw new Error('must not execute without a local package'); },
+  });
+
+  assert.ok(report.gaps.some(({ code }) => code === 'FM_XRAY_PLAYWRIGHT_UNAVAILABLE'));
+  assert.equal(report.gaps.some(({ code }) => code === 'FM_XRAY_GUI_CONTROL_UNAVAILABLE'), false);
+  assert.equal(report.receipts.length, 0);
+});
+
 test('Xray rejects remote Browser receipt URLs and persists normalized local flow fields', async (t) => {
   const root = await fixture(t, {
     packageJson: { scripts: { dev: 'vite' }, dependencies: { vite: '^6' } },
