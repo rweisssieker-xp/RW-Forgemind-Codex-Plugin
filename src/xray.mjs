@@ -1,4 +1,5 @@
 import { readFile, readdir } from 'node:fs/promises';
+import { isIP } from 'node:net';
 import path from 'node:path';
 
 import { inspectProject } from './project.mjs';
@@ -31,7 +32,13 @@ const SCORE_COMPONENTS = [
   { id: 'robustness-error-paths', label: 'Robustness and error paths', configuredWeight: 10 },
   { id: 'evidence-coverage', label: 'Evidence coverage of detected surfaces', configuredWeight: 10 },
 ];
-const SEVERITY_DEDUCTIONS = { critical: 40, high: 25, medium: 10, low: 3 };
+const SEVERITY_DEDUCTIONS = new Map([
+  ['critical', 40],
+  ['high', 25],
+  ['medium', 10],
+  ['low', 3],
+]);
+const DEFAULT_FAILURE_SEVERITY = 'high';
 
 export async function discoverXrayMission({
   workspace,
@@ -61,8 +68,8 @@ export async function discoverXrayMission({
         unsafe: safetyReasons.length > 0,
       };
     });
-  const guiChecks = createGuiChecks(surfaces, guiControl, guiReceipts);
-  const gaps = guiGap(surfaces, guiControl, guiChecks);
+  const { checks: guiChecks, gaps: guiReceiptGaps } = createGuiChecks(surfaces, guiControl, guiReceipts);
+  const gaps = [...guiGap(surfaces, guiControl, guiChecks), ...guiReceiptGaps];
 
   return {
     id: `xray-${Date.now().toString(36)}`,
@@ -193,15 +200,16 @@ export function commandFinding(check, result) {
 
 function guiFinding(check) {
   const surfaceId = check.surfaceIds?.[0] ?? 'gui';
+  const receipt = check.importedReceipt ?? {};
   return {
     id: `finding-${check.id}`,
-    severity: check.importedReceipt?.severity ?? 'high',
+    severity: normalizeFailureSeverity(receipt.severity),
     surfaces: [...(check.surfaceIds ?? [])],
     componentIds: [...(check.componentIds ?? [])],
     title: `GUI control check failed: ${surfaceId}`,
-    reproduction: `Repeat the recorded ${check.control ?? 'GUI'} interaction for ${surfaceId}.`,
-    expected: 'The recorded GUI interaction satisfies its expected visible behavior.',
-    actual: 'The surface-specific GUI execution receipt recorded a failure.',
+    reproduction: receipt.reproduction || `Repeat the recorded ${check.control ?? 'GUI'} interaction for ${surfaceId}.`,
+    expected: receipt.expected || 'The recorded GUI interaction satisfies its expected visible behavior.',
+    actual: receipt.actual || 'The surface-specific GUI execution receipt recorded a failure.',
     evidence: [check.id],
     suspectedCause: 'The visible application behavior did not match the tested expectation.',
     userImpact: 'Users may encounter the failed behavior on the affected GUI surface.',
@@ -249,11 +257,14 @@ export function scoreXrayQuality({ mission, findings = [], receipts = [], gaps =
     const status = applicability[definition.id];
     const effectiveWeight = effectiveWeights.get(definition.id) ?? 0;
     const relevantFindings = findings.filter((finding) => findingAppliesToComponent(finding, definition.id));
-    const deductions = relevantFindings.map((finding) => ({
-      findingId: finding.id ?? null,
-      severity: finding.severity,
-      value: SEVERITY_DEDUCTIONS[finding.severity] ?? 0,
-    }));
+    const deductions = relevantFindings.map((finding) => {
+      const severity = normalizeFailureSeverity(finding.severity);
+      return {
+        findingId: finding.id ?? null,
+        severity,
+        value: SEVERITY_DEDUCTIONS.get(severity),
+      };
+    });
     const deductionTotal = deductions.reduce((total, deduction) => total + deduction.value, 0);
     return {
       ...definition,
@@ -297,6 +308,8 @@ export async function runXray({
   const score = scoreXrayQuality({ mission: discoveredMission, ...execution });
   const gaps = deduplicateGaps([...execution.gaps, ...score.gaps]);
   const mission = enrichMission(discoveredMission, execution.receipts, gaps);
+  const coverage = browserCoverage(execution.receipts);
+  const recommendations = improvementRecommendations(execution.findings, gaps);
   const report = {
     schemaVersion: 1,
     status: deriveStatus({ ...execution, gaps }, score),
@@ -306,6 +319,8 @@ export async function runXray({
     findings: execution.findings,
     gaps,
     score,
+    coverage,
+    recommendations,
     errors: [],
   };
   await writeJsonAtomic(artifactStatePath(workspace, 'xray', 'test-mission-latest.json'), mission);
@@ -359,8 +374,79 @@ export function renderXrayMarkdown(report) {
     '',
     ...(report.gaps.length ? report.gaps.map((gap) => `- ${gap.code}${gap.message ? `: ${gap.message}` : ''}`) : ['No test gaps recorded.']),
     '',
+    '## GUI coverage',
+    '',
+    ...(report.coverage.areas.length ? report.coverage.areas.map((area) => `- ${area}`) : ['No Browser GUI coverage recorded.']),
+    '',
+    '## Improvement proposals',
+    '',
+    ...(report.recommendations.length ? report.recommendations.map((proposal) => `- **${proposal.priority}** ${proposal.area}: ${proposal.recommendation}\n  - Evidence: ${proposal.evidence.join(', ')}\n  - Benefit: ${proposal.benefit}\n  - Verification: ${proposal.verification}`) : ['No improvement proposals recorded.']),
+    '',
   ];
   return lines.join('\n');
+}
+
+function browserCoverage(receipts) {
+  const areas = [...new Set(receipts
+    .filter(({ control, status, coverageArea }) => control === 'browser' && ['passed', 'failed'].includes(status) && coverageArea)
+    .map(({ coverageArea }) => coverageArea))].sort();
+  return { areas, covered: areas.length };
+}
+
+function priorityForSeverity(severity) {
+  return SEVERITY_DEDUCTIONS.has(severity) ? severity : 'medium';
+}
+
+function improvementRecommendations(findings, gaps) {
+  return [
+    ...findings.map((finding) => findingRecommendation(finding)),
+    ...gaps.map((gap) => gapRecommendation(gap)),
+  ].sort((left, right) => priorityRank(left.priority) - priorityRank(right.priority));
+}
+
+function findingRecommendation(finding) {
+  const area = finding.surfaces?.join(', ') || finding.componentIds?.join(', ') || finding.id;
+  const title = finding.title || finding.id || area;
+  const recommendation = finding.expected
+    ? `Address the verified finding "${title}" by achieving the recorded expected outcome: ${finding.expected}`
+    : `Address the verified finding: ${title}`;
+  const benefit = finding.expected
+    ? `Expected outcome: ${finding.expected}`
+    : finding.userImpact
+      ? `User impact addressed: ${finding.userImpact}`
+      : `Expected outcome: ${title} is addressed.`;
+  return {
+    priority: priorityForSeverity(finding.severity),
+    area,
+    evidence: [...(finding.evidence ?? [])],
+    recommendation,
+    benefit,
+    verification: finding.reproduction || finding.nextVerification || `Verify that ${title} is addressed for ${area}.`,
+  };
+}
+
+function gapRecommendation(gap) {
+  const code = gap.code || 'recorded-gap';
+  const area = gap.coverageArea || gap.surfaceId || gap.componentId || gap.checkId || code;
+  const description = gap.message || code;
+  return {
+    priority: priorityForSeverity(gap.severity),
+    area,
+    evidence: [...new Set([...(gap.evidence ?? []), ...[gap.checkId, code].filter(Boolean)])],
+    recommendation: `Close the recorded gap ${code} for ${area}: ${description}`,
+    benefit: gap.expected
+      ? `Expected outcome: ${gap.expected}`
+      : `Expected outcome: evidence resolves ${code} for ${area}.`,
+    verification: gap.reproduction || gap.nextVerification || `Verify that ${code} is closed for ${area} and capture the resulting evidence.`,
+  };
+}
+
+function priorityRank(priority) {
+  return ['critical', 'high', 'medium', 'low'].indexOf(priority);
+}
+
+function normalizeFailureSeverity(severity) {
+  return SEVERITY_DEDUCTIONS.has(severity) ? severity : DEFAULT_FAILURE_SEVERITY;
 }
 
 function isUnsafeCommand(command) {
@@ -474,16 +560,50 @@ function prerequisiteGap(check, kind) {
 function createGuiChecks(surfaces, guiControl = {}, guiReceipts = []) {
   const guiSurfaces = new Map(surfaces.filter(({ id }) => GUI_SURFACE_IDS.has(id)).map((surface) => [surface.id, surface]));
   const checks = [];
+  const gaps = [];
   for (const candidate of Array.isArray(guiReceipts) ? guiReceipts : []) {
     const surface = guiSurfaces.get(candidate?.surfaceId);
     const componentIds = [...new Set((candidate?.componentIds ?? []).filter((id) => GUI_COMPONENT_IDS.has(id)))];
     const evidence = (candidate?.evidence ?? [])
       .filter((item) => typeof item === 'string' && item.trim())
       .map((item) => redactText(item).text);
-    if (!surface || candidate.control !== surface.control || !['passed', 'failed'].includes(candidate.status)
+    const { complete, ...flow } = browserFlowFields(candidate);
+    if (candidate?.control === 'browser' && !complete) {
+      gaps.push({
+        code: 'FM_XRAY_GUI_RECEIPT_INCOMPLETE',
+        surfaceId: candidate?.surfaceId,
+        control: 'browser',
+        status: candidate?.status,
+        message: 'Browser GUI receipt does not establish a reproducible GUI flow.',
+      });
+      continue;
+    }
+    if (candidate?.control === 'browser' && !isLocalOrTestBrowserUrl(flow.url)) {
+      gaps.push({
+        code: 'FM_XRAY_GUI_RECEIPT_TARGET_INVALID',
+        surfaceId: candidate?.surfaceId,
+        control: 'browser',
+        status: candidate?.status,
+        message: 'Browser GUI receipt targets must use a local or test URL.',
+      });
+      continue;
+    }
+    if (!surface || candidate.control !== surface.control || !['passed', 'failed', 'blocked', 'skipped'].includes(candidate.status)
       || componentIds.length === 0 || evidence.length === 0) continue;
+    const checkId = `gui-${checks.length + 1}`;
+    if (['blocked', 'skipped'].includes(candidate.status)) {
+      gaps.push({
+        code: `FM_XRAY_GUI_FLOW_${candidate.status.toUpperCase()}`,
+        checkId,
+        surfaceId: surface.id,
+        control: surface.control,
+        status: candidate.status,
+        ...(surface.control === 'browser' ? flow : {}),
+        message: `The recorded ${surface.control} GUI flow was ${candidate.status}.`,
+      });
+    }
     checks.push({
-      id: `gui-${checks.length + 1}`,
+      id: checkId,
       kind: 'gui-control',
       control: surface.control,
       surfaceIds: [surface.id],
@@ -494,7 +614,8 @@ function createGuiChecks(surfaces, guiControl = {}, guiReceipts = []) {
         surfaceId: candidate.surfaceId,
         componentIds,
         evidence,
-        ...(candidate.severity ? { severity: candidate.severity } : {}),
+        ...(surface.control === 'browser' ? flow : {}),
+        ...(candidate.status === 'failed' ? { severity: normalizeFailureSeverity(candidate.severity) } : {}),
       },
     });
   }
@@ -509,7 +630,27 @@ function createGuiChecks(surfaces, guiControl = {}, guiReceipts = []) {
       componentIds: [...GUI_COMPONENT_IDS],
     });
   }
-  return checks;
+  return { checks, gaps };
+}
+
+function browserFlowFields(candidate) {
+  const fields = ['url', 'coverageArea', 'controlLabel', 'action', 'expected', 'actual', 'reproduction'];
+  const normalized = Object.fromEntries(fields.map((key) => [key, String(candidate?.[key] ?? '').trim()]));
+  return { ...normalized, complete: fields.every((key) => normalized[key]) };
+}
+
+function isLocalOrTestBrowserUrl(value) {
+  try {
+    const url = new URL(value);
+    const hostname = url.hostname.toLowerCase().replace(/^\[|\]$/g, '');
+    const isIpv4Loopback = isIP(hostname) === 4 && hostname.split('.')[0] === '127';
+    return ['http:', 'https:'].includes(url.protocol)
+      && (hostname === 'localhost' || hostname.endsWith('.localhost')
+        || hostname === '::1' || isIpv4Loopback
+        || hostname === 'test' || hostname.endsWith('.test'));
+  } catch {
+    return false;
+  }
 }
 
 function enrichMission(mission, receipts, gaps) {
