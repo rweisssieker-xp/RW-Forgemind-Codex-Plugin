@@ -17,6 +17,7 @@ const BROWSER_STATUSES = new Set(['passed', 'failed', 'blocked', 'skipped']);
 const BROWSER_FAILURE_SEVERITIES = new Set(['critical', 'high', 'medium', 'low']);
 const SAFE_BROWSER_HTTP_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 const BROWSER_PATTERN_TYPES = new Set(['', 'email', 'password', 'search', 'tel', 'text', 'url']);
+const BROWSER_INVALID_PATTERN_PROBES = ['0', 'x', 'X', '-', '_', '!', ' ', '0000', 'xray.invalid', 'test@example.invalid'];
 const DANGEROUS_BROWSER_CONTROL_PATTERN = /\b(?:admin|approve|buy|checkout|credential|delete|deploy|destroy|drop|invite|order|password|pay|payment|production|publish|purchase|release|remove|reset|save|secret|seed|send|sign[ -]?in|submit|token|transfer|truncate|upload)\b/i;
 const PLAYWRIGHT_SETUP_ACTION = 'Run `npm install --save-dev playwright`, then `npx playwright install chromium`.';
 const ANDROID_EVIDENCE_PREFIX = '.codex-orchestrator/xray/android';
@@ -292,7 +293,7 @@ export async function executeBrowserAdapter({
   };
 
   let result;
-  let protocol = { receipts: [], invalidEvidenceCount: 0, invalidReceiptCount: 0 };
+  let protocol = { receipts: [], invalidEvidenceCount: 0, invalidReceiptCount: 0, invalidReceipts: [] };
   let serverFailure = null;
   let managedServer = null;
   try {
@@ -311,6 +312,7 @@ export async function executeBrowserAdapter({
           managedServer = await startProcess(serverCandidate.command, serverCandidate.args, serverCandidate.options);
           const ready = managedServer && await waitForBrowserTarget(target, probeUrl, managedServer);
           if (!ready) {
+            result = withManagedServerDiagnostics(result, managedServer);
             serverFailure = {
               code: 'FM_XRAY_BROWSER_SERVER_START_FAILED',
               message: `The detected local ${serverCandidate.label} server did not become reachable at the explicit test URL.`,
@@ -347,8 +349,11 @@ export async function executeBrowserAdapter({
   }
 
   const { receipts } = protocol;
-  if (receipts.length > 0 && result?.exitCode === 0 && !result?.truncated && protocol.invalidEvidenceCount === 0) {
-    return receipts;
+  const invalidReceiptGaps = protocol.invalidReceipts
+    .map((candidate, index) => browserInvalidReceiptGap(candidate, index + 1));
+  if ((receipts.length > 0 || invalidReceiptGaps.length > 0)
+    && result?.exitCode === 0 && !result?.truncated && protocol.invalidEvidenceCount === 0) {
+    return [...receipts, ...invalidReceiptGaps];
   }
 
   const failure = serverFailure ?? classifyBrowserRunnerFailure(result, protocol);
@@ -357,7 +362,8 @@ export async function executeBrowserAdapter({
     stderr: redactText(result?.stderr ?? '').text,
     exitCode: result?.exitCode,
   });
-  return receipts.length > 0 ? [...receipts, gap] : [gap];
+  const partialResults = [...receipts, ...invalidReceiptGaps];
+  return partialResults.length > 0 ? [...partialResults, gap] : [gap];
 }
 
 export function isSafeBrowserTarget(value) {
@@ -408,7 +414,19 @@ export function browserValidationCandidates({ required = false, type = '', patte
   const normalizedType = String(type ?? '').trim().toLowerCase();
   if (normalizedType === 'email') return ['xray-invalid-email'];
   if (pattern !== undefined && pattern !== null && BROWSER_PATTERN_TYPES.has(normalizedType)) {
-    return ['xray-invalid-pattern'];
+    let matcher = null;
+    for (const flags of ['v', 'u']) {
+      try {
+        matcher = new RegExp(`^(?:${String(pattern)})$`, flags);
+        break;
+      } catch {
+        // Try the legacy Unicode pattern semantics used by older browsers.
+      }
+    }
+    if (matcher) {
+      const invalidCandidate = BROWSER_INVALID_PATTERN_PROBES.find((candidate) => !matcher.test(candidate));
+      if (invalidCandidate) return [invalidCandidate];
+    }
   }
   if (required && !['checkbox', 'file', 'radio'].includes(normalizedType)) return [''];
   return [];
@@ -565,6 +583,18 @@ async function stopManagedBrowserProcess(server) {
   }
 }
 
+function withManagedServerDiagnostics(result = {}, server = {}) {
+  const append = (primary, diagnostic, label) => [
+    String(primary ?? '').trim(),
+    String(diagnostic ?? '').trim() ? `[${label}]\n${String(diagnostic).trim()}` : '',
+  ].filter(Boolean).join('\n');
+  return {
+    ...result,
+    stdout: append(result.stdout, server.stdout, 'managed server stdout'),
+    stderr: append(result.stderr, server.stderr, 'managed server stderr'),
+  };
+}
+
 async function waitForBrowserTarget(target, probeUrl, server) {
   for (let attempt = 0; attempt < 60; attempt += 1) {
     try {
@@ -616,7 +646,7 @@ function normalizeBrowserTarget(value) {
   }
 }
 
-function browserGapResult(code, message, nextAction, execution = {}) {
+function browserGapResult(code, message, nextAction, execution = {}, gapDetails = {}) {
   return {
     adapter: 'browser',
     control: 'playwright',
@@ -632,8 +662,25 @@ function browserGapResult(code, message, nextAction, execution = {}) {
       control: 'playwright',
       message,
       nextAction,
+      ...gapDetails,
     },
   };
+}
+
+function browserInvalidReceiptGap(candidate, index) {
+  const coverageArea = redactField(candidate?.coverageArea) || `unknown-flow-${index}`;
+  const controlLabel = redactField(candidate?.controlLabel) || 'Unidentified browser control';
+  return browserGapResult(
+    'FM_XRAY_BROWSER_RECEIPT_INVALID',
+    `The Browser receipt for ${controlLabel} in ${coverageArea} was incomplete or unsafe and was not scored.`,
+    'Rerun Xray and inspect the generated Browser flow for missing fields or an off-target URL.',
+    {},
+    {
+      checkId: `browser-invalid-receipt-${index}`,
+      coverageArea,
+      controlLabel,
+    },
+  );
 }
 
 function classifyBrowserRunnerFailure(result = {}, protocol = {}) {
@@ -684,6 +731,7 @@ async function parseBrowserProtocol(stdout, target, evidenceContext) {
   const receipts = [];
   let invalidEvidenceCount = 0;
   let invalidReceiptCount = 0;
+  const invalidReceipts = [];
   for (const line of String(stdout ?? '').split(/\r?\n/)) {
     let envelope;
     try {
@@ -695,9 +743,12 @@ async function parseBrowserProtocol(stdout, target, evidenceContext) {
     const normalized = await normalizeBrowserReceipt(envelope.receipt, target, evidenceContext);
     if (normalized.receipt) receipts.push(normalized.receipt);
     else if (normalized.invalidEvidence) invalidEvidenceCount += 1;
-    else invalidReceiptCount += 1;
+    else {
+      invalidReceiptCount += 1;
+      invalidReceipts.push(envelope.receipt);
+    }
   }
-  return { receipts, invalidEvidenceCount, invalidReceiptCount };
+  return { receipts, invalidEvidenceCount, invalidReceiptCount, invalidReceipts };
 }
 
 async function normalizeBrowserReceipt(candidate, target, evidenceContext) {

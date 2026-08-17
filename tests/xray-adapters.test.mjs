@@ -39,6 +39,21 @@ async function browserWorkspace(t, packageName = 'playwright') {
   });
 }
 
+async function viteBrowserWorkspace(t) {
+  const root = await browserWorkspace(t);
+  const manifestPath = path.join(root, 'package.json');
+  const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
+  manifest.scripts = { dev: 'vite --host 0.0.0.0' };
+  manifest.devDependencies.vite = '^6.0.0';
+  await writeFile(manifestPath, JSON.stringify(manifest), 'utf8');
+  await mkdir(path.join(root, 'node_modules', 'vite', 'bin'), { recursive: true });
+  await writeFile(path.join(root, 'node_modules', 'vite', 'package.json'), JSON.stringify({
+    name: 'vite', version: '6.0.0', bin: { vite: 'bin/vite.js' },
+  }), 'utf8');
+  await writeFile(path.join(root, 'node_modules', 'vite', 'bin', 'vite.js'), 'process.exitCode = 0;\n', 'utf8');
+  return root;
+}
+
 async function writeBrowserFlowArtifacts(root, scriptArgument, stem = 'flow') {
   const runDirectory = path.basename(scriptArgument, '.spec.mjs');
   assert.match(runDirectory, /^run-[0-9a-f-]+$/);
@@ -166,17 +181,7 @@ test('browser adapter executes its isolated local runner and normalizes protocol
 });
 
 test('browser adapter starts and stops a detected local Vite server when the target is initially unavailable', async (t) => {
-  const root = await browserWorkspace(t);
-  const manifestPath = path.join(root, 'package.json');
-  const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
-  manifest.scripts = { dev: 'vite --host 0.0.0.0' };
-  manifest.devDependencies.vite = '^6.0.0';
-  await writeFile(manifestPath, JSON.stringify(manifest), 'utf8');
-  await mkdir(path.join(root, 'node_modules', 'vite', 'bin'), { recursive: true });
-  await writeFile(path.join(root, 'node_modules', 'vite', 'package.json'), JSON.stringify({
-    name: 'vite', version: '6.0.0', bin: { vite: 'bin/vite.js' },
-  }), 'utf8');
-  await writeFile(path.join(root, 'node_modules', 'vite', 'bin', 'vite.js'), 'process.exitCode = 0;\n', 'utf8');
+  const root = await viteBrowserWorkspace(t);
 
   let runnerAttempts = 0;
   let starts = 0;
@@ -226,6 +231,33 @@ test('browser adapter starts and stops a detected local Vite server when the tar
   assert.equal(stops, 1);
   assert.equal(receipts.length, 1);
   assert.equal(receipts[0].status, 'passed');
+});
+
+test('browser adapter preserves diagnostics when a managed local server exits during startup', async (t) => {
+  const root = await viteBrowserWorkspace(t);
+  let stopped = false;
+  const [result] = await executeBrowserAdapter({
+    url: 'http://127.0.0.1:4173/',
+    workspace: root,
+    runProcess: async () => ({
+      exitCode: 1,
+      stdout: '',
+      stderr: 'page.goto: net::ERR_CONNECTION_REFUSED',
+    }),
+    startProcess: async () => ({
+      exited: true,
+      stdout: 'Vite inspected vite.config.mjs.\n',
+      stderr: 'failed to load config: invalid plugin option\n',
+      stop: async () => { stopped = true; },
+    }),
+    probeUrl: async () => false,
+  });
+
+  assert.equal(stopped, true);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.gap.code, 'FM_XRAY_BROWSER_SERVER_START_FAILED');
+  assert.match(result.stdout, /Vite inspected vite\.config\.mjs/);
+  assert.match(result.stderr, /failed to load config: invalid plugin option/);
 });
 
 test('browser request and link policy only permits read-only HTTP and structurally opted-in navigation', () => {
@@ -304,12 +336,45 @@ test('browser adapter rejects missing and prior-run evidence instead of scoring 
   assert.equal(prior.gap.code, 'FM_XRAY_BROWSER_EVIDENCE_INVALID');
 });
 
-test('optional pattern fields receive nonblank invalid candidates without inventing a product failure', () => {
-  const candidates = browserValidationCandidates({ required: false, type: 'text', pattern: '[0-9]{4}' });
+test('optional pattern fields derive a nonblank candidate that the declared pattern rejects or skip safely', () => {
+  const candidates = browserValidationCandidates({ required: false, type: 'text', pattern: '[A-Za-z-]+' });
   assert.ok(candidates.length > 0);
   assert.ok(candidates.every((candidate) => candidate.length > 0));
-  assert.ok(candidates.some((candidate) => !/^(?:[0-9]{4})$/.test(candidate)));
-  assert.deepEqual(browserValidationCandidates({ required: false, type: 'text', pattern: '' }), ['xray-invalid-pattern']);
+  assert.ok(candidates.every((candidate) => !/^(?:[A-Za-z-]+)$/.test(candidate)));
+  assert.deepEqual(browserValidationCandidates({ required: false, type: 'text', pattern: '.*' }), []);
+});
+
+test('browser adapter emits a distinct flow gap when a partial protocol contains an invalid receipt', async (t) => {
+  const root = await browserWorkspace(t);
+  const results = await executeBrowserAdapter({
+    url: 'http://127.0.0.1:4173/',
+    workspace: root,
+    runProcess: async (_command, args) => {
+      const script = args.find((argument) => String(argument).endsWith('.spec.mjs'));
+      const artifacts = await writeBrowserFlowArtifacts(root, script, 'home');
+      const valid = {
+        protocol: 'forgemind-xray-browser-v1', type: 'receipt', receipt: {
+          status: 'passed', url: 'http://127.0.0.1:4173/', coverageArea: 'home',
+          controlLabel: 'Home page', action: 'open page', expected: 'The page loads.',
+          actual: 'The page loaded.', reproduction: 'Open the page.', ...artifacts,
+        },
+      };
+      const invalid = {
+        protocol: 'forgemind-xray-browser-v1', type: 'receipt', receipt: {
+          status: 'failed', url: 'http://127.0.0.1:4173/settings', coverageArea: 'settings',
+          controlLabel: 'Settings', action: 'inspect settings', expected: 'Settings remain visible.',
+          actual: '', reproduction: 'Open settings.', ...artifacts,
+        },
+      };
+      return { exitCode: 0, stderr: '', stdout: `${JSON.stringify(valid)}\n${JSON.stringify(invalid)}\n` };
+    },
+  });
+
+  assert.equal(results.filter(({ status }) => status === 'passed').length, 1);
+  const invalidGap = results.find(({ gap }) => gap?.code === 'FM_XRAY_BROWSER_RECEIPT_INVALID');
+  assert.ok(invalidGap);
+  assert.equal(invalidGap.gap.coverageArea, 'settings');
+  assert.match(invalidGap.gap.checkId, /^browser-invalid-receipt-/);
 });
 
 test('Android adapter reports an explicit ADB prerequisite gap', async (t) => {
