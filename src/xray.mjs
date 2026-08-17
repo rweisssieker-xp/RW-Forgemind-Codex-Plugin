@@ -3,6 +3,7 @@ import path from 'node:path';
 
 import { invalidInput } from './errors.mjs';
 import { inspectProject } from './project.mjs';
+import { deriveProjectProfile } from './project-profile.mjs';
 import { runProcess as runLocalProcess } from './process.mjs';
 import {
   classifyPrerequisiteFailure,
@@ -74,6 +75,8 @@ export async function discoverXrayMission({
 }) {
   const selectedAdapters = parseXrayAdapters(adapters);
   const profile = await inspectProject(workspace);
+  const projectProfile = await deriveProjectProfile({ workspace: profile.root });
+  const projectContext = xrayProjectContext(projectProfile);
   const manifest = await readPackageManifest(profile.root);
   const files = await projectFileNames(profile.root);
   const guiSignals = await detectGuiProjectSignals(profile.root, files, manifest, profile);
@@ -90,13 +93,36 @@ export async function discoverXrayMission({
 
   return {
     id: `xray-${Date.now().toString(36)}`,
-    goal: String(goal ?? '').trim() || 'Autonomously assess this software quality.',
+    goal: String(goal ?? '').trim() || defaultXrayGoal(projectContext),
+    projectContext,
     adapters: selectedAdapters,
     testUrl: normalizedTestUrl,
     surfaces,
     checks: [...commandChecks, ...guiChecks],
     gaps,
   };
+}
+
+function xrayProjectContext(profile) {
+  return {
+    productCategory: profile.productCategory.value,
+    targetAudience: profile.targetAudience.value,
+    primaryJob: profile.primaryJob.value,
+    deploymentModel: profile.deploymentModel.value,
+    evidence: strongestProjectEvidence(profile),
+  };
+}
+
+function strongestProjectEvidence(profile) {
+  const levels = ['observed', 'inferred', 'assumption', 'missing'];
+  const evidence = [profile.productCategory, profile.targetAudience, profile.primaryJob, profile.deploymentModel]
+    .map((field) => field?.evidence)
+    .filter((value) => levels.includes(value));
+  return evidence.sort((left, right) => levels.indexOf(left) - levels.indexOf(right))[0] ?? 'missing';
+}
+
+function defaultXrayGoal(context) {
+  return `Assess the ${context.productCategory} application for ${context.targetAudience} whose primary job is to ${context.primaryJob}.`;
 }
 
 export function detectSurfaces(profile) {
@@ -489,6 +515,14 @@ export function renderXrayMarkdown(report) {
     '',
     `Selected: ${report.adapters?.selected?.join(', ') || 'none'}`,
     `Executed: ${report.adapters?.executed?.join(', ') || 'none'}`,
+    '',
+    '## Project context',
+    '',
+    `Category: ${report.mission?.projectContext?.productCategory ?? 'Not identified'}`,
+    `Audience: ${report.mission?.projectContext?.targetAudience ?? 'Not identified'}`,
+    `Primary job: ${report.mission?.projectContext?.primaryJob ?? 'Not identified'}`,
+    `Deployment: ${report.mission?.projectContext?.deploymentModel ?? 'Not identified'}`,
+    `Evidence: ${report.mission?.projectContext?.evidence ?? 'missing'}`,
     '',
     '## Quality score',
     '',

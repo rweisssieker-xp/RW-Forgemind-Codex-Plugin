@@ -55,6 +55,24 @@ test('Xray discovers CLI, API, GUI, and existing command surfaces without invent
   assert.ok(mission.gaps.every(({ code }) => code !== 'FM_XRAY_COMMAND_INVENTED'));
 });
 
+test('Xray carries the repository-derived application purpose into its test mission', async (t) => {
+  const root = await fixture(t, {
+    packageJson: { dependencies: { next: '^15.0.0' }, scripts: { dev: 'next dev' } },
+    files: { 'README.md': '# CaseFlow\n\nAn application for service teams to resolve incidents faster.' },
+  });
+
+  const mission = await discoverXrayMission({ workspace: root });
+
+  assert.deepEqual(mission.projectContext, {
+    productCategory: 'enterprise-operations',
+    targetAudience: 'service operations teams',
+    primaryJob: 'resolve operational incidents faster',
+    deploymentModel: 'hosted-web-application',
+    evidence: 'inferred',
+  });
+  assert.match(mission.goal, /resolve operational incidents faster/i);
+});
+
 test('Xray reports unavailable GUI control as a gap rather than a test result', async (t) => {
   const root = await fixture(t, {
     packageJson: { scripts: { dev: 'vite' }, dependencies: { vite: '^6.0.0' } },
@@ -697,6 +715,7 @@ test('Xray writes canonical evidence and a readable Markdown report without chan
 
   assert.equal(report.evidencePath, '.codex-orchestrator/xray/report-latest.json');
   assert.match(await readFile(path.join(root, 'docs', 'forgemind', 'xray-report.md'), 'utf8'), /Quality score/);
+  assert.match(await readFile(path.join(root, 'docs', 'forgemind', 'xray-report.md'), 'utf8'), /Project context/);
   assert.deepEqual(
     JSON.parse(await readFile(path.join(root, '.codex-orchestrator', 'xray', 'report-latest.json'), 'utf8')),
     Object.fromEntries(Object.entries(report).filter(([key]) => !['evidencePath', 'projectDocuments'].includes(key))),
