@@ -464,6 +464,32 @@ test('Android adapter rejects consequential controls and no-op UI interactions',
   }
 });
 
+test('Android adapter rejects a foreground check when the package appears only on another dumpsys line', async (t) => {
+  let treeCalls = 0;
+  const result = await executeAndroidAdapter({
+    workspace: await workspace(t, { 'app/src/main/AndroidManifest.xml': '<manifest package="example.xray" />' }),
+    runProcess: async (_command, args) => {
+      const invocation = args.join(' ');
+      if (invocation === 'devices') return { exitCode: 0, stdout: 'List of devices attached\nemulator-5554\tdevice\n', stderr: '' };
+      if (invocation.includes('shell date')) return { exitCode: 0, stdout: '08-17 12:00:00.000\n', stderr: '' };
+      if (invocation.includes('resolve-activity')) return { exitCode: 0, stdout: 'example.xray/.MainActivity\n', stderr: '' };
+      if (invocation.includes('pidof -s')) return { exitCode: 0, stdout: '4132\n', stderr: '' };
+      if (invocation.includes('uiautomator dump')) {
+        treeCalls += 1;
+        return { exitCode: 0, stdout: treeCalls === 1
+          ? '<hierarchy><node text="Help" clickable="true" bounds="[0,0][20,20]" /></hierarchy>'
+          : '<hierarchy><node text="Help center" clickable="true" bounds="[0,0][20,20]" /></hierarchy>', stderr: '' };
+      }
+      if (invocation.includes('input tap')) return { exitCode: 0, stdout: '', stderr: '' };
+      if (invocation.includes('dumpsys window')) return { exitCode: 0, stdout: 'mCurrentFocus=Window{ com.other/.Main }\nrecent package example.xray', stderr: '' };
+      return { exitCode: 0, stdout: '', stderr: '' };
+    },
+  });
+
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.gap.code, 'FM_XRAY_ANDROID_FLOW_ASSERTION_UNAVAILABLE');
+});
+
 test('Android manifest discovery rejects ambiguous non-app manifests', async (t) => {
   const result = await executeAndroidAdapter({
     workspace: await workspace(t, {

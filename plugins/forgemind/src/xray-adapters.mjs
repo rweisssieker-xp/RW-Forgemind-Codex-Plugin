@@ -246,8 +246,14 @@ function isMeaningfulUiTransition(before, after) {
 }
 
 function isAndroidPackageForeground(value, packageName) {
-  return /\bm(?:CurrentFocus|FocusedApp|ResumedActivity)\b[^\n]*/i.test(String(value ?? ''))
-    && String(value ?? '').includes(packageName);
+  const escapedPackage = escapeRegExp(packageName);
+  const packagePattern = new RegExp(`(?:^|[^A-Za-z0-9_.])${escapedPackage}(?=[/.]|$)`);
+  return String(value ?? '').split(/\r?\n/).some((line) => /\bm(?:CurrentFocus|FocusedApp|ResumedActivity)\b/i.test(line)
+    && packagePattern.test(line));
+}
+
+function escapeRegExp(value) {
+  return String(value ?? '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 function isAndroidUiTree(value) {
