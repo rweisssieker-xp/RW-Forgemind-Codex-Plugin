@@ -674,7 +674,10 @@ function createGuiChecks(surfaces, guiControl = {}, guiReceipts = []) {
     const surface = guiSurfaces.get(candidate?.surfaceId);
     const browserReceipt = ['browser', 'playwright'].includes(candidate?.control);
     const androidReceipt = candidate?.adapter === 'android-adb';
-    const componentIds = [...new Set((candidate?.componentIds ?? []).filter((id) => GUI_COMPONENT_IDS.has(id)))];
+    const allowedComponentIds = androidReceipt
+      ? new Set([...GUI_COMPONENT_IDS, 'functional-correctness', 'robustness-error-paths'])
+      : GUI_COMPONENT_IDS;
+    const componentIds = [...new Set((candidate?.componentIds ?? []).filter((id) => allowedComponentIds.has(id)))];
     const evidence = (candidate?.evidence ?? [])
       .filter((item) => typeof item === 'string' && item.trim())
       .map((item) => redactText(item).text);
@@ -769,7 +772,7 @@ function browserFlowFields(candidate) {
 
 function isValidAndroidReceipt(candidate, evidence) {
   const fields = androidReceiptFields(candidate);
-  const expectedEvidence = [fields.uiTree, fields.screenshot, fields.log];
+  const expectedEvidence = [fields.beforeUiTree, fields.afterUiTree, fields.screenshot, fields.log];
   return candidate?.surfaceId === 'mobile-gui'
     && candidate?.control === 'computer-use'
     && ['passed', 'failed'].includes(candidate?.status)
@@ -778,7 +781,9 @@ function isValidAndroidReceipt(candidate, evidence) {
     && fields.activity.startsWith(`${fields.packageName}/`)
     && fields.controls.length > 0
     && fields.controls.every(isAndroidControl)
-    && ['controlLabel', 'action', 'expected', 'actual', 'reproduction'].every((key) => fields[key])
+    && ['controlLabel', 'action', 'expected', 'actual', 'reproduction', 'logBoundary'].every((key) => fields[key])
+    && fields.uiTree === fields.afterUiTree
+    && /^\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\.\d{3}$/.test(fields.logBoundary)
     && expectedEvidence.every((item) => isSafeAndroidEvidence(item) && evidence.includes(item));
 }
 
@@ -794,8 +799,11 @@ function androidReceiptFields(candidate) {
     activity: String(candidate?.activity ?? '').trim(),
     controls,
     screenshot: String(candidate?.screenshot ?? '').trim(),
+    beforeUiTree: String(candidate?.beforeUiTree ?? '').trim(),
+    afterUiTree: String(candidate?.afterUiTree ?? '').trim(),
     uiTree: String(candidate?.uiTree ?? '').trim(),
     log: String(candidate?.log ?? '').trim(),
+    logBoundary: String(candidate?.logBoundary ?? '').trim(),
     controlLabel: redactText(String(candidate?.controlLabel ?? '').trim()).text,
     action: redactText(String(candidate?.action ?? '').trim()).text,
     expected: redactText(String(candidate?.expected ?? '').trim()).text,

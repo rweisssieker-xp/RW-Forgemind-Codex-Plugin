@@ -33,12 +33,20 @@ export async function executeAndroidAdapter({ workspace, profile = {}, runProces
   if (emulator.gap) return emulator.gap;
   const { serial } = emulator;
 
-  const manifest = await findAndroidManifest(workspace, profile);
+  const manifestResult = await findAndroidManifest(workspace, profile);
+  if (manifestResult?.gap) return manifestResult.gap;
+  const manifest = manifestResult?.manifest;
   if (!manifest?.packageName) {
     return androidGapResult('FM_XRAY_ANDROID_PACKAGE_UNAVAILABLE', 'Xray could not resolve an Android package name from a local AndroidManifest.xml.', 'Add a valid local AndroidManifest.xml with a package name, then rerun Xray.', { serial });
   }
 
   const baseArgs = ['-s', serial];
+  const boundaryResult = await executeAdb(runProcess, [...baseArgs, 'shell', 'date', '+%m-%d %H:%M:%S.000'], workspace);
+  if (boundaryResult.truncated) return androidTruncationGap('log boundary', { serial, packageName: manifest.packageName });
+  const logBoundary = parseAndroidLogBoundary(boundaryResult);
+  if (!logBoundary) {
+    return androidGapResult('FM_XRAY_ANDROID_LOG_BOUNDARY_UNAVAILABLE', 'Xray could not establish an Android log timestamp boundary before app launch.', 'Ensure the emulator shell date command is available, then rerun Xray.', { serial, packageName: manifest.packageName });
+  }
   const resolved = await executeAdb(runProcess, [...baseArgs, 'shell', 'cmd', 'package', 'resolve-activity', '--brief', manifest.packageName], workspace);
   if (resolved.truncated) return androidTruncationGap('activity resolution', { serial, packageName: manifest.packageName });
   const activity = resolveAndroidActivity(resolved, manifest.packageName);
@@ -79,12 +87,20 @@ export async function executeAndroidAdapter({ workspace, profile = {}, runProces
   if (uiTree.exitCode !== 0 || !isAndroidUiTree(uiTree.stdout)) {
     return androidGapResult('FM_XRAY_ANDROID_SAFE_FLOW_UNAVAILABLE', `The ${control.label} interaction did not leave observable Android UI evidence.`, 'Inspect the safe interaction in the emulator and rerun Xray.', { serial, packageName: manifest.packageName, activity });
   }
+  if (!isMeaningfulUiTransition(beforeUiTree.stdout, uiTree.stdout)) {
+    return androidGapResult('FM_XRAY_ANDROID_FLOW_ASSERTION_UNAVAILABLE', `The ${control.label} interaction did not produce an observable Android UI transition.`, 'Choose a safe informational control with a visible state change, then rerun Xray.', { serial, packageName: manifest.packageName, activity });
+  }
+  const foreground = await executeAdb(runProcess, [...baseArgs, 'shell', 'dumpsys', 'window', 'windows'], workspace);
+  if (foreground.truncated) return androidTruncationGap('foreground verification', { serial, packageName: manifest.packageName, activity });
+  if (foreground.exitCode !== 0 || !isAndroidPackageForeground(foreground.stdout, manifest.packageName)) {
+    return androidGapResult('FM_XRAY_ANDROID_FLOW_ASSERTION_UNAVAILABLE', `The ${control.label} interaction did not leave ${manifest.packageName} as the foreground Android package.`, 'Choose a safe in-app informational control and rerun Xray.', { serial, packageName: manifest.packageName, activity });
+  }
   const screenshot = await executeAdb(runProcess, [...baseArgs, 'exec-out', 'screencap', '-p'], workspace);
   if (screenshot.truncated) return androidTruncationGap('screenshot', { serial, packageName: manifest.packageName, activity });
   if (screenshot.exitCode !== 0 || !isPngScreenshot(screenshot)) {
     return androidGapResult('FM_XRAY_ANDROID_SCREENSHOT_UNAVAILABLE', `Xray could not capture an Android screenshot for ${activity} on ${serial}.`, 'Unlock the emulator, keep the app foregrounded, and rerun Xray.', { serial, packageName: manifest.packageName, activity });
   }
-  const logcat = await executeAdb(runProcess, [...baseArgs, 'logcat', '-d', '--pid', pid], workspace);
+  const logcat = await executeAdb(runProcess, [...baseArgs, 'logcat', '-d', '-T', logBoundary, '--pid', pid], workspace);
   if (logcat.truncated) return androidTruncationGap('package-scoped logcat', { serial, packageName: manifest.packageName, activity });
   if (logcat.exitCode !== 0) {
     return androidGapResult('FM_XRAY_ANDROID_LOG_UNAVAILABLE', `Xray could not collect package-scoped logcat evidence for ${manifest.packageName} on ${serial}.`, 'Ensure the debug app process remains available and rerun Xray.', { serial, packageName: manifest.packageName, activity });
@@ -93,20 +109,21 @@ export async function executeAndroidAdapter({ workspace, profile = {}, runProces
   const artifactDirectory = artifactStatePath(workspace, 'xray', 'android', 'latest');
   await mkdir(artifactDirectory, { recursive: true });
   await Promise.all([
+    writeFile(path.join(artifactDirectory, 'ui-tree-before.xml'), String(beforeUiTree.stdout ?? ''), 'utf8'),
     writeFile(path.join(artifactDirectory, 'ui-tree.xml'), String(uiTree.stdout ?? ''), 'utf8'),
     writeFile(path.join(artifactDirectory, 'screenshot.png'), processOutputBuffer(screenshot)),
     writeFile(path.join(artifactDirectory, 'logcat.txt'), redactText(String(logcat.stdout ?? '')).text, 'utf8'),
   ]);
-  const evidence = [`${ANDROID_EVIDENCE_PREFIX}/latest/ui-tree.xml`, `${ANDROID_EVIDENCE_PREFIX}/latest/screenshot.png`, `${ANDROID_EVIDENCE_PREFIX}/latest/logcat.txt`];
+  const evidence = [`${ANDROID_EVIDENCE_PREFIX}/latest/ui-tree-before.xml`, `${ANDROID_EVIDENCE_PREFIX}/latest/ui-tree.xml`, `${ANDROID_EVIDENCE_PREFIX}/latest/screenshot.png`, `${ANDROID_EVIDENCE_PREFIX}/latest/logcat.txt`];
   const logText = redactText(String(logcat.stdout ?? '')).text;
   const logFailure = /(?:FATAL EXCEPTION|AndroidRuntime|\bE\/[A-Za-z0-9_.-]+\s*\()/i.test(logText);
   return {
     adapter: 'android-adb', control: 'computer-use', surfaceId: 'mobile-gui', surfaceIds: ['mobile-gui'],
     componentIds: [...ANDROID_COMPONENT_IDS], status: logFailure ? 'failed' : 'passed', ...(logFailure ? { severity: 'high' } : {}), serial, packageName: manifest.packageName, activity,
-    controls, evidence, screenshot: evidence[1], uiTree: evidence[0], log: evidence[2],
+    controls, evidence, screenshot: evidence[2], beforeUiTree: evidence[0], afterUiTree: evidence[1], uiTree: evidence[1], log: evidence[3], logBoundary,
     controlLabel: control.label, action: 'tap safe control',
     expected: `The non-destructive ${control.label} control remains actionable and leaves observable UI evidence.`,
-    actual: logFailure ? 'Android logcat recorded an application error after the safe control interaction.' : `The ${control.label} control was tapped and the Android UI remained observable.`,
+    actual: logFailure ? 'Android logcat recorded an application error after the safe control interaction.' : `The ${control.label} control was tapped, changed the visible UI, and kept the application foregrounded.`,
     reproduction: `Launch ${activity} on ${serial}, then tap the UI-tree-derived ${control.label} control at ${control.bounds}.`,
   };
 }
@@ -139,17 +156,34 @@ function selectAndroidEmulator(result = {}) {
 
 async function findAndroidManifest(workspace, profile) {
   const profileManifest = profile.androidManifest;
-  if (typeof profileManifest === 'string') return parseAndroidManifest(profileManifest);
+  if (typeof profileManifest === 'string') return { manifest: parseAndroidManifest(profileManifest) };
+  if (typeof profile.androidManifestPath === 'string') {
+    const explicitPath = path.resolve(workspace, profile.androidManifestPath);
+    const relative = path.relative(path.resolve(workspace), explicitPath);
+    if (relative && !relative.startsWith('..') && !path.isAbsolute(relative)) {
+      try {
+        return { manifest: parseAndroidManifest(await readFile(explicitPath, 'utf8')) };
+      } catch {
+        return { gap: androidGapResult('FM_XRAY_ANDROID_PACKAGE_UNAVAILABLE', 'The explicitly configured Android manifest cannot be read.', 'Provide a readable workspace-local Android manifest path, then rerun Xray.') };
+      }
+    }
+    return { gap: androidGapResult('FM_XRAY_ANDROID_PACKAGE_UNAVAILABLE', 'The configured Android manifest path is outside the workspace.', 'Provide a workspace-local Android manifest path, then rerun Xray.') };
+  }
   const manifests = (await findFilesNamed(workspace, 'AndroidManifest.xml')).toSorted((left, right) => left.localeCompare(right));
-  for (const manifestPath of manifests) {
+  const appManifests = manifests.filter((manifestPath) => /(?:^|[\\/])app[\\/]src[\\/]main[\\/]AndroidManifest\.xml$/i.test(manifestPath));
+  const candidates = appManifests.length > 0 ? appManifests : manifests.filter((manifestPath) => /(?:^|[\\/])src[\\/]main[\\/]AndroidManifest\.xml$/i.test(manifestPath));
+  if (candidates.length > 1) {
+    return { gap: androidGapResult('FM_XRAY_ANDROID_MANIFEST_AMBIGUOUS', 'Multiple Android application manifests are eligible and Xray will not guess a package.', 'Provide an explicit Android manifest profile path or retain one app src/main manifest.') };
+  }
+  for (const manifestPath of candidates) {
     try {
       const parsed = parseAndroidManifest(await readFile(manifestPath, 'utf8'));
-      if (parsed?.packageName) return parsed;
+      if (parsed?.packageName) return { manifest: parsed };
     } catch {
       // Continue to the next local manifest.
     }
   }
-  return null;
+  return { manifest: null };
 }
 
 function parseAndroidManifest(xml) {
@@ -198,8 +232,22 @@ function androidControls(xml) {
 }
 
 function selectSafeAndroidControl(controls) {
-  const safe = /\b(?:back|cancel|close|details|help|learn|menu|more|show|toggle|view)\b/i;
-  return controls.find((control) => safe.test(control.label) && !DANGEROUS_BROWSER_CONTROL_PATTERN.test(control.label)) ?? null;
+  const safe = /^(?:help(?:\s+(?:center|info|information|details))?|details|info(?:rmation)?|learn\s+more|more\s+(?:info|details)|view\s+details|menu)$/i;
+  const consequential = /\b(?:account|subscription|billing|payment|plan|profile|settings?|sign|login|logout|delete|remove|purchase|order|send|save|submit|continue|next|back|cancel|close|toggle)\b/i;
+  return controls.find((control) => safe.test(control.label) && !consequential.test(control.label) && !DANGEROUS_BROWSER_CONTROL_PATTERN.test(control.label)) ?? null;
+}
+
+function parseAndroidLogBoundary(result = {}) {
+  return String(result.stdout ?? '').trim().match(/^\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\.\d{3}$/)?.[0] ?? null;
+}
+
+function isMeaningfulUiTransition(before, after) {
+  return String(before ?? '').replace(/\s+/g, ' ').trim() !== String(after ?? '').replace(/\s+/g, ' ').trim();
+}
+
+function isAndroidPackageForeground(value, packageName) {
+  return /\bm(?:CurrentFocus|FocusedApp|ResumedActivity)\b[^\n]*/i.test(String(value ?? ''))
+    && String(value ?? '').includes(packageName);
 }
 
 function isAndroidUiTree(value) {

@@ -426,6 +426,7 @@ test('Android adapter records a prerequisite gap rather than passing without a s
       const invocation = args.join(' ');
       if (invocation.includes('logcat -c')) throw new Error('global logcat clearing is forbidden');
       if (invocation === 'devices') return { exitCode: 0, stdout: 'List of devices attached\nemulator-5554\tdevice\n', stderr: '' };
+      if (invocation.includes('shell date')) return { exitCode: 0, stdout: '08-17 12:00:00.000\n', stderr: '' };
       if (invocation.includes('resolve-activity')) return { exitCode: 0, stdout: 'example.xray/.MainActivity\n', stderr: '' };
       if (invocation.includes('pidof -s')) return { exitCode: 0, stdout: '4132\n', stderr: '' };
       if (invocation.includes('uiautomator dump')) return { exitCode: 0, stdout: '<hierarchy><node text="Delete account" clickable="true" bounds="[0,0][20,20]" /></hierarchy>', stderr: '' };
@@ -437,6 +438,71 @@ test('Android adapter records a prerequisite gap rather than passing without a s
   assert.equal(result.gap.code, 'FM_XRAY_ANDROID_SAFE_FLOW_UNAVAILABLE');
 });
 
+test('Android adapter rejects consequential controls and no-op UI interactions', async (t) => {
+  for (const tree of [
+    '<hierarchy><node text="Cancel subscription" clickable="true" bounds="[0,0][20,20]" /></hierarchy>',
+    '<hierarchy><node text="Help" clickable="true" bounds="[0,0][20,20]" /></hierarchy>',
+  ]) {
+    let dumps = 0;
+    const result = await executeAndroidAdapter({
+      workspace: await workspace(t, { 'app/src/main/AndroidManifest.xml': '<manifest package="example.xray" />' }),
+      runProcess: async (_command, args) => {
+        const invocation = args.join(' ');
+        if (invocation === 'devices') return { exitCode: 0, stdout: 'List of devices attached\nemulator-5554\tdevice\n', stderr: '' };
+        if (invocation.includes('shell date')) return { exitCode: 0, stdout: '08-17 12:00:00.000\n', stderr: '' };
+        if (invocation.includes('resolve-activity')) return { exitCode: 0, stdout: 'example.xray/.MainActivity\n', stderr: '' };
+        if (invocation.includes('pidof -s')) return { exitCode: 0, stdout: '4132\n', stderr: '' };
+        if (invocation.includes('uiautomator dump')) { dumps += 1; return { exitCode: 0, stdout: tree, stderr: '' }; }
+        if (invocation.includes('input tap') || invocation.includes('dumpsys window')) return { exitCode: 0, stdout: 'mCurrentFocus=example.xray/.MainActivity', stderr: '' };
+        return { exitCode: 0, stdout: '', stderr: '' };
+      },
+    });
+
+    assert.equal(result.status, 'blocked');
+    assert.match(result.gap.code, /^FM_XRAY_ANDROID_(?:SAFE_FLOW|FLOW_ASSERTION)_UNAVAILABLE$/);
+    if (/Help/.test(tree)) assert.equal(dumps, 2);
+  }
+});
+
+test('Android manifest discovery rejects ambiguous non-app manifests', async (t) => {
+  const result = await executeAndroidAdapter({
+    workspace: await workspace(t, {
+      'feature-a/src/main/AndroidManifest.xml': '<manifest package="example.a" />',
+      'feature-b/src/main/AndroidManifest.xml': '<manifest package="example.b" />',
+    }),
+    runProcess: async (_command, args) => args.join(' ') === 'devices'
+      ? { exitCode: 0, stdout: 'List of devices attached\nemulator-5554\tdevice\n', stderr: '' }
+      : { exitCode: 0, stdout: '', stderr: '' },
+  });
+
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.gap.code, 'FM_XRAY_ANDROID_MANIFEST_AMBIGUOUS');
+});
+
+test('Android manifest discovery prefers the application src/main manifest', async (t) => {
+  let resolvedPackage = null;
+  const result = await executeAndroidAdapter({
+    workspace: await workspace(t, {
+      'app/src/main/AndroidManifest.xml': '<manifest package="example.application" />',
+      'library/src/main/AndroidManifest.xml': '<manifest package="example.library" />',
+    }),
+    runProcess: async (_command, args) => {
+      const invocation = args.join(' ');
+      if (invocation === 'devices') return { exitCode: 0, stdout: 'List of devices attached\nemulator-5554\tdevice\n', stderr: '' };
+      if (invocation.includes('shell date')) return { exitCode: 0, stdout: '08-17 12:00:00.000\n', stderr: '' };
+      if (invocation.includes('resolve-activity')) {
+        resolvedPackage = args.at(-1);
+        return { exitCode: 1, stdout: '', stderr: 'not installed' };
+      }
+      return { exitCode: 0, stdout: '', stderr: '' };
+    },
+  });
+
+  assert.equal(resolvedPackage, 'example.application');
+  assert.equal(result.gap.code, 'FM_XRAY_ANDROID_ACTIVITY_UNAVAILABLE');
+  assert.equal(result.packageName, 'example.application');
+});
+
 test('Android adapter rejects truncated evidence before writing a receipt', async (t) => {
   const result = await executeAndroidAdapter({
     workspace: await workspace(t, { 'app/src/main/AndroidManifest.xml': '<manifest package="example.xray" />' }),
@@ -444,6 +510,7 @@ test('Android adapter rejects truncated evidence before writing a receipt', asyn
       const invocation = args.join(' ');
       if (invocation.includes('logcat -c')) throw new Error('global logcat clearing is forbidden');
       if (invocation === 'devices') return { exitCode: 0, stdout: 'List of devices attached\nemulator-5554\tdevice\n', stderr: '' };
+      if (invocation.includes('shell date')) return { exitCode: 0, stdout: '08-17 12:00:00.000\n', stderr: '' };
       if (invocation.includes('resolve-activity')) return { exitCode: 0, stdout: 'example.xray/.MainActivity\n', stderr: '' };
       if (invocation.includes('pidof -s')) return { exitCode: 0, stdout: '4132\n', stderr: '' };
       if (invocation.includes('uiautomator dump')) return { exitCode: 0, stdout: '<hierarchy><node text="Help" clickable="true" bounds="[0,0][20,20]" /></hierarchy>', stderr: '', truncated: true };
@@ -466,13 +533,16 @@ test('Android adapter captures a package-scoped emulator receipt and local artif
       const invocation = args.join(' ');
       if (invocation.includes('logcat -c')) throw new Error('global logcat clearing is forbidden');
       if (invocation === 'devices') return { exitCode: 0, stdout: 'List of devices attached\nemulator-5554\tdevice\n', stderr: '' };
+      if (invocation.includes('shell date')) return { exitCode: 0, stdout: '08-17 12:00:00.000\n', stderr: '' };
       if (invocation.includes('resolve-activity')) return { exitCode: 0, stdout: 'example.xray/.MainActivity\n', stderr: '' };
       if (invocation.includes('pidof -s')) return { exitCode: 0, stdout: '4132\n', stderr: '' };
       if (invocation.includes('uiautomator dump')) {
         uiTreeCalls += 1;
         return {
           exitCode: 0,
-          stdout: '<hierarchy><node text="Help" clickable="true" bounds="[10,20][110,60]" /></hierarchy>',
+          stdout: uiTreeCalls === 1
+            ? '<hierarchy><node text="Help" clickable="true" bounds="[10,20][110,60]" /></hierarchy>'
+            : '<hierarchy><node text="Help center" clickable="true" bounds="[10,20][110,60]" /></hierarchy>',
           stderr: '',
         };
       }
@@ -480,8 +550,9 @@ test('Android adapter captures a package-scoped emulator receipt and local artif
         assert.match(invocation, /input tap 60 40/);
         return { exitCode: 0, stdout: '', stderr: '' };
       }
+      if (invocation.includes('dumpsys window')) return { exitCode: 0, stdout: 'mCurrentFocus=Window{ example.xray/.MainActivity }', stderr: '' };
       if (invocation.includes('screencap -p')) return { exitCode: 0, stdout: 'PNG-DATA', stdoutBuffer: Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), stderr: '' };
-      if (invocation.includes('logcat -d --pid 4132')) return { exitCode: 0, stdout: 'I/Xray(4132): ready\n', stderr: '' };
+      if (invocation.includes('logcat -d -T 08-17 12:00:00.000 --pid 4132')) return { exitCode: 0, stdout: 'I/Xray(4132): ready\n', stderr: '' };
       return { exitCode: 0, stdout: '', stderr: '' };
     },
   });
@@ -495,9 +566,13 @@ test('Android adapter captures a package-scoped emulator receipt and local artif
   assert.equal(receipt.controlLabel, 'Help');
   assert.equal(receipt.action, 'tap safe control');
   assert.match(receipt.expected, /Help/);
-  assert.match(receipt.actual, /remained observable/);
+  assert.match(receipt.actual, /changed the visible UI/);
   assert.match(receipt.reproduction, /Help/);
   assert.ok(receipt.evidence.some((evidence) => evidence.endsWith('ui-tree.xml')));
+  assert.ok(receipt.evidence.some((evidence) => evidence.endsWith('ui-tree-before.xml')));
+  assert.equal(receipt.beforeUiTree, '.codex-orchestrator/xray/android/latest/ui-tree-before.xml');
+  assert.equal(receipt.afterUiTree, '.codex-orchestrator/xray/android/latest/ui-tree.xml');
+  assert.equal(receipt.logBoundary, '08-17 12:00:00.000');
   assert.deepEqual(receipt.controls, [{ label: 'Help', bounds: '[10,20][110,60]', center: { x: 60, y: 40 } }]);
   assert.equal(uiTreeCalls, 2);
   assert.match(await readFile(path.join(root, '.codex-orchestrator', 'xray', 'android', 'latest', 'ui-tree.xml'), 'utf8'), /Help/);
@@ -509,15 +584,23 @@ test('Xray imports Android adapter evidence as a mobile GUI receipt', async (t) 
     'gradlew.bat': '',
     'app/src/main/AndroidManifest.xml': '<manifest package="example.xray"><application /></manifest>',
   });
+  let integrationTrees = 0;
   const report = await runXray({
     workspace: root,
     adapters: ['android'],
     runProcess: async (_command, args) => {
       const invocation = args.join(' ');
       if (invocation === 'devices') return { exitCode: 0, stdout: 'List of devices attached\nemulator-5554\tdevice\n', stderr: '' };
+      if (invocation.includes('shell date')) return { exitCode: 0, stdout: '08-17 12:00:00.000\n', stderr: '' };
       if (invocation.includes('resolve-activity')) return { exitCode: 0, stdout: 'example.xray/.MainActivity\n', stderr: '' };
       if (invocation.includes('pidof -s')) return { exitCode: 0, stdout: '4132\n', stderr: '' };
-      if (invocation.includes('uiautomator dump')) return { exitCode: 0, stdout: '<hierarchy><node text="Help" clickable="true" bounds="[0,0][20,20]" /></hierarchy>', stderr: '' };
+      if (invocation.includes('uiautomator dump')) {
+        integrationTrees += 1;
+        return { exitCode: 0, stdout: integrationTrees === 1
+          ? '<hierarchy><node text="Help" clickable="true" bounds="[0,0][20,20]" /></hierarchy>'
+          : '<hierarchy><node text="Help center" clickable="true" bounds="[0,0][20,20]" /></hierarchy>', stderr: '' };
+      }
+      if (invocation.includes('dumpsys window')) return { exitCode: 0, stdout: 'mCurrentFocus=example.xray/.MainActivity', stderr: '' };
       if (invocation.includes('screencap -p')) return { exitCode: 0, stdout: 'PNG-DATA', stdoutBuffer: Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), stderr: '' };
       return { exitCode: 0, stdout: '', stderr: '' };
     },
@@ -533,7 +616,13 @@ test('Xray imports Android adapter evidence as a mobile GUI receipt', async (t) 
   assert.equal(report.receipts[0].screenshot, '.codex-orchestrator/xray/android/latest/screenshot.png');
   assert.equal(report.receipts[0].uiTree, '.codex-orchestrator/xray/android/latest/ui-tree.xml');
   assert.equal(report.receipts[0].log, '.codex-orchestrator/xray/android/latest/logcat.txt');
+  assert.equal(report.receipts[0].beforeUiTree, '.codex-orchestrator/xray/android/latest/ui-tree-before.xml');
+  assert.equal(report.receipts[0].afterUiTree, '.codex-orchestrator/xray/android/latest/ui-tree.xml');
   assert.equal(report.receipts[0].controls[0].label, 'Help');
+  assert.ok(report.receipts[0].componentIds.includes('functional-correctness'));
+  assert.ok(report.receipts[0].componentIds.includes('robustness-error-paths'));
+  assert.equal(report.score.components.find(({ id }) => id === 'functional-correctness').status, 'applicable');
+  assert.equal(report.score.components.find(({ id }) => id === 'robustness-error-paths').status, 'applicable');
   assert.equal(report.score.components.find(({ id }) => id === 'gui-usability').status, 'applicable');
 });
 
