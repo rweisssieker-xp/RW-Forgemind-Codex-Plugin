@@ -88,6 +88,12 @@ test('Xray rejects remote Browser receipt URLs and persists normalized local flo
       reproduction: 'Open the home page and click Get started.',
     }, {
       surfaceId: 'web-gui', control: 'browser', status: 'passed',
+      componentIds: ['gui-usability'], evidence: ['screenshots/loopback-lookalike.png'],
+      url: 'http://127.evil.com/', coverageArea: 'home', controlLabel: 'Get started',
+      action: 'click', expected: 'The onboarding view opens.', actual: 'The onboarding view opened.',
+      reproduction: 'Open the home page and click Get started.',
+    }, {
+      surfaceId: 'web-gui', control: 'browser', status: 'passed',
       componentIds: ['gui-usability'], evidence: ['screenshots/local.png'],
       url: ' http://127.0.0.1:4173/ ', coverageArea: ' home ', controlLabel: ' Get started ',
       action: ' click ', expected: ' The onboarding view opens. ', actual: ' The onboarding view opened. ',

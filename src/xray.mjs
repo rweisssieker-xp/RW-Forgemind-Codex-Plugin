@@ -1,4 +1,5 @@
 import { readFile, readdir } from 'node:fs/promises';
+import { isIP } from 'node:net';
 import path from 'node:path';
 
 import { inspectProject } from './project.mjs';
@@ -557,9 +558,10 @@ function isLocalOrTestBrowserUrl(value) {
   try {
     const url = new URL(value);
     const hostname = url.hostname.toLowerCase().replace(/^\[|\]$/g, '');
+    const isIpv4Loopback = isIP(hostname) === 4 && hostname.split('.')[0] === '127';
     return ['http:', 'https:'].includes(url.protocol)
       && (hostname === 'localhost' || hostname.endsWith('.localhost')
-        || hostname === '::1' || hostname === '127.0.0.1' || hostname.startsWith('127.')
+        || hostname === '::1' || isIpv4Loopback
         || hostname === 'test' || hostname.endsWith('.test'));
   } catch {
     return false;
