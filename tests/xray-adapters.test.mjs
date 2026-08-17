@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 
-import { executeBrowserAdapter, executeCommandAdapter } from '../src/xray-adapters.mjs';
+import { executeAndroidAdapter, executeBrowserAdapter, executeCommandAdapter } from '../src/xray-adapters.mjs';
 import { runProcess } from '../src/process.mjs';
 import { discoverXrayMission, runXray, selectXrayChecks } from '../src/xray.mjs';
 
@@ -142,6 +142,93 @@ test('browser adapter executes its isolated local runner and normalizes protocol
   assert.equal(receipt.screenshot, '.codex-orchestrator/xray/browser/getting-started-after.png');
   assert.equal(receipt.trace, '.codex-orchestrator/xray/browser/getting-started-trace.zip');
   assert.equal(receipts[1].status, 'passed');
+});
+
+test('Android adapter reports an explicit ADB prerequisite gap', async (t) => {
+  const result = await executeAndroidAdapter({
+    workspace: await workspace(t, {
+      'app/src/main/AndroidManifest.xml': '<manifest package="example.xray" />',
+    }),
+    runProcess: async () => ({ exitCode: 127, stdout: '', stderr: 'adb: command not found' }),
+  });
+
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.gap.code, 'FM_XRAY_ADB_UNAVAILABLE');
+});
+
+test('Android adapter reports an explicit emulator prerequisite gap', async (t) => {
+  const result = await executeAndroidAdapter({
+    workspace: await workspace(t, {
+      'app/src/main/AndroidManifest.xml': '<manifest package="example.xray" />',
+    }),
+    runProcess: async (_command, args) => {
+      assert.deepEqual(args, ['devices']);
+      return { exitCode: 0, stdout: 'List of devices attached\nemulator-5554\toffline\n', stderr: '' };
+    },
+  });
+
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.gap.code, 'FM_XRAY_ANDROID_EMULATOR_UNAVAILABLE');
+});
+
+test('Android adapter captures a package-scoped emulator receipt and local artifacts', async (t) => {
+  const root = await workspace(t, {
+    'app/src/main/AndroidManifest.xml': '<manifest package="example.xray"><application><activity android:name=".MainActivity" /></application></manifest>',
+  });
+  const receipt = await executeAndroidAdapter({
+    workspace: root,
+    runProcess: async (_command, args) => {
+      const invocation = args.join(' ');
+      if (invocation === 'devices') return { exitCode: 0, stdout: 'List of devices attached\nemulator-5554\tdevice\n', stderr: '' };
+      if (invocation.includes('resolve-activity')) return { exitCode: 0, stdout: 'example.xray/.MainActivity\n', stderr: '' };
+      if (invocation.includes('pidof -s')) return { exitCode: 0, stdout: '4132\n', stderr: '' };
+      if (invocation.includes('uiautomator dump')) return {
+        exitCode: 0,
+        stdout: '<hierarchy><node text="Continue" clickable="true" bounds="[10,20][110,60]" /></hierarchy>',
+        stderr: '',
+      };
+      if (invocation.includes('screencap -p')) return { exitCode: 0, stdout: 'PNG-DATA', stdoutBuffer: Buffer.from([0x89, 0x50, 0x4e, 0x47]), stderr: '' };
+      if (invocation.includes('logcat -d --pid 4132')) return { exitCode: 0, stdout: 'I/Xray(4132): ready\n', stderr: '' };
+      return { exitCode: 0, stdout: '', stderr: '' };
+    },
+  });
+
+  assert.equal(receipt.adapter, 'android-adb');
+  assert.equal(receipt.status, 'passed');
+  assert.deepEqual(receipt.surfaceIds, ['mobile-gui']);
+  assert.equal(receipt.serial, 'emulator-5554');
+  assert.equal(receipt.packageName, 'example.xray');
+  assert.equal(receipt.activity, 'example.xray/.MainActivity');
+  assert.ok(receipt.evidence.some((evidence) => evidence.endsWith('ui-tree.xml')));
+  assert.deepEqual(receipt.controls, [{ label: 'Continue', bounds: '[10,20][110,60]', center: { x: 60, y: 40 } }]);
+  assert.match(await readFile(path.join(root, '.codex-orchestrator', 'xray', 'android', 'latest', 'ui-tree.xml'), 'utf8'), /Continue/);
+  assert.deepEqual(await readFile(path.join(root, '.codex-orchestrator', 'xray', 'android', 'latest', 'screenshot.png')), Buffer.from([0x89, 0x50, 0x4e, 0x47]));
+});
+
+test('Xray imports Android adapter evidence as a mobile GUI receipt', async (t) => {
+  const root = await workspace(t, {
+    'gradlew.bat': '',
+    'app/src/main/AndroidManifest.xml': '<manifest package="example.xray"><application /></manifest>',
+  });
+  const report = await runXray({
+    workspace: root,
+    adapters: ['android'],
+    runProcess: async (_command, args) => {
+      const invocation = args.join(' ');
+      if (invocation === 'devices') return { exitCode: 0, stdout: 'List of devices attached\nemulator-5554\tdevice\n', stderr: '' };
+      if (invocation.includes('resolve-activity')) return { exitCode: 0, stdout: 'example.xray/.MainActivity\n', stderr: '' };
+      if (invocation.includes('pidof -s')) return { exitCode: 0, stdout: '4132\n', stderr: '' };
+      if (invocation.includes('uiautomator dump')) return { exitCode: 0, stdout: '<hierarchy />', stderr: '' };
+      if (invocation.includes('screencap -p')) return { exitCode: 0, stdout: 'PNG-DATA', stderr: '' };
+      return { exitCode: 0, stdout: '', stderr: '' };
+    },
+  });
+
+  assert.deepEqual(report.adapters.selected, ['android']);
+  assert.deepEqual(report.adapters.executed, ['android-adb']);
+  assert.equal(report.receipts[0].adapter, 'android-adb');
+  assert.equal(report.receipts[0].surfaceId, 'mobile-gui');
+  assert.equal(report.score.components.find(({ id }) => id === 'gui-usability').status, 'applicable');
 });
 
 test('command adapter records a successful inferred dotnet test receipt', async (t) => {

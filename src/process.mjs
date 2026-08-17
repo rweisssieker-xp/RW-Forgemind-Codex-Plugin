@@ -5,9 +5,10 @@ import path from 'node:path';
 export async function runProcess(command, args = [], options = {}) {
   const startedAt = new Date().toISOString();
   const maxOutputBytes = options.maxOutputBytes ?? 256 * 1024;
+  const binaryOutput = options.binaryOutput === true;
   const invocation = await resolveInvocation(command, args, options.env ?? process.env);
   if (invocation.error) {
-    return result(127, [], [Buffer.from(invocation.error)], false, startedAt);
+    return result(127, [], [Buffer.from(invocation.error)], false, startedAt, binaryOutput);
   }
 
   return new Promise((resolve) => {
@@ -26,7 +27,7 @@ export async function runProcess(command, args = [], options = {}) {
         stdio: ['ignore', 'pipe', 'pipe'],
       });
     } catch (error) {
-      resolve(result(127, stdout, [Buffer.from(error.message)], truncated, startedAt));
+      resolve(result(127, stdout, [Buffer.from(error.message)], truncated, startedAt, binaryOutput));
       return;
     }
 
@@ -43,10 +44,10 @@ export async function runProcess(command, args = [], options = {}) {
       stderrBytes += Math.min(chunk.length, remaining);
     });
     child.on('error', (error) => {
-      resolve(result(127, stdout, [...stderr, Buffer.from(error.message)], truncated, startedAt));
+      resolve(result(127, stdout, [...stderr, Buffer.from(error.message)], truncated, startedAt, binaryOutput));
     });
     child.on('close', (code) => {
-      resolve(result(code ?? 1, stdout, stderr, truncated, startedAt));
+      resolve(result(code ?? 1, stdout, stderr, truncated, startedAt, binaryOutput));
     });
   });
 }
@@ -91,10 +92,12 @@ function windowsBatchInvocation(command, args) {
   return `call ${[command, ...args].map(String).join(' ')}`;
 }
 
-function result(exitCode, stdout, stderr, truncated, startedAt) {
+function result(exitCode, stdout, stderr, truncated, startedAt, binaryOutput) {
+  const stdoutBuffer = Buffer.concat(stdout);
   return {
     exitCode,
-    stdout: Buffer.concat(stdout).toString('utf8'),
+    stdout: stdoutBuffer.toString('utf8'),
+    ...(binaryOutput ? { stdoutBuffer } : {}),
     stderr: Buffer.concat(stderr).toString('utf8'),
     truncated,
     shell: false,

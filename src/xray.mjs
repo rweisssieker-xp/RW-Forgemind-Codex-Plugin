@@ -6,6 +6,7 @@ import { inspectProject } from './project.mjs';
 import { runProcess as runLocalProcess } from './process.mjs';
 import {
   classifyPrerequisiteFailure,
+  executeAndroidAdapter,
   executeBrowserAdapter,
   executeCommandAdapter,
   formatCommandCandidate,
@@ -371,7 +372,7 @@ export async function runXray({
     ...(result.stdout ? { stdout: result.stdout } : {}),
     ...(result.stderr ? { stderr: result.stderr } : {}),
   }));
-  const discoveredMission = await discoverXrayMission({
+  let discoveredMission = await discoverXrayMission({
     workspace,
     goal,
     guiControl,
@@ -379,11 +380,40 @@ export async function runXray({
     adapters: selectedAdapters,
     testUrl: normalizedTestUrl,
   });
-  if (browserGaps.length > 0) {
+  const androidResult = selectedAdapters.includes('android')
+    && discoveredMission.surfaces.some(({ id }) => id === 'mobile-gui')
+    ? await executeAndroidAdapter({
+      workspace,
+      profile: { surfaces: discoveredMission.surfaces },
+      runProcess,
+    })
+    : null;
+  const androidReceipts = androidResult && !androidResult.gap ? [androidResult] : [];
+  const androidGaps = androidResult?.gap ? [{
+    ...androidResult.gap,
+    adapter: androidResult.adapter,
+    evidence: [...(androidResult.evidence ?? [])],
+  }] : [];
+  if (androidReceipts.length > 0) {
+    discoveredMission = await discoverXrayMission({
+      workspace,
+      goal,
+      guiControl,
+      guiReceipts: [...guiReceipts, ...browserReceipts, ...androidReceipts],
+      adapters: selectedAdapters,
+      testUrl: normalizedTestUrl,
+    });
+  }
+  if (browserGaps.length > 0 || androidGaps.length > 0) {
     discoveredMission.gaps = [
-      ...discoveredMission.gaps.filter((gap) => !(gap.code === 'FM_XRAY_GUI_CONTROL_UNAVAILABLE'
-        && gap.surfaceId === 'web-gui' && gap.control === 'browser')),
+      ...discoveredMission.gaps.filter((gap) => !(
+        (gap.code === 'FM_XRAY_GUI_CONTROL_UNAVAILABLE'
+          && gap.surfaceId === 'web-gui' && gap.control === 'browser')
+        || (gap.code === 'FM_XRAY_GUI_CONTROL_UNAVAILABLE'
+          && gap.surfaceId === 'mobile-gui' && gap.control === 'computer-use')
+      )),
       ...browserGaps,
+      ...androidGaps,
     ];
   }
   const execution = await executeXrayMission({ workspace, mission: discoveredMission, runCommand });

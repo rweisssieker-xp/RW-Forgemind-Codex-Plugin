@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { access, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { access, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { isIP } from 'node:net';
 import path from 'node:path';
 
@@ -16,6 +16,169 @@ const BROWSER_STATUSES = new Set(['passed', 'failed', 'blocked', 'skipped']);
 const BROWSER_FAILURE_SEVERITIES = new Set(['critical', 'high', 'medium', 'low']);
 const DANGEROUS_BROWSER_CONTROL_PATTERN = /\b(?:admin|approve|buy|checkout|credential|delete|deploy|destroy|drop|invite|order|password|pay|payment|production|publish|purchase|release|remove|reset|save|secret|seed|send|sign[ -]?in|submit|token|transfer|truncate|upload)\b/i;
 const PLAYWRIGHT_SETUP_ACTION = 'Run `npm install --save-dev playwright`, then `npx playwright install chromium`.';
+const ANDROID_EVIDENCE_PREFIX = '.codex-orchestrator/xray/android';
+const ANDROID_COMPONENT_IDS = ['functional-correctness', 'gui-usability', 'accessibility-visual', 'robustness-error-paths'];
+
+export async function executeAndroidAdapter({ workspace, profile = {}, runProcess }) {
+  const devices = await executeAdb(runProcess, ['devices'], workspace);
+  if (isUnavailableTool(devices)) {
+    return androidGapResult('FM_XRAY_ADB_UNAVAILABLE', 'Android Debug Bridge (adb) is unavailable, so Xray cannot test the Android emulator.', 'Install Android platform-tools, ensure `adb` is on PATH, then rerun Xray.');
+  }
+  const serial = selectAndroidDevice(devices);
+  if (!serial) {
+    return androidGapResult('FM_XRAY_ANDROID_EMULATOR_UNAVAILABLE', 'No Android emulator or authorized Android test device is available through adb.', 'Start an emulator (or connect an authorized test device), wait until it reports `device`, then rerun Xray.');
+  }
+
+  const manifest = await findAndroidManifest(workspace, profile);
+  if (!manifest?.packageName) {
+    return androidGapResult('FM_XRAY_ANDROID_PACKAGE_UNAVAILABLE', 'Xray could not resolve an Android package name from a local AndroidManifest.xml.', 'Add a valid local AndroidManifest.xml with a package name, then rerun Xray.', { serial });
+  }
+
+  const baseArgs = ['-s', serial];
+  await executeAdb(runProcess, [...baseArgs, 'logcat', '-c'], workspace);
+  const resolved = await executeAdb(runProcess, [...baseArgs, 'shell', 'cmd', 'package', 'resolve-activity', '--brief', manifest.packageName], workspace);
+  const activity = resolveAndroidActivity(resolved, manifest.packageName);
+  if (!activity) {
+    return androidGapResult('FM_XRAY_ANDROID_ACTIVITY_UNAVAILABLE', `The installed Android package ${manifest.packageName} has no resolvable launch activity on ${serial}.`, 'Install a runnable debug build on the selected emulator and verify its launch activity, then rerun Xray.', { serial, packageName: manifest.packageName });
+  }
+
+  const launched = await executeAdb(runProcess, [...baseArgs, 'shell', 'am', 'start', '-n', activity], workspace);
+  if (launched.exitCode !== 0) {
+    return androidGapResult('FM_XRAY_ANDROID_ACTIVITY_UNAVAILABLE', `Xray could not start the resolved Android activity ${activity} on ${serial}.`, 'Install a runnable debug build and verify its launch activity, then rerun Xray.', { serial, packageName: manifest.packageName, activity });
+  }
+
+  const pidResult = await executeAdb(runProcess, [...baseArgs, 'shell', 'pidof', '-s', manifest.packageName], workspace);
+  const pid = String(pidResult.stdout ?? '').trim().match(/^\d+$/)?.[0] ?? null;
+  if (!pid) {
+    return androidGapResult('FM_XRAY_ANDROID_LOG_UNAVAILABLE', `The launched package ${manifest.packageName} did not expose a process id for package-scoped log collection.`, 'Keep the debug app running on the emulator and rerun Xray.', { serial, packageName: manifest.packageName, activity });
+  }
+
+  const uiTree = await executeAdb(runProcess, [...baseArgs, 'exec-out', 'uiautomator', 'dump', '/dev/tty'], workspace);
+  if (uiTree.exitCode !== 0 || !String(uiTree.stdout ?? '').trim()) {
+    return androidGapResult('FM_XRAY_ANDROID_UI_EVIDENCE_UNAVAILABLE', `Xray could not capture the Android UI tree for ${activity} on ${serial}.`, 'Unlock the emulator, keep the app foregrounded, and rerun Xray.', { serial, packageName: manifest.packageName, activity });
+  }
+  const screenshot = await executeAdb(runProcess, [...baseArgs, 'exec-out', 'screencap', '-p'], workspace);
+  if (screenshot.exitCode !== 0 || !hasProcessOutput(screenshot)) {
+    return androidGapResult('FM_XRAY_ANDROID_SCREENSHOT_UNAVAILABLE', `Xray could not capture an Android screenshot for ${activity} on ${serial}.`, 'Unlock the emulator, keep the app foregrounded, and rerun Xray.', { serial, packageName: manifest.packageName, activity });
+  }
+  const logcat = await executeAdb(runProcess, [...baseArgs, 'logcat', '-d', '--pid', pid], workspace);
+  if (logcat.exitCode !== 0) {
+    return androidGapResult('FM_XRAY_ANDROID_LOG_UNAVAILABLE', `Xray could not collect package-scoped logcat evidence for ${manifest.packageName} on ${serial}.`, 'Ensure the debug app process remains available and rerun Xray.', { serial, packageName: manifest.packageName, activity });
+  }
+
+  const artifactDirectory = artifactStatePath(workspace, 'xray', 'android', 'latest');
+  await mkdir(artifactDirectory, { recursive: true });
+  await Promise.all([
+    writeFile(path.join(artifactDirectory, 'ui-tree.xml'), String(uiTree.stdout ?? ''), 'utf8'),
+    writeFile(path.join(artifactDirectory, 'screenshot.png'), processOutputBuffer(screenshot)),
+    writeFile(path.join(artifactDirectory, 'logcat.txt'), redactText(String(logcat.stdout ?? '')).text, 'utf8'),
+  ]);
+  const controls = androidControls(String(uiTree.stdout ?? ''));
+  const evidence = [`${ANDROID_EVIDENCE_PREFIX}/latest/ui-tree.xml`, `${ANDROID_EVIDENCE_PREFIX}/latest/screenshot.png`, `${ANDROID_EVIDENCE_PREFIX}/latest/logcat.txt`];
+  return {
+    adapter: 'android-adb', control: 'computer-use', surfaceId: 'mobile-gui', surfaceIds: ['mobile-gui'],
+    componentIds: [...ANDROID_COMPONENT_IDS], status: 'passed', serial, packageName: manifest.packageName, activity,
+    controls, evidence, screenshot: evidence[1], uiTree: evidence[0], log: evidence[2],
+  };
+}
+
+async function executeAdb(runProcess, args, workspace) {
+  try {
+    return await runProcess('adb', args, { cwd: workspace, ...(args.includes('screencap') ? { binaryOutput: true } : {}) });
+  } catch (error) {
+    return { exitCode: 127, stdout: '', stderr: error?.message ?? String(error) };
+  }
+}
+
+function isUnavailableTool(result = {}) {
+  return result.exitCode === 127 || /\b(?:adb: command not found|ENOENT|not recognized as an internal or external command)\b/i.test(`${result.stdout ?? ''}\n${result.stderr ?? ''}`);
+}
+
+function selectAndroidDevice(result = {}) {
+  if (result.exitCode !== 0) return null;
+  for (const line of String(result.stdout ?? '').split(/\r?\n/)) {
+    const match = line.trim().match(/^(\S+)\s+device(?:\s|$)/);
+    if (match) return match[1];
+  }
+  return null;
+}
+
+async function findAndroidManifest(workspace, profile) {
+  const profileManifest = profile.androidManifest;
+  if (typeof profileManifest === 'string') return parseAndroidManifest(profileManifest);
+  const manifests = await findFilesNamed(workspace, 'AndroidManifest.xml');
+  for (const manifestPath of manifests) {
+    try {
+      const parsed = parseAndroidManifest(await readFile(manifestPath, 'utf8'));
+      if (parsed?.packageName) return parsed;
+    } catch {
+      // Continue to the next local manifest.
+    }
+  }
+  return null;
+}
+
+function parseAndroidManifest(xml) {
+  const packageName = String(xml ?? '').match(/<manifest\b[^>]*\bpackage\s*=\s*["']([^"']+)["']/i)?.[1]?.trim();
+  return packageName ? { packageName } : null;
+}
+
+async function findFilesNamed(root, fileName, relative = '') {
+  let entries;
+  try {
+    entries = await readdir(path.join(root, relative), { withFileTypes: true });
+  } catch {
+    return [];
+  }
+  const files = [];
+  for (const entry of entries) {
+    if (entry.name === '.git' || entry.name === 'node_modules' || entry.name === '.codex-orchestrator') continue;
+    const target = path.join(root, relative, entry.name);
+    if (entry.isFile() && entry.name === fileName) files.push(target);
+    else if (entry.isDirectory()) files.push(...await findFilesNamed(root, fileName, path.join(relative, entry.name)));
+  }
+  return files;
+}
+
+function resolveAndroidActivity(result, packageName) {
+  if (result?.exitCode !== 0) return null;
+  const candidate = String(result.stdout ?? '').trim().split(/\s+/)[0] ?? '';
+  if (!candidate) return null;
+  if (candidate.includes('/')) return candidate.startsWith(`${packageName}/`) ? candidate : null;
+  if (candidate.startsWith('.')) return `${packageName}/${candidate}`;
+  return candidate.startsWith(packageName) ? `${packageName}/${candidate}` : null;
+}
+
+function androidControls(xml) {
+  const controls = [];
+  for (const node of String(xml ?? '').matchAll(/<node\b([^>]*)\/?>(?:<\/node>)?/g)) {
+    const attributes = node[1];
+    if (!/\bclickable\s*=\s*["']true["']/i.test(attributes)) continue;
+    const bounds = attributes.match(/\bbounds\s*=\s*["'](\[(-?\d+),(-?\d+)\]\[(-?\d+),(-?\d+)\])["']/i);
+    if (!bounds) continue;
+    const label = attributes.match(/\b(?:text|content-desc|resource-id)\s*=\s*["']([^"']*)["']/i)?.[1]?.trim() || 'Unnamed control';
+    const [left, top, right, bottom] = bounds.slice(2).map(Number);
+    controls.push({ label: redactText(label).text, bounds: bounds[1], center: { x: Math.round((left + right) / 2), y: Math.round((top + bottom) / 2) } });
+  }
+  return controls;
+}
+
+function hasProcessOutput(result = {}) {
+  return Boolean(result.stdoutBuffer?.length || String(result.stdout ?? '').length);
+}
+
+function processOutputBuffer(result = {}) {
+  if (Buffer.isBuffer(result.stdoutBuffer)) return result.stdoutBuffer;
+  return Buffer.from(String(result.stdout ?? ''), 'binary');
+}
+
+function androidGapResult(code, message, nextAction, details = {}) {
+  return {
+    adapter: 'android-adb', control: 'computer-use', surfaceId: 'mobile-gui', surfaceIds: ['mobile-gui'],
+    componentIds: [...ANDROID_COMPONENT_IDS], status: 'blocked', evidence: [], ...details,
+    gap: { code, surfaceId: 'mobile-gui', control: 'computer-use', message, nextAction },
+  };
+}
 
 export async function executeBrowserAdapter({ url, workspace, runProcess }) {
   const target = normalizeBrowserTarget(url);
