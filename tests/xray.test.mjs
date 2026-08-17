@@ -46,6 +46,34 @@ test('Xray reports unavailable GUI control as a gap rather than a test result', 
   assert.deepEqual(mission.gaps.map(({ code }) => code), ['FM_XRAY_GUI_CONTROL_UNAVAILABLE']);
 });
 
+test('Xray accepts complete browser-flow evidence and rejects incomplete GUI evidence', async (t) => {
+  const root = await fixture(t, {
+    packageJson: { scripts: { dev: 'vite' }, dependencies: { vite: '^6' } },
+  });
+  const report = await runXray({
+    workspace: root,
+    guiReceipts: [{
+      surfaceId: 'web-gui', control: 'browser', status: 'passed',
+      componentIds: ['gui-usability'], evidence: ['screenshots/home.png'],
+      url: 'http://127.0.0.1:4173/', coverageArea: 'home', controlLabel: 'Get started',
+      action: 'click', expected: 'The onboarding view opens.', actual: 'The onboarding view opened.',
+      reproduction: 'Open the home page and click Get started.',
+    }, {
+      surfaceId: 'web-gui', control: 'browser', status: 'passed',
+      componentIds: ['gui-usability'], evidence: ['screenshots/missing-flow.png'],
+    }, {
+      surfaceId: 'web-gui', control: 'browser', status: 'blocked',
+      componentIds: ['gui-usability'], evidence: ['screenshots/auth-wall.png'],
+      url: 'http://127.0.0.1:4173/account', coverageArea: 'account', controlLabel: 'Save',
+      action: 'submit profile', expected: 'The test profile is saved.', actual: 'Authentication was unavailable.',
+      reproduction: 'Open account and submit the test profile.',
+    }],
+  });
+  assert.equal(report.receipts.filter(({ status }) => status === 'passed').length, 1);
+  assert.ok(report.gaps.some(({ code }) => code === 'FM_XRAY_GUI_RECEIPT_INCOMPLETE'));
+  assert.ok(report.gaps.some(({ code }) => code === 'FM_XRAY_GUI_FLOW_BLOCKED'));
+});
+
 test('Xray identifies an API route without creating an inferred runnable check', async (t) => {
   const root = await fixture(t, { files: { 'src/routes.mjs': 'router.get("/health", () => {});' } });
 
@@ -416,6 +444,13 @@ test('Xray imports GUI receipts and persists executed and skipped mission outcom
       status: 'passed',
       componentIds: ['gui-usability', 'accessibility-visual'],
       evidence: ['screenshots/home.png', 'axe:0-critical'],
+      url: 'http://127.0.0.1:4173/',
+      coverageArea: 'home',
+      controlLabel: 'Get started',
+      action: 'click',
+      expected: 'The onboarding view opens.',
+      actual: 'The onboarding view opened.',
+      reproduction: 'Open the home page and click Get started.',
     }],
     runCommand: async (check) => {
       assert.equal(check.command, 'npm test');

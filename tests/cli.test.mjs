@@ -88,6 +88,13 @@ test('xray run accepts surface-specific GUI receipts for the canonical report', 
     status: 'passed',
     componentIds: ['gui-usability'],
     evidence: ['screenshots/home.png'],
+    url: 'http://127.0.0.1:4173/',
+    coverageArea: 'home',
+    controlLabel: 'Get started',
+    action: 'click',
+    expected: 'The onboarding view opens.',
+    actual: 'The onboarding view opened.',
+    reproduction: 'Open the home page and click Get started.',
   }]);
 
   const result = await runCli(

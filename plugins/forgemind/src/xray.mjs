@@ -61,8 +61,8 @@ export async function discoverXrayMission({
         unsafe: safetyReasons.length > 0,
       };
     });
-  const guiChecks = createGuiChecks(surfaces, guiControl, guiReceipts);
-  const gaps = guiGap(surfaces, guiControl, guiChecks);
+  const { checks: guiChecks, gaps: guiReceiptGaps } = createGuiChecks(surfaces, guiControl, guiReceipts);
+  const gaps = [...guiGap(surfaces, guiControl, guiChecks), ...guiReceiptGaps];
 
   return {
     id: `xray-${Date.now().toString(36)}`,
@@ -474,14 +474,36 @@ function prerequisiteGap(check, kind) {
 function createGuiChecks(surfaces, guiControl = {}, guiReceipts = []) {
   const guiSurfaces = new Map(surfaces.filter(({ id }) => GUI_SURFACE_IDS.has(id)).map((surface) => [surface.id, surface]));
   const checks = [];
+  const gaps = [];
   for (const candidate of Array.isArray(guiReceipts) ? guiReceipts : []) {
     const surface = guiSurfaces.get(candidate?.surfaceId);
     const componentIds = [...new Set((candidate?.componentIds ?? []).filter((id) => GUI_COMPONENT_IDS.has(id)))];
     const evidence = (candidate?.evidence ?? [])
       .filter((item) => typeof item === 'string' && item.trim())
       .map((item) => redactText(item).text);
-    if (!surface || candidate.control !== surface.control || !['passed', 'failed'].includes(candidate.status)
+    const { complete, ...flow } = browserFlowFields(candidate);
+    if (candidate?.control === 'browser' && !complete) {
+      gaps.push({
+        code: 'FM_XRAY_GUI_RECEIPT_INCOMPLETE',
+        surfaceId: candidate?.surfaceId,
+        control: 'browser',
+        status: candidate?.status,
+        message: 'Browser GUI receipt does not establish a reproducible GUI flow.',
+      });
+      continue;
+    }
+    if (!surface || candidate.control !== surface.control || !['passed', 'failed', 'blocked', 'skipped'].includes(candidate.status)
       || componentIds.length === 0 || evidence.length === 0) continue;
+    if (['blocked', 'skipped'].includes(candidate.status)) {
+      gaps.push({
+        code: `FM_XRAY_GUI_FLOW_${candidate.status.toUpperCase()}`,
+        surfaceId: surface.id,
+        control: surface.control,
+        status: candidate.status,
+        ...(surface.control === 'browser' ? flow : {}),
+        message: `The recorded ${surface.control} GUI flow was ${candidate.status}.`,
+      });
+    }
     checks.push({
       id: `gui-${checks.length + 1}`,
       kind: 'gui-control',
@@ -494,6 +516,7 @@ function createGuiChecks(surfaces, guiControl = {}, guiReceipts = []) {
         surfaceId: candidate.surfaceId,
         componentIds,
         evidence,
+        ...(surface.control === 'browser' ? flow : {}),
         ...(candidate.severity ? { severity: candidate.severity } : {}),
       },
     });
@@ -509,7 +532,13 @@ function createGuiChecks(surfaces, guiControl = {}, guiReceipts = []) {
       componentIds: [...GUI_COMPONENT_IDS],
     });
   }
-  return checks;
+  return { checks, gaps };
+}
+
+function browserFlowFields(candidate) {
+  const fields = ['url', 'coverageArea', 'controlLabel', 'action', 'expected', 'actual', 'reproduction'];
+  const normalized = Object.fromEntries(fields.map((key) => [key, String(candidate?.[key] ?? '').trim()]));
+  return { ...normalized, complete: fields.every((key) => normalized[key]) };
 }
 
 function enrichMission(mission, receipts, gaps) {
