@@ -32,7 +32,7 @@ test('Xray discovers CLI, API, GUI, and existing command surfaces without invent
   const mission = await discoverXrayMission({ workspace: root, goal: 'full QA' });
 
   assert.deepEqual(mission.surfaces.map(({ id }) => id).sort(), ['api', 'cli', 'web-gui']);
-  assert.ok(mission.checks.some(({ command }) => command === 'npm test'));
+  assert.ok(mission.checks.some(({ command, args }) => command === 'npm' && args[0] === 'test'));
   assert.ok(mission.gaps.every(({ code }) => code !== 'FM_XRAY_COMMAND_INVENTED'));
 });
 
@@ -610,7 +610,8 @@ test('Xray imports GUI receipts and persists executed and skipped mission outcom
       reproduction: 'Open the home page and click Get started.',
     }],
     runCommand: async (check) => {
-      assert.equal(check.command, 'npm test');
+      assert.equal(check.command, 'npm');
+      assert.deepEqual(check.args, ['test']);
       return { exitCode: 0, stdout: 'ok', stderr: '' };
     },
   });

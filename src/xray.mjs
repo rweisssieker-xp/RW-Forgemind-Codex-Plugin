@@ -4,6 +4,13 @@ import path from 'node:path';
 
 import { inspectProject } from './project.mjs';
 import { runProcess } from './process.mjs';
+import {
+  classifyPrerequisiteFailure,
+  executeCommandAdapter,
+  formatCommandCandidate,
+  isSafeXrayCommandCandidate,
+  prerequisiteGap,
+} from './xray-adapters.mjs';
 import { redactText } from './redact.mjs';
 import { artifactStatePath } from './artifact-store.mjs';
 import { writeJsonAtomic, writeTextAtomic } from './io.mjs';
@@ -51,23 +58,7 @@ export async function discoverXrayMission({
   const files = await projectFileNames(profile.root);
   const guiSignals = await detectGuiProjectSignals(profile.root, files, manifest, profile);
   const surfaces = detectSurfaces({ ...profile, files, manifest, ...guiSignals });
-  const commandChecks = profile.commands
-    .filter(({ confidence }) => confidence === 'detected')
-    .map((check, index) => {
-      const scriptBody = manifest.scripts?.[check.category];
-      const safetyReasons = classifyPackageScript(manifest.scripts ?? {}, check.category);
-      return {
-        id: `command-${index + 1}`,
-        kind: 'command',
-        surfaceIds: surfaceIdsForCommand(check, surfaces),
-        ...check,
-        scriptName: check.category,
-        scriptBody,
-        componentIds: commandComponentIds(check, scriptBody),
-        safetyReasons,
-        unsafe: safetyReasons.length > 0,
-      };
-    });
+  const commandChecks = selectXrayChecks({ ...profile, manifest, surfaces });
   const { checks: guiChecks, gaps: guiReceiptGaps } = createGuiChecks(surfaces, guiControl, guiReceipts);
   const gaps = [...guiGap(surfaces, guiControl, guiChecks), ...guiReceiptGaps];
 
@@ -106,7 +97,37 @@ export function detectSurfaces(profile) {
 }
 
 export function surfaceIdsForCommand(check, surfaces) {
-  return surfaces.map(({ id }) => id).filter((id) => !GUI_SURFACE_IDS.has(id));
+  const hints = new Set(check.surfaceHints ?? []);
+  return surfaces
+    .map(({ id }) => id)
+    .filter((id) => !GUI_SURFACE_IDS.has(id) && (id !== 'api' || hints.has('api')));
+}
+
+export function selectXrayChecks(profile = {}) {
+  const manifest = profile.manifest ?? {};
+  const surfaces = profile.surfaces ?? [];
+  return (profile.commands ?? [])
+    .filter((check) => check.adapter === 'command'
+      && (check.confidence === 'detected' || (check.confidence === 'inferred' && check.category === 'test')))
+    .toSorted((left, right) => formatCommandCandidate(left).localeCompare(formatCommandCandidate(right)))
+    .flatMap((check) => {
+      const scriptBody = manifest.scripts?.[check.category];
+      const safetyReasons = check.confidence === 'detected'
+        ? classifyPackageScript(manifest.scripts ?? {}, check.category)
+        : [];
+      const candidate = { ...check, safetyReasons, unsafe: safetyReasons.length > 0 };
+      if (check.confidence === 'inferred' && !isSafeXrayCommandCandidate(candidate)) return [];
+      return [candidate];
+    })
+    .map((check, index) => ({
+      id: `command-${index + 1}`,
+      kind: 'command',
+      surfaceIds: surfaceIdsForCommand(check, surfaces),
+      ...check,
+      scriptName: check.category,
+      scriptBody: manifest.scripts?.[check.category],
+      componentIds: commandComponentIds(check, manifest.scripts?.[check.category]),
+    }));
 }
 
 export function guiGap(surfaces, guiControl = {}, guiChecks = []) {
@@ -145,7 +166,7 @@ export async function executeXrayMission({ workspace, mission, runCommand = exec
       continue;
     }
 
-    if (check.unsafe || check.safetyReasons?.length || isUnsafeCommand(check.command)) {
+    if (!isSafeXrayCommandCandidate(check)) {
       receipts.push({ id: check.id, status: 'skipped' });
       gaps.push({
         code: 'FM_XRAY_UNSAFE_CHECK_SKIPPED',
@@ -155,23 +176,30 @@ export async function executeXrayMission({ workspace, mission, runCommand = exec
       continue;
     }
 
-    const result = await runCommand(check, workspace);
-    const prerequisite = classifyPrerequisiteFailure(result);
+    const execution = await runCommand(check, workspace);
+    if (execution?.adapter === 'command') {
+      const { gap, ...receipt } = execution;
+      receipts.push({ id: check.id, ...receipt });
+      if (gap) gaps.push({ ...gap, checkId: check.id });
+      else if (execution.status === 'failed') findings.push(commandFinding(check, execution));
+      continue;
+    }
+
+    const prerequisite = classifyPrerequisiteFailure(execution);
     receipts.push({
       id: check.id,
-      ...redactReceipt(result),
-      status: result.exitCode === 0 ? 'passed' : prerequisite ? 'blocked' : 'failed',
+      ...redactReceipt(execution),
+      status: execution.exitCode === 0 ? 'passed' : prerequisite ? 'blocked' : 'failed',
     });
     if (prerequisite) gaps.push(prerequisiteGap(check, prerequisite));
-    else if (result.exitCode !== 0) findings.push(commandFinding(check, result));
+    else if (execution.exitCode !== 0) findings.push(commandFinding(check, execution));
   }
 
   return { receipts, findings: deduplicateFindings(findings), gaps };
 }
 
 export async function executeDetectedCommand(check, workspace) {
-  const [command, ...args] = String(check.command ?? '').trim().split(/\s+/);
-  return runProcess(command, args, { cwd: workspace });
+  return executeCommandAdapter({ candidate: check, workspace, runProcess });
 }
 
 export function redactReceipt(result) {
@@ -181,7 +209,7 @@ export function redactReceipt(result) {
 }
 
 export function commandFinding(check, result) {
-  const command = String(check.command ?? 'detected command');
+  const command = formatCommandCandidate(check) || 'detected command';
   return {
     id: `finding-${check.id}`,
     severity: 'high',
@@ -449,10 +477,6 @@ function normalizeFailureSeverity(severity) {
   return SEVERITY_DEDUCTIONS.has(severity) ? severity : DEFAULT_FAILURE_SEVERITY;
 }
 
-function isUnsafeCommand(command) {
-  return UNSAFE_COMMAND_PATTERN.test(String(command ?? ''));
-}
-
 function classifyPackageScript(scripts, scriptName) {
   if (!scriptName || !scripts[scriptName]) return [];
   const reasons = new Set();
@@ -532,29 +556,6 @@ function hasUnverifiedRemoteTarget(body) {
   }
   return /\b(?:ssh|scp|sftp|ftp)\b/i.test(body)
     || (/\b(?:curl|wget)\b/i.test(body) && !/\b(?:localhost|127\.0\.0\.1|\[?::1\]?)\b/i.test(body));
-}
-
-function classifyPrerequisiteFailure(result) {
-  const output = `${result?.stderr ?? ''}\n${result?.stdout ?? ''}`;
-  if (result?.exitCode === 127 || /\b(?:ENOENT|command not found|not recognized as an internal or external command|cannot find (?:the )?(?:file|command|executable))\b/i.test(output)) {
-    return 'tool';
-  }
-  const localServiceUnavailable = /(?:\b(?:localhost|127\.0\.0\.1|\[?::1\]?|local (?:service|server|database))\b[^\n]*(?:unavailable|not running|failed to connect|ECONNREFUSED|connection refused)|(?:unavailable|not running|failed to connect|ECONNREFUSED|connection refused)[^\n]*\b(?:localhost|127\.0\.0\.1|\[?::1\]?|local (?:service|server|database))\b)/i.test(output);
-  if (/\b(?:no (?:running )?(?:emulator|simulator|device)|(?:credential|api[_-]?key|token).*(?:missing|not configured|unavailable|required))\b/i.test(output)
-    || localServiceUnavailable) {
-    return 'prerequisite';
-  }
-  return null;
-}
-
-function prerequisiteGap(check, kind) {
-  return {
-    code: kind === 'tool' ? 'FM_XRAY_TOOL_UNAVAILABLE' : 'FM_XRAY_PREREQUISITE_UNAVAILABLE',
-    checkId: check.id,
-    message: kind === 'tool'
-      ? 'The detected check could not start because its executable is unavailable.'
-      : 'The detected check could not assess application behavior because a local prerequisite is unavailable.',
-  };
 }
 
 function createGuiChecks(surfaces, guiControl = {}, guiReceipts = []) {

@@ -8,18 +8,24 @@ export async function runProcess(command, args = [], options = {}) {
   const invocation = await resolveInvocation(command, args, options.env ?? process.env);
 
   return new Promise((resolve) => {
-    const child = spawn(invocation.command, invocation.args, {
-      cwd: options.cwd,
-      env: options.env ?? process.env,
-      shell: false,
-      windowsHide: true,
-      stdio: ['ignore', 'pipe', 'pipe'],
-    });
     const stdout = [];
     const stderr = [];
     let stdoutBytes = 0;
     let stderrBytes = 0;
     let truncated = false;
+    let child;
+    try {
+      child = spawn(invocation.command, invocation.args, {
+        cwd: options.cwd,
+        env: options.env ?? process.env,
+        shell: false,
+        windowsHide: true,
+        stdio: ['ignore', 'pipe', 'pipe'],
+      });
+    } catch (error) {
+      resolve(result(127, stdout, [Buffer.from(error.message)], truncated, startedAt));
+      return;
+    }
 
     child.stdout.on('data', (chunk) => {
       const remaining = Math.max(0, maxOutputBytes - stdoutBytes);
@@ -43,6 +49,12 @@ export async function runProcess(command, args = [], options = {}) {
 }
 
 async function resolveInvocation(command, args, env) {
+  if (process.platform === 'win32' && /\.(?:bat|cmd)$/i.test(command)) {
+    return {
+      command: env.ComSpec ?? env.COMSPEC ?? 'cmd.exe',
+      args: ['/d', '/s', '/c', windowsBatchInvocation(command, args)],
+    };
+  }
   if (process.platform !== 'win32' || !['npm', 'pnpm', 'yarn'].includes(command)) {
     return { command, args };
   }
@@ -67,6 +79,10 @@ async function resolveInvocation(command, args, env) {
     }
   }
   return { command: `${command}.cmd`, args };
+}
+
+function windowsBatchInvocation(command, args) {
+  return `call ${[command, ...args].map(String).join(' ')}`;
 }
 
 function result(exitCode, stdout, stderr, truncated, startedAt) {
