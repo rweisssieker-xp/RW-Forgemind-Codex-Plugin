@@ -74,6 +74,68 @@ test('Xray accepts complete browser-flow evidence and rejects incomplete GUI evi
   assert.ok(report.gaps.some(({ code }) => code === 'FM_XRAY_GUI_FLOW_BLOCKED'));
 });
 
+test('Xray rejects remote Browser receipt URLs and persists normalized local flow fields', async (t) => {
+  const root = await fixture(t, {
+    packageJson: { scripts: { dev: 'vite' }, dependencies: { vite: '^6' } },
+  });
+  const report = await runXray({
+    workspace: root,
+    guiReceipts: [{
+      surfaceId: 'web-gui', control: 'browser', status: 'passed',
+      componentIds: ['gui-usability'], evidence: ['screenshots/remote.png'],
+      url: 'https://production.example/', coverageArea: 'home', controlLabel: 'Get started',
+      action: 'click', expected: 'The onboarding view opens.', actual: 'The onboarding view opened.',
+      reproduction: 'Open the home page and click Get started.',
+    }, {
+      surfaceId: 'web-gui', control: 'browser', status: 'passed',
+      componentIds: ['gui-usability'], evidence: ['screenshots/local.png'],
+      url: ' http://127.0.0.1:4173/ ', coverageArea: ' home ', controlLabel: ' Get started ',
+      action: ' click ', expected: ' The onboarding view opens. ', actual: ' The onboarding view opened. ',
+      reproduction: ' Open the home page and click Get started. ',
+    }],
+  });
+
+  assert.equal(report.receipts.filter(({ status }) => status === 'passed').length, 1);
+  assert.ok(report.gaps.some(({ code }) => code === 'FM_XRAY_GUI_RECEIPT_TARGET_INVALID'));
+  assert.deepEqual(report.receipts[0], {
+    id: 'gui-1', status: 'passed', control: 'browser', surfaceId: 'web-gui',
+    componentIds: ['gui-usability'], evidence: ['screenshots/local.png'],
+    url: 'http://127.0.0.1:4173/', coverageArea: 'home', controlLabel: 'Get started',
+    action: 'click', expected: 'The onboarding view opens.', actual: 'The onboarding view opened.',
+    reproduction: 'Open the home page and click Get started.',
+  });
+});
+
+test('Xray retains each blocked Browser flow on the same surface as a distinct gap', async (t) => {
+  const root = await fixture(t, {
+    packageJson: { scripts: { dev: 'vite' }, dependencies: { vite: '^6' } },
+  });
+  const report = await runXray({
+    workspace: root,
+    guiReceipts: [{
+      surfaceId: 'web-gui', control: 'browser', status: 'blocked',
+      componentIds: ['gui-usability'], evidence: ['screenshots/login.png'],
+      url: 'http://127.0.0.1:4173/login', coverageArea: 'login', controlLabel: 'Sign in',
+      action: 'submit credentials', expected: 'The test account signs in.', actual: 'Test credentials were unavailable.',
+      reproduction: 'Open login and submit the test credentials.',
+    }, {
+      surfaceId: 'web-gui', control: 'browser', status: 'blocked',
+      componentIds: ['gui-usability'], evidence: ['screenshots/account.png'],
+      url: 'http://127.0.0.1:4173/account', coverageArea: 'account', controlLabel: 'Save',
+      action: 'submit profile', expected: 'The test profile saves.', actual: 'Authentication was unavailable.',
+      reproduction: 'Open account and submit the test profile.',
+    }],
+  });
+  const flowGaps = report.gaps.filter(({ code }) => code === 'FM_XRAY_GUI_FLOW_BLOCKED');
+
+  assert.equal(flowGaps.length, 2);
+  assert.deepEqual(flowGaps.map(({ checkId }) => checkId), ['gui-1', 'gui-2']);
+  assert.deepEqual(flowGaps.map(({ coverageArea, status }) => [coverageArea, status]), [
+    ['login', 'blocked'],
+    ['account', 'blocked'],
+  ]);
+});
+
 test('Xray identifies an API route without creating an inferred runnable check', async (t) => {
   const root = await fixture(t, { files: { 'src/routes.mjs': 'router.get("/health", () => {});' } });
 

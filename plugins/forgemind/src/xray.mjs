@@ -492,11 +492,23 @@ function createGuiChecks(surfaces, guiControl = {}, guiReceipts = []) {
       });
       continue;
     }
+    if (candidate?.control === 'browser' && !isLocalOrTestBrowserUrl(flow.url)) {
+      gaps.push({
+        code: 'FM_XRAY_GUI_RECEIPT_TARGET_INVALID',
+        surfaceId: candidate?.surfaceId,
+        control: 'browser',
+        status: candidate?.status,
+        message: 'Browser GUI receipt targets must use a local or test URL.',
+      });
+      continue;
+    }
     if (!surface || candidate.control !== surface.control || !['passed', 'failed', 'blocked', 'skipped'].includes(candidate.status)
       || componentIds.length === 0 || evidence.length === 0) continue;
+    const checkId = `gui-${checks.length + 1}`;
     if (['blocked', 'skipped'].includes(candidate.status)) {
       gaps.push({
         code: `FM_XRAY_GUI_FLOW_${candidate.status.toUpperCase()}`,
+        checkId,
         surfaceId: surface.id,
         control: surface.control,
         status: candidate.status,
@@ -505,7 +517,7 @@ function createGuiChecks(surfaces, guiControl = {}, guiReceipts = []) {
       });
     }
     checks.push({
-      id: `gui-${checks.length + 1}`,
+      id: checkId,
       kind: 'gui-control',
       control: surface.control,
       surfaceIds: [surface.id],
@@ -539,6 +551,19 @@ function browserFlowFields(candidate) {
   const fields = ['url', 'coverageArea', 'controlLabel', 'action', 'expected', 'actual', 'reproduction'];
   const normalized = Object.fromEntries(fields.map((key) => [key, String(candidate?.[key] ?? '').trim()]));
   return { ...normalized, complete: fields.every((key) => normalized[key]) };
+}
+
+function isLocalOrTestBrowserUrl(value) {
+  try {
+    const url = new URL(value);
+    const hostname = url.hostname.toLowerCase().replace(/^\[|\]$/g, '');
+    return ['http:', 'https:'].includes(url.protocol)
+      && (hostname === 'localhost' || hostname.endsWith('.localhost')
+        || hostname === '::1' || hostname === '127.0.0.1' || hostname.startsWith('127.')
+        || hostname === 'test' || hostname.endsWith('.test'));
+  } catch {
+    return false;
+  }
 }
 
 function enrichMission(mission, receipts, gaps) {
