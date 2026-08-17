@@ -7,6 +7,7 @@ export async function inspectProject(workspace) {
   const root = await resolveWorkspace(workspace);
   const entries = await readdir(root, { withFileTypes: true });
   const names = new Set(entries.map((entry) => entry.name));
+  const files = await projectFileNames(root);
   const stacks = [];
   const commands = [];
   let packageManager = null;
@@ -18,12 +19,14 @@ export async function inspectProject(workspace) {
       const packageJson = JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8'));
       for (const category of ['test', 'build', 'lint']) {
         if (packageJson.scripts?.[category]) {
-          commands.push({
-            command: `${packageManager} ${category}`,
+          commands.push(commandCandidate({
+            command: packageManager,
+            args: [category],
             category,
             confidence: 'detected',
             source: `package.json#scripts.${category}`,
-          });
+            surfaceHints: [],
+          }));
         }
       }
     } catch {
@@ -31,20 +34,58 @@ export async function inspectProject(workspace) {
     }
   }
 
-  const hasDotnet = entries.some((entry) => entry.isFile() && /\.(?:sln|csproj|fsproj)$/i.test(entry.name));
+  const hasSolution = files.some((name) => /\.sln$/i.test(name));
+  const hasDotnet = hasSolution || files.some((name) => /\.(?:csproj|fsproj)$/i.test(name));
   if (hasDotnet) {
     stacks.push('dotnet');
-    commands.push({ command: 'dotnet test', category: 'test', confidence: 'inferred', source: '*.csproj' });
+    commands.push(commandCandidate({
+      command: 'dotnet',
+      args: ['test'],
+      category: 'test',
+      confidence: 'inferred',
+      source: hasSolution ? '*.sln' : '*.csproj',
+      surfaceHints: ['api'],
+    }));
   }
 
   if (names.has('pyproject.toml') || names.has('requirements.txt')) {
     stacks.push('python');
-    commands.push({
-      command: 'python -m pytest',
+    commands.push(commandCandidate({
+      command: 'python',
+      args: ['-m', 'pytest'],
       category: 'test',
       confidence: 'inferred',
       source: names.has('pyproject.toml') ? 'pyproject.toml' : 'requirements.txt',
-    });
+      surfaceHints: ['api'],
+    }));
+  }
+
+  if (names.has('go.mod')) {
+    stacks.push('go');
+    commands.push(commandCandidate({
+      command: 'go',
+      args: ['test', './...'],
+      category: 'test',
+      confidence: 'inferred',
+      source: 'go.mod',
+      surfaceHints: ['api'],
+    }));
+  }
+
+  const gradleWrapperNames = process.platform === 'win32' ? ['gradlew.bat', 'gradlew'] : ['gradlew', 'gradlew.bat'];
+  const gradleWrapper = gradleWrapperNames.find((name) => names.has(name));
+  if (gradleWrapper) {
+    stacks.push('gradle');
+    const hasAndroidManifest = files.some((name) => /(?:^|[\\/])AndroidManifest\.xml$/i.test(name));
+    if (hasAndroidManifest) stacks.push('android');
+    commands.push(commandCandidate({
+      command: gradleWrapper,
+      args: ['test'],
+      category: 'test',
+      confidence: 'inferred',
+      source: gradleWrapper,
+      surfaceHints: hasAndroidManifest ? ['mobile-gui'] : [],
+    }));
   }
 
   stacks.sort();
@@ -56,4 +97,34 @@ export async function inspectProject(workspace) {
     stacks,
     commands,
   };
+}
+
+export function commandCandidate({ command, args, category, source, confidence, surfaceHints = [] }) {
+  return {
+    command,
+    args: [...args],
+    category,
+    confidence,
+    source,
+    adapter: 'command',
+    surfaceHints: [...surfaceHints],
+  };
+}
+
+async function projectFileNames(root, relative = '') {
+  const current = path.join(root, relative);
+  let children;
+  try {
+    children = await readdir(current, { withFileTypes: true });
+  } catch {
+    return [];
+  }
+  const files = [];
+  for (const child of children) {
+    if (child.name === '.git' || child.name === 'node_modules') continue;
+    const childRelative = path.join(relative, child.name);
+    if (child.isDirectory()) files.push(...await projectFileNames(root, childRelative));
+    else if (child.isFile()) files.push(childRelative);
+  }
+  return files;
 }

@@ -18,9 +18,9 @@ async function workspace(t, files) {
 }
 
 for (const fixture of [
-  { manager: 'npm', lock: 'package-lock.json', command: 'npm test' },
-  { manager: 'pnpm', lock: 'pnpm-lock.yaml', command: 'pnpm test' },
-  { manager: 'yarn', lock: 'yarn.lock', command: 'yarn test' },
+  { manager: 'npm', lock: 'package-lock.json', command: 'npm', args: ['test'] },
+  { manager: 'pnpm', lock: 'pnpm-lock.yaml', command: 'pnpm', args: ['test'] },
+  { manager: 'yarn', lock: 'yarn.lock', command: 'yarn', args: ['test'] },
 ]) {
   test(`detects ${fixture.manager} commands from its lockfile and package scripts`, async (t) => {
     const root = await workspace(t, {
@@ -34,7 +34,15 @@ for (const fixture of [
     assert.ok(profile.stacks.includes('node'));
     assert.deepEqual(
       profile.commands.find((item) => item.category === 'test'),
-      { command: fixture.command, category: 'test', confidence: 'detected', source: 'package.json#scripts.test' },
+      {
+        command: fixture.command,
+        args: fixture.args,
+        category: 'test',
+        confidence: 'detected',
+        source: 'package.json#scripts.test',
+        adapter: 'command',
+        surfaceHints: [],
+      },
     );
   });
 }
@@ -49,10 +57,56 @@ test('detects Python and .NET projects without inventing runnable commands', asy
 
   assert.deepEqual(profile.stacks, ['dotnet', 'python']);
   assert.deepEqual(profile.commands, [
-    { command: 'dotnet test', category: 'test', confidence: 'inferred', source: '*.csproj' },
-    { command: 'python -m pytest', category: 'test', confidence: 'inferred', source: 'pyproject.toml' },
+    {
+      command: 'dotnet', args: ['test'], category: 'test', confidence: 'inferred', source: '*.csproj',
+      adapter: 'command', surfaceHints: ['api'],
+    },
+    {
+      command: 'python', args: ['-m', 'pytest'], category: 'test', confidence: 'inferred', source: 'pyproject.toml',
+      adapter: 'command', surfaceHints: ['api'],
+    },
   ]);
 });
+
+for (const fixture of [
+  {
+    name: '.NET solution',
+    files: { 'sample.sln': '' },
+    expected: {
+      command: 'dotnet', args: ['test'], category: 'test', source: '*.sln', confidence: 'inferred',
+      adapter: 'command', surfaceHints: ['api'],
+    },
+  },
+  {
+    name: 'Python project',
+    files: { 'pyproject.toml': '' },
+    expected: {
+      command: 'python', args: ['-m', 'pytest'], category: 'test', source: 'pyproject.toml', confidence: 'inferred',
+      adapter: 'command', surfaceHints: ['api'],
+    },
+  },
+  {
+    name: 'Go module',
+    files: { 'go.mod': 'module example.test/app' },
+    expected: {
+      command: 'go', args: ['test', './...'], category: 'test', source: 'go.mod', confidence: 'inferred',
+      adapter: 'command', surfaceHints: ['api'],
+    },
+  },
+  {
+    name: 'Android Gradle wrapper',
+    files: { 'gradlew.bat': '', 'app/src/main/AndroidManifest.xml': '<manifest package="example.app" />' },
+    expected: {
+      command: 'gradlew.bat', args: ['test'], category: 'test', source: 'gradlew.bat', confidence: 'inferred',
+      adapter: 'command', surfaceHints: ['mobile-gui'],
+    },
+  },
+]) {
+  test(`discovers a normalized ${fixture.name} command candidate`, async (t) => {
+    const profile = await inspectProject(await workspace(t, fixture.files));
+    assert.deepEqual(profile.commands, [fixture.expected]);
+  });
+}
 
 test('a generic repository returns an explicit empty command set', async (t) => {
   const root = await workspace(t, { 'README.md': '# Generic\n' });
