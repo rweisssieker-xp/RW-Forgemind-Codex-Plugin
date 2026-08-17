@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Hardened `$forgemind-xray`: it now requires a completed CLI execution and inspected receipts before it may report a test result.
 - Added `$forgemind-xray` for autonomous, read-only QA with Browser and Computer Use GUI evidence, detailed evidence-backed findings, and an informative 0-100 quality score.
 - Fixed Autopilot skill commands to use ForgeMind's bundled runner, which is available in Marketplace installations.
 - Fixed project-profile classification so historical ForgeMind reports cannot override current repository signals.

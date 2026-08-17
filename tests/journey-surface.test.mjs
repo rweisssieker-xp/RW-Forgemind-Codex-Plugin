@@ -48,6 +48,9 @@ test('Xray remains an explicit-only primary journey with the bundled runner and 
   const instructions = await readFile(path.join(root, 'entry-skills', 'forgemind-xray', 'SKILL.md'), 'utf8');
   const ui = await readFile(path.join(root, 'entry-skills', 'forgemind-xray', 'agents', 'openai.yaml'), 'utf8');
   assert.match(instructions, /node <plugin-root>\/bin\/forgemind\.mjs xray run/);
+  assert.match(instructions, /MUST execute.*xray run/i);
+  assert.match(instructions, /Do not return a test plan, score, or report before the command has completed/i);
+  assert.match(instructions, /execution receipt/i);
   assert.match(instructions, /internal Browser/);
   assert.match(instructions, /Computer Use/);
   assert.match(ui, /allow_implicit_invocation: false/);
