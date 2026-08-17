@@ -106,3 +106,33 @@ test('xray run accepts surface-specific GUI receipts for the canonical report', 
   assert.equal(result.data.receipts[0].surfaceId, 'web-gui');
   assert.equal(result.data.score.components.find(({ id }) => id === 'gui-usability').status, 'applicable');
 });
+
+test('xray run routes the local test URL and selected adapters to browser execution', async (t) => {
+  const workspace = await mkdtemp(path.join(tmpdir(), 'forgemind-xray-cli-browser-'));
+  await writeFile(path.join(workspace, 'package.json'), JSON.stringify({
+    scripts: { dev: 'vite' },
+    dependencies: { vite: '^6' },
+  }, null, 2));
+  t.after(() => rm(workspace, { recursive: true, force: true }));
+
+  const result = await runCli([
+    'xray', 'run', '--workspace', workspace,
+    '--test-url', 'http://127.0.0.1:4173',
+    '--adapters', 'browser', '--json',
+  ], { stdout: outputBuffer().stream, stderr: outputBuffer().stream });
+
+  assert.equal(result.exitCode, 0);
+  assert.equal(result.data.mission.testUrl, 'http://127.0.0.1:4173/');
+  assert.deepEqual(result.data.mission.adapters, ['browser']);
+  assert.ok(result.data.gaps.some(({ code }) => code === 'FM_XRAY_PLAYWRIGHT_UNAVAILABLE'));
+});
+
+test('xray run rejects unknown adapter names', async (t) => {
+  const result = await runCli(
+    ['xray', 'run', '--workspace', await xrayWorkspace(t), '--adapters', 'command,telepathy', '--json'],
+    { stdout: outputBuffer().stream, stderr: outputBuffer().stream },
+  );
+
+  assert.equal(result.exitCode, 2);
+  assert.equal(result.data.error, 'FM_XRAY_ADAPTERS_INVALID');
+});

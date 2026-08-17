@@ -19,6 +19,25 @@ async function fixture(t, { packageJson, files = {} } = {}) {
   return root;
 }
 
+async function browserArtifacts(root, scriptArgument, stem = 'home') {
+  const runDirectory = path.basename(scriptArgument, '.spec.mjs');
+  const artifactDirectory = path.join(root, '.codex-orchestrator', 'xray', 'browser', runDirectory);
+  const files = [
+    `${stem}-before.png`, `${stem}-before.json`, `${stem}-after.png`, `${stem}-after.json`, `${stem}-trace.zip`,
+  ];
+  await mkdir(artifactDirectory, { recursive: true });
+  await Promise.all(files.map((name) => writeFile(
+    path.join(artifactDirectory, name),
+    name.endsWith('.json') ? '[]\n' : `xray ${name}\n`,
+  )));
+  const prefix = `.codex-orchestrator/xray/browser/${runDirectory}`;
+  return {
+    evidence: files.map((name) => `${prefix}/${name}`),
+    screenshot: `${prefix}/${stem}-after.png`,
+    trace: `${prefix}/${stem}-trace.zip`,
+  };
+}
+
 test('Xray discovers CLI, API, GUI, and existing command surfaces without inventing commands', async (t) => {
   const root = await fixture(t, {
     packageJson: {
@@ -32,7 +51,7 @@ test('Xray discovers CLI, API, GUI, and existing command surfaces without invent
   const mission = await discoverXrayMission({ workspace: root, goal: 'full QA' });
 
   assert.deepEqual(mission.surfaces.map(({ id }) => id).sort(), ['api', 'cli', 'web-gui']);
-  assert.ok(mission.checks.some(({ command }) => command === 'npm test'));
+  assert.ok(mission.checks.some(({ command, args }) => command === 'npm' && args[0] === 'test'));
   assert.ok(mission.gaps.every(({ code }) => code !== 'FM_XRAY_COMMAND_INVENTED'));
 });
 
@@ -72,6 +91,105 @@ test('Xray accepts complete browser-flow evidence and rejects incomplete GUI evi
   assert.equal(report.receipts.filter(({ status }) => status === 'passed').length, 1);
   assert.ok(report.gaps.some(({ code }) => code === 'FM_XRAY_GUI_RECEIPT_INCOMPLETE'));
   assert.ok(report.gaps.some(({ code }) => code === 'FM_XRAY_GUI_FLOW_BLOCKED'));
+});
+
+test('Xray executes selected Playwright flows and scores their browser evidence', async (t) => {
+  const root = await fixture(t, {
+    packageJson: {
+      scripts: { dev: 'vite' },
+      dependencies: { vite: '^6' },
+      devDependencies: { playwright: '^1' },
+    },
+    files: {
+      'node_modules/playwright/package.json': JSON.stringify({
+        name: 'playwright', version: '1.0.0', bin: { playwright: 'cli.js' },
+      }),
+      'node_modules/playwright/cli.js': 'process.exitCode = 0;\n',
+    },
+  });
+  const report = await runXray({
+    workspace: root,
+    testUrl: 'http://127.0.0.1:4173/',
+    adapters: ['browser'],
+    runProcess: async (_command, args) => {
+      const script = args.find((argument) => String(argument).endsWith('.spec.mjs'));
+      const artifacts = await browserArtifacts(root, script);
+      return {
+        exitCode: 0,
+        stderr: '',
+        stdout: `${JSON.stringify({
+        protocol: 'forgemind-xray-browser-v1',
+        type: 'receipt',
+        receipt: {
+          status: 'passed',
+          url: 'http://127.0.0.1:4173/',
+          coverageArea: 'home',
+          controlLabel: 'Home page',
+          action: 'open page',
+          expected: 'The local page loads.',
+          actual: 'The local page loaded.',
+          reproduction: 'Open the local test URL.',
+          ...artifacts,
+        },
+      })}\n`,
+      };
+    },
+  });
+
+  assert.equal(report.mission.testUrl, 'http://127.0.0.1:4173/');
+  assert.deepEqual(report.mission.adapters, ['browser']);
+  assert.equal(report.receipts.length, 1);
+  assert.equal(report.receipts[0].control, 'playwright');
+  assert.equal(report.receipts[0].adapter, 'browser');
+  assert.deepEqual(report.coverage.areas, ['home']);
+  assert.equal(report.score.components.find(({ id }) => id === 'gui-usability').status, 'applicable');
+  assert.equal(report.gaps.some(({ code }) => code === 'FM_XRAY_GUI_CONTROL_UNAVAILABLE'), false);
+});
+
+test('an explicit safe test URL establishes web GUI coverage in an API-classified repository', async (t) => {
+  const root = await fixture(t, {
+    files: { 'src/routes.mjs': 'router.get("/health", () => {});' },
+  });
+  const report = await runXray({
+    workspace: root,
+    testUrl: 'http://127.0.0.1:4173/',
+    adapters: ['command'],
+    guiReceipts: [{
+      surfaceId: 'web-gui',
+      control: 'browser',
+      status: 'passed',
+      componentIds: ['gui-usability'],
+      evidence: ['screenshots/api-hosted-gui.png'],
+      url: 'http://127.0.0.1:4173/',
+      coverageArea: 'home',
+      controlLabel: 'Home page',
+      action: 'open page',
+      expected: 'The API-hosted GUI loads.',
+      actual: 'The API-hosted GUI loaded.',
+      reproduction: 'Open the explicit local test URL.',
+    }],
+  });
+
+  assert.ok(report.mission.surfaces.some(({ id }) => id === 'web-gui'));
+  assert.equal(report.receipts.length, 1);
+  assert.equal(report.receipts[0].surfaceId, 'web-gui');
+  assert.deepEqual(report.coverage.areas, ['home']);
+});
+
+test('Xray keeps Browser prerequisite failures as specific report gaps', async (t) => {
+  const root = await fixture(t, {
+    packageJson: { scripts: { dev: 'vite' }, dependencies: { vite: '^6' } },
+  });
+  const report = await runXray({
+    workspace: root,
+    testUrl: 'http://127.0.0.1:4173/',
+    adapters: ['browser'],
+    runProcess: async () => { throw new Error('must not execute without a local package'); },
+  });
+
+  assert.ok(report.gaps.some(({ code }) => code === 'FM_XRAY_PLAYWRIGHT_UNAVAILABLE'));
+  assert.equal(report.gaps.some(({ code }) => code === 'FM_XRAY_GUI_CONTROL_UNAVAILABLE'), false);
+  assert.equal(report.receipts.length, 0);
 });
 
 test('Xray rejects remote Browser receipt URLs and persists normalized local flow fields', async (t) => {
@@ -610,7 +728,8 @@ test('Xray imports GUI receipts and persists executed and skipped mission outcom
       reproduction: 'Open the home page and click Get started.',
     }],
     runCommand: async (check) => {
-      assert.equal(check.command, 'npm test');
+      assert.equal(check.command, 'npm');
+      assert.deepEqual(check.args, ['test']);
       return { exitCode: 0, stdout: 'ok', stderr: '' };
     },
   });

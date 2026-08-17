@@ -272,6 +272,8 @@ export async function runCli(argv, context = {}) {
       if (action === 'run') data = await xray.runXray({
         workspace,
         goal: options.goal,
+        testUrl: options['test-url'],
+        adapters: xray.parseXrayAdapters(options.adapters),
         guiReceipts: parseJsonArray(options['gui-receipts'], 'FM_XRAY_GUI_RECEIPTS_INVALID'),
       });
       else if (action === 'status') data = await xray.getXrayStatus({ workspace });
