@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [1.41.0] - 2026-08-17
+
+- Made Xray an executable local test suite: it discovers and runs safe framework commands, records API evidence only from executed checks, drives explicit local/test web targets through Playwright, and tests detected Android applications through one authorized ADB emulator.
+- Added canonical GUI/API/Android receipts, detailed gaps, findings, improvement proposals, and informative 0-100 scoring without treating open browser tabs or code detection as test evidence.
+- Preserved actionable prerequisite gaps when Playwright, its Chromium runtime, ADB, or an authorized emulator is unavailable; Xray never installs or downloads these dependencies silently.
+- Fixed verification to execute normalized discovered command arguments, including framework test commands, without losing their arguments.
+
 ## [1.40.0]
 
 - Xray now uses Codex Browser to exercise every reachable local/test web-GUI flow, persists detailed evidence, and provides evidence-backed improvement proposals.

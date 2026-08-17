@@ -37,7 +37,10 @@ export async function verifyWorkspace(options) {
       results.push({ ...item, status: 'denied', exitCode: null, policyDecision });
       continue;
     }
-    const [command, ...args] = tokenize(item.command);
+    const [tokenizedCommand, ...tokenizedArgs] = tokenize(item.command);
+    const normalizedArgs = Array.isArray(item.args) ? item.args.map(String) : null;
+    const command = normalizedArgs ? item.command : tokenizedCommand;
+    const args = normalizedArgs ?? tokenizedArgs;
     const execution = await runProcess(command, args, { cwd: workspace, maxOutputBytes: options.maxOutputBytes });
     const stdout = redactText(execution.stdout, config.redaction);
     const stderr = redactText(execution.stderr, config.redaction);

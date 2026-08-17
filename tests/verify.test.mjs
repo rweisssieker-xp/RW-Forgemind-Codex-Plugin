@@ -40,6 +40,26 @@ test('verification executes detected project commands and persists their evidenc
   assert.equal(persisted.status, 'passed');
 });
 
+test('verification executes normalized discovered command arguments without retokenizing them', async (t) => {
+  const root = await mkdtemp(path.join(tmpdir(), 'forgemind-verify-normalized-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+
+  const report = await verifyWorkspace({
+    workspace: root,
+    run: true,
+    commands: [{
+      command: process.execPath,
+      args: ['-e', 'process.exit(0)'],
+      category: 'test',
+      confidence: 'detected',
+      source: 'fixture',
+    }],
+  });
+
+  assert.equal(report.status, 'passed');
+  assert.equal(report.commands[0].exitCode, 0);
+});
+
 test('verification refuses inferred commands unless explicitly allowed', async (t) => {
   const root = await mkdtemp(path.join(tmpdir(), 'forgemind-verify-'));
   t.after(() => rm(root, { recursive: true, force: true }));
