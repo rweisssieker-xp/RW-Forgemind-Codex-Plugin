@@ -42,6 +42,7 @@ test('built Marketplace package exposes the Xray skill and CLI runtime', async (
   assert.equal(sourceManifest.version, distributionManifest.version);
   assert.match(await readFile(path.join(pluginRoot, 'entry-skills', 'forgemind-xray', 'SKILL.md'), 'utf8'), /every reachable page/i);
   await access(path.join(built.marketplacePath, 'plugins', 'forgemind', 'entry-skills', 'forgemind-xray', 'SKILL.md'));
+  assert.match(await readFile(path.join(built.marketplacePath, 'plugins', 'forgemind', 'entry-skills', 'forgemind-xray', 'SKILL.md'), 'utf8'), /every reachable page/i);
   await access(path.join(built.marketplacePath, 'plugins', 'forgemind', 'src', 'xray.mjs'));
 });
 
