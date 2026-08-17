@@ -5,7 +5,7 @@ description: Use when an existing application needs autonomous, read-only qualit
 
 # ForgeMind Xray
 
-Run `node <plugin-root>/bin/forgemind.mjs xray run --goal "<scope>" --artifacts workspace --json`. Marketplace installation does not create a global `forgemind` shell command; always use this bundled runner.
+You MUST execute `node <plugin-root>/bin/forgemind.mjs xray run --goal "<scope>" --artifacts workspace --json` before analysing, planning, scoring, or reporting. Marketplace installation does not create a global `forgemind` shell command; always use this bundled runner. Do not return a test plan, score, or report before the command has completed and its execution receipts have been inspected.
 
 Execute every safe detected local check and inspect the returned execution receipts before reporting a result. Xray is test-only: do not modify product source, configuration, application data, credentials, or production systems. The score is informative only and does not block a release.
 
