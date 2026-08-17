@@ -31,10 +31,16 @@ test('build creates reproducible standalone and marketplace packages', async (t)
 test('built Marketplace package exposes the Xray skill and CLI runtime', async (t) => {
   const root = await mkdtemp(path.join(tmpdir(), 'forgemind-xray-package-'));
   t.after(() => rm(root, { recursive: true, force: true }));
-  const pluginRoot = path.join(await resolvePluginRoot(), 'plugins', 'forgemind');
+  const sourceRoot = await resolvePluginRoot();
+  const pluginRoot = path.join(sourceRoot, 'plugins', 'forgemind');
+  const sourceManifest = JSON.parse(await readFile(path.join(sourceRoot, '.codex-plugin', 'plugin.json'), 'utf8'));
+  const distributionManifest = JSON.parse(await readFile(path.join(pluginRoot, '.codex-plugin', 'plugin.json'), 'utf8'));
 
   const built = await buildPackages({ pluginRoot, outputRoot: path.join(root, 'dist') });
 
+  assert.equal(sourceManifest.version, '1.40.0');
+  assert.equal(sourceManifest.version, distributionManifest.version);
+  assert.match(await readFile(path.join(pluginRoot, 'entry-skills', 'forgemind-xray', 'SKILL.md'), 'utf8'), /every reachable page/i);
   await access(path.join(built.marketplacePath, 'plugins', 'forgemind', 'entry-skills', 'forgemind-xray', 'SKILL.md'));
   await access(path.join(built.marketplacePath, 'plugins', 'forgemind', 'src', 'xray.mjs'));
 });
