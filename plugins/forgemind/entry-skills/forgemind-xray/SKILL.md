@@ -5,16 +5,28 @@ description: Use when an existing application needs autonomous, read-only qualit
 
 # ForgeMind Xray
 
-You MUST execute `node <plugin-root>/bin/forgemind.mjs xray run --goal "<scope>" --artifacts workspace --json` before analysing, planning, scoring, or reporting. Marketplace installation does not create a global `forgemind` shell command; always use this bundled runner. Do not return a test plan, score, or report before the command has completed and its execution receipts have been inspected.
+You MUST execute `node <plugin-root>/bin/forgemind.mjs xray run` before analysing, planning, scoring, or reporting. Marketplace installation does not create a global `forgemind` shell command.
+Do not return a test plan, score, or report before the command has completed and its execution receipts have been inspected.
 
-Xray executes its command/API, Playwright Browser, and Android ADB adapters itself. Execute every safe detected local check and inspect the returned execution receipts before reporting a result. API evidence requires an executable local check; detecting API code alone is not a passing API test. Xray is test-only: do not modify product source, configuration, credentials, or production systems. Isolated local or designated-test application data may be created or updated only as required by safe test flows; production and other non-test application data remain immutable. The score is informative only and does not block a release.
+For an explicit local/test web URL, use the internal Codex Browser as Xray's preferred GUI executor. First run:
 
-For autonomous web-GUI execution, start or reuse a safe local/test server and run `node <plugin-root>/bin/forgemind.mjs xray run --goal "<scope>" --test-url <loopback-url> --artifacts workspace --json`. The URL MUST use localhost, 127.0.0.0/8, ::1, or a reserved `.test` host. Xray uses the workspace-local Playwright installation to map safe reachable pages and exercise only non-destructive interactions; it writes canonical flow receipts and artifacts itself. Never target production or perform payment, deploy, publish, credential, deletion, administration, or other destructive actions.
+`node <plugin-root>/bin/forgemind.mjs xray run --goal "<scope>" --test-url <loopback-url> --adapters browser --artifacts workspace --json`
 
-The internal Browser and Computer Use remain interactive inspection tools: use them to understand a local/test surface or native GUI, but a visible Codex tab is not CLI evidence and must not be coupled through a controlled reload. Only Xray adapter receipts count toward the score. For local native GUI or mobile testing, Xray uses Android ADB only when it detects an Android surface and exactly one authorized emulator; it does not choose physical devices autonomously.
+The URL MUST use `localhost`, `127.0.0.0/8`, `::1`, or a reserved `.test` host. Before Browser control, invoke the internal Browser skill and use its in-app Browser binding. Create or claim one tab, navigate only to the explicit same-origin local/test URL, inspect its visible DOM, and execute only safe, non-destructive interactions: page loads, same-origin opted-in links, and non-submitting invalid-input validation.
 
-Do not install packages, download browsers, start an emulator, or invent receipts silently. If the declared local Playwright package or Chromium runtime is unavailable, preserve `FM_XRAY_PLAYWRIGHT_UNAVAILABLE` with its exact next action. If no authorized emulator is available, preserve `FM_XRAY_ANDROID_EMULATOR_UNAVAILABLE`; if ADB itself is unavailable, preserve `FM_XRAY_ADB_UNAVAILABLE`. For externally gathered GUI observations, provide complete `--gui-receipts '<json-array>'` only when each receipt has `surfaceId`, `control`, `status`, `componentIds`, `evidence`, `url`, `coverageArea`, `controlLabel`, `action`, `expected`, `actual`, and `reproduction`.
+The internal Codex Browser does not submit forms or perform login, download, upload, save, delete, account, administration, payment, deploy, publish, credential, or other consequential actions. Do not inspect cookies, local storage, profiles, passwords, or session stores. Do not start an app server, install packages, download a browser runtime, use another browser family, or invent a result.
 
-If an applicable adapter or control surface is unavailable, keep the real Xray gap; do not claim a GUI result, pass, failure, or coverage without a surface-specific execution receipt. Use `gui-usability` only for interaction evidence and `accessibility-visual` only when the receipt actually contains accessibility or visual inspection evidence. The final report must distinguish covered areas from gaps and include evidence-backed Improvement proposals.
+For every attempted safe flow, capture observable before/after state and a screenshot artifact. Form a complete Browser receipt with `surfaceId`, `control`, `status`, `componentIds`, `evidence`, `url`, `coverageArea`, `controlLabel`, `action`, `expected`, `actual`, and `reproduction`. The evidence must be workspace-local and refer to the current Xray run. Then execute:
+Provide complete receipts only through `--gui-receipts`; incomplete observations remain Xray gaps.
 
-Then run `node <plugin-root>/bin/forgemind.mjs xray status --artifacts workspace --json` and hand off its detailed findings, explicit gaps, evidence references, and informative score.
+`node <plugin-root>/bin/forgemind.mjs xray run --goal "<scope>" --test-url <loopback-url> --adapters browser --gui-receipts '<json-array>' --artifacts workspace --json`
+
+Only that second CLI result is canonical: inspect its execution receipts, coverage, gaps, score, and improvement proposals before reporting. A visible Browser tab alone is not evidence.
+
+If Browser control, the URL, evidence capture, or an eligible safe flow is unavailable, do not pass a successful GUI receipt. Preserve and report the CLI's returned Browser gap and next action. If a flow is blocked or intentionally skipped, only pass a complete receipt with its truthful `blocked` or `skipped` status.
+
+For direct CLI use without the internal Browser, Xray retains its workspace-local Playwright adapter. It runs only safe local checks and records unavailable controls as test gaps rather than claiming coverage. Playwright requires a declared local package and Chromium runtime; preserve `FM_XRAY_PLAYWRIGHT_UNAVAILABLE` with its exact next action when either is unavailable.
+
+For local native GUI or mobile testing, Xray uses Android ADB only when it detects an Android surface and exactly one authorized emulator; it does not choose physical devices autonomously. Preserve `FM_XRAY_ANDROID_EMULATOR_UNAVAILABLE` or `FM_XRAY_ADB_UNAVAILABLE` when appropriate.
+
+Finally run `node <plugin-root>/bin/forgemind.mjs xray status --artifacts workspace --json` and hand off its detailed findings, explicit gaps, evidence references, Browser-covered areas, and informative score.

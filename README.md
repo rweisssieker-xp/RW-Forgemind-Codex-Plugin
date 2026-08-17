@@ -6,6 +6,7 @@ ForgeMind is an evidence-first product innovation and delivery plugin for Codex,
 
 | Start | Prompt | Result |
 | --- | --- | --- |
+| Start | `$forgemind-start` | One explainable next ForgeMind action for an idea, project, or quality concern. |
 | Compass | `$forgemind-compass Help me choose the right path for …` | The smallest safe journey. |
 | Spark | `$forgemind-spark Generate disruptive AI directions for …` | Five radical, measurable directions. |
 | Evolve | `$forgemind-evolve Transform this existing app around …` | Repository-aware product transformation and MVP bet. |
@@ -23,6 +24,8 @@ ForgeMind is an evidence-first product innovation and delivery plugin for Codex,
 
 Every entry also works without appended text. For example, `$forgemind-spark` automatically runs its radical-idea default for the current project, and `$forgemind-leap` starts autonomous product mode. The first response states the derived goal; any supplied text overrides it.
 
+Use **Start** when you do not yet know which ForgeMind journey fits. It asks only for your context, desired outcome, and working style, then recommends a next action. Start does not execute the recommended journey.
+
 ## Developer automode
 
 Use **Autopilot** when the Codex goal itself is the delivery contract:
@@ -37,7 +40,7 @@ Use **Portfolio** and **Transform** to discover every defensible AI-native USP i
 
 Use **Twin** before broad product work to map repository-derived workflows and knowledge gaps. **Evolve UI** stages a feature-flagged, reversible outcome-flow experiment. **Growth** creates non-contact, non-spend experiment plans. Portfolio invokes a six-perspective Product Lab, Autopilot retains verified Outcome Memory, and Transform prepares an Integration Mesh; none of these capabilities makes market, user, or production claims without evidence and an authorized adapter.
 
-Use **Xray** for an independent, read-only QA pass across detected local CLI, API, integration, and GUI surfaces. It runs only safe local checks, uses the internal Browser for a reachable local web GUI and Computer Use for a local native or emulator GUI, and records unavailable controls as test gaps rather than claiming coverage.
+Use **Xray** for an independent, read-only QA pass across detected local CLI, API, integration, and GUI surfaces. `$forgemind-xray` uses the internal Codex Browser for safe flows on an explicit local/test web URL, passes complete receipts to the canonical Xray report, and records unavailable controls as test gaps rather than claiming coverage. Direct CLI use retains its workspace-local Playwright adapter.
 
 Use **Leap** for fast autonomous MVP work:
 

@@ -20,6 +20,7 @@ const PRIMARY_COMMANDS = [
   'outcome',
   'route',
   'signals',
+  'start',
   'compass',
   'hero',
   'innovation',
@@ -260,6 +261,14 @@ export async function runCli(argv, context = {}) {
       else if (action === 'execute') data = await hero.executeHeroControl({ workspace, run: Boolean(options.run) });
       else if (action === 'advance') data = await hero.advanceHeroMission({ workspace, packet: options.packet, outcome: options.outcome, evidence: options.evidence });
       else throw invalidInput('FM_HERO_ACTION_INVALID', 'Hero supports run, status, execute, and advance.');
+    } else if (command === 'start') {
+      const { runStart } = await import('./start.mjs');
+      data = await runStart({
+        workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()),
+        context: options.context,
+        outcome: options.outcome,
+        mode: options.mode,
+      });
     } else if (command === 'compass') {
       const action = positionals[0] ?? 'run';
       if (action !== 'run') throw invalidInput('FM_COMPASS_ACTION_INVALID', 'Compass supports run.');

@@ -29,7 +29,7 @@ test('help returns success and lists the stable primary commands', async () => {
 
   assert.equal(result.exitCode, 0);
   assert.match(stdout.text(), /ForgeMind/);
-  for (const command of ['doctor', 'validate', 'init', 'leap', 'verify', 'evidence', 'package']) {
+  for (const command of ['doctor', 'validate', 'init', 'start', 'leap', 'verify', 'evidence', 'package']) {
     assert.match(stdout.text(), new RegExp(`\\b${command}\\b`));
   }
   assert.equal(stderr.text(), '');

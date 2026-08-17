@@ -1,8 +1,16 @@
 # ForgeMind Workflows
 
+## Start: choose the next action
+
+Use `$forgemind-start` for an idea, an existing project, or a quality concern when the right ForgeMind journey is unclear. It collects context (`idea`, `project`, or `quality`), outcome (`improve`, `mvp`, or `ship`), and working style (`guided` or `autonomous`), then calls `forgemind start`. It returns an explainable recommendation and direct command without executing the selected journey. Missing or conflicting inputs use a low-confidence Compass fallback.
+
 ## Compass
 
 Use `$forgemind-compass` whenever the start is unclear. It routes to one of the six outcome journeys without expanding a generic skill library.
+
+## Xray: internal Browser evidence
+
+When invoked through `$forgemind-xray` with an explicit loopback or `.test` URL, Xray uses the internal Codex Browser to exercise only safe, non-destructive GUI flows. It submits complete, workspace-local receipts to `xray run --gui-receipts`; the CLI's resulting report is the canonical score and evidence record. Direct CLI use keeps the workspace-local Playwright adapter. Neither path tests production or external URLs, submits forms, logs in, downloads, uploads, or performs consequential actions.
 
 ## Spark: create a disruptive direction
 

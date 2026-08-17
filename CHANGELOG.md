@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- Added `$forgemind-start`, a recommendation-only guided entry that selects and explains the next ForgeMind journey from context, outcome, and working style.
+- `$forgemind-xray` now uses the internal Codex Browser for safe explicit local/test GUI flows and submits complete receipts to the canonical Xray report; direct CLI use retains the local Playwright adapter.
+
 ## [1.41.0] - 2026-08-17
 
 - Made Xray an executable local test suite: it discovers and runs safe framework commands, records API evidence only from executed checks, drives explicit local/test web targets through Playwright, and tests detected Android applications through one authorized ADB emulator.

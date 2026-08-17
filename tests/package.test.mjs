@@ -57,6 +57,12 @@ test('built Marketplace package exposes the Xray skill and CLI runtime', async (
   const builtSkill = await readFile(path.join(built.marketplacePath, 'plugins', 'forgemind', 'entry-skills', 'forgemind-xray', 'SKILL.md'), 'utf8');
   assert.equal(builtSkill, sourceSkill);
   await access(path.join(built.marketplacePath, 'plugins', 'forgemind', 'src', 'xray.mjs'));
+  const sourceStartSkill = await readFile(path.join(sourceRoot, 'entry-skills', 'forgemind-start', 'SKILL.md'), 'utf8');
+  const distributionStartSkill = await readFile(path.join(pluginRoot, 'entry-skills', 'forgemind-start', 'SKILL.md'), 'utf8');
+  const builtStartSkill = await readFile(path.join(built.marketplacePath, 'plugins', 'forgemind', 'entry-skills', 'forgemind-start', 'SKILL.md'), 'utf8');
+  assert.equal(distributionStartSkill, sourceStartSkill);
+  assert.equal(builtStartSkill, sourceStartSkill);
+  await access(path.join(built.marketplacePath, 'plugins', 'forgemind', 'src', 'start.mjs'));
 });
 
 test('package verification rejects files outside the checksum allowlist', async (t) => {
