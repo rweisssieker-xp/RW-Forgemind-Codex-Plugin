@@ -19,6 +19,25 @@ async function fixture(t, { packageJson, files = {} } = {}) {
   return root;
 }
 
+async function browserArtifacts(root, scriptArgument, stem = 'home') {
+  const runDirectory = path.basename(scriptArgument, '.spec.mjs');
+  const artifactDirectory = path.join(root, '.codex-orchestrator', 'xray', 'browser', runDirectory);
+  const files = [
+    `${stem}-before.png`, `${stem}-before.json`, `${stem}-after.png`, `${stem}-after.json`, `${stem}-trace.zip`,
+  ];
+  await mkdir(artifactDirectory, { recursive: true });
+  await Promise.all(files.map((name) => writeFile(
+    path.join(artifactDirectory, name),
+    name.endsWith('.json') ? '[]\n' : `xray ${name}\n`,
+  )));
+  const prefix = `.codex-orchestrator/xray/browser/${runDirectory}`;
+  return {
+    evidence: files.map((name) => `${prefix}/${name}`),
+    screenshot: `${prefix}/${stem}-after.png`,
+    trace: `${prefix}/${stem}-trace.zip`,
+  };
+}
+
 test('Xray discovers CLI, API, GUI, and existing command surfaces without inventing commands', async (t) => {
   const root = await fixture(t, {
     packageJson: {
@@ -92,10 +111,13 @@ test('Xray executes selected Playwright flows and scores their browser evidence'
     workspace: root,
     testUrl: 'http://127.0.0.1:4173/',
     adapters: ['browser'],
-    runProcess: async () => ({
-      exitCode: 0,
-      stderr: '',
-      stdout: `${JSON.stringify({
+    runProcess: async (_command, args) => {
+      const script = args.find((argument) => String(argument).endsWith('.spec.mjs'));
+      const artifacts = await browserArtifacts(root, script);
+      return {
+        exitCode: 0,
+        stderr: '',
+        stdout: `${JSON.stringify({
         protocol: 'forgemind-xray-browser-v1',
         type: 'receipt',
         receipt: {
@@ -107,16 +129,11 @@ test('Xray executes selected Playwright flows and scores their browser evidence'
           expected: 'The local page loads.',
           actual: 'The local page loaded.',
           reproduction: 'Open the local test URL.',
-          evidence: [
-            '.codex-orchestrator/xray/browser/home-before.png',
-            '.codex-orchestrator/xray/browser/home-after.png',
-            '.codex-orchestrator/xray/browser/home-trace.zip',
-          ],
-          screenshot: '.codex-orchestrator/xray/browser/home-after.png',
-          trace: '.codex-orchestrator/xray/browser/home-trace.zip',
+          ...artifacts,
         },
       })}\n`,
-    }),
+      };
+    },
   });
 
   assert.equal(report.mission.testUrl, 'http://127.0.0.1:4173/');
@@ -127,6 +144,36 @@ test('Xray executes selected Playwright flows and scores their browser evidence'
   assert.deepEqual(report.coverage.areas, ['home']);
   assert.equal(report.score.components.find(({ id }) => id === 'gui-usability').status, 'applicable');
   assert.equal(report.gaps.some(({ code }) => code === 'FM_XRAY_GUI_CONTROL_UNAVAILABLE'), false);
+});
+
+test('an explicit safe test URL establishes web GUI coverage in an API-classified repository', async (t) => {
+  const root = await fixture(t, {
+    files: { 'src/routes.mjs': 'router.get("/health", () => {});' },
+  });
+  const report = await runXray({
+    workspace: root,
+    testUrl: 'http://127.0.0.1:4173/',
+    adapters: ['command'],
+    guiReceipts: [{
+      surfaceId: 'web-gui',
+      control: 'browser',
+      status: 'passed',
+      componentIds: ['gui-usability'],
+      evidence: ['screenshots/api-hosted-gui.png'],
+      url: 'http://127.0.0.1:4173/',
+      coverageArea: 'home',
+      controlLabel: 'Home page',
+      action: 'open page',
+      expected: 'The API-hosted GUI loads.',
+      actual: 'The API-hosted GUI loaded.',
+      reproduction: 'Open the explicit local test URL.',
+    }],
+  });
+
+  assert.ok(report.mission.surfaces.some(({ id }) => id === 'web-gui'));
+  assert.equal(report.receipts.length, 1);
+  assert.equal(report.receipts[0].surfaceId, 'web-gui');
+  assert.deepEqual(report.coverage.areas, ['home']);
 });
 
 test('Xray keeps Browser prerequisite failures as specific report gaps', async (t) => {

@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
-import { access, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
+import { spawn } from 'node:child_process';
+import { access, lstat, mkdir, readFile, readdir, realpath, rm, writeFile } from 'node:fs/promises';
 import { isIP } from 'node:net';
 import path from 'node:path';
 
@@ -14,6 +15,8 @@ const BROWSER_EVIDENCE_PREFIX = '.codex-orchestrator/xray/browser';
 const BROWSER_COMPONENT_IDS = ['gui-usability', 'accessibility-visual'];
 const BROWSER_STATUSES = new Set(['passed', 'failed', 'blocked', 'skipped']);
 const BROWSER_FAILURE_SEVERITIES = new Set(['critical', 'high', 'medium', 'low']);
+const SAFE_BROWSER_HTTP_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
+const BROWSER_PATTERN_TYPES = new Set(['', 'email', 'password', 'search', 'tel', 'text', 'url']);
 const DANGEROUS_BROWSER_CONTROL_PATTERN = /\b(?:admin|approve|buy|checkout|credential|delete|deploy|destroy|drop|invite|order|password|pay|payment|production|publish|purchase|release|remove|reset|save|secret|seed|send|sign[ -]?in|submit|token|transfer|truncate|upload)\b/i;
 const PLAYWRIGHT_SETUP_ACTION = 'Run `npm install --save-dev playwright`, then `npx playwright install chromium`.';
 const ANDROID_EVIDENCE_PREFIX = '.codex-orchestrator/xray/android';
@@ -180,7 +183,13 @@ function androidGapResult(code, message, nextAction, details = {}) {
   };
 }
 
-export async function executeBrowserAdapter({ url, workspace, runProcess }) {
+export async function executeBrowserAdapter({
+  url,
+  workspace,
+  runProcess,
+  startProcess = startManagedBrowserProcess,
+  probeUrl = probeBrowserUrl,
+}) {
   const target = normalizeBrowserTarget(url);
   if (!target) {
     return [browserGapResult(
@@ -212,6 +221,7 @@ export async function executeBrowserAdapter({ url, workspace, runProcess }) {
     artifactDirectory: flowArtifactDirectory,
     evidencePrefix: flowEvidencePrefix,
     importSpecifier: runner.importSpecifier,
+    adapterImportSpecifier: import.meta.url,
   }), { encoding: 'utf8', flag: 'wx' });
   await writeFile(configPath, createBrowserRunnerConfig({
     artifactDirectory,
@@ -219,32 +229,85 @@ export async function executeBrowserAdapter({ url, workspace, runProcess }) {
     scriptName: path.basename(scriptPath),
   }), { encoding: 'utf8', flag: 'wx' });
 
+  const invokeRunner = async () => {
+    try {
+      const scriptArgument = workspaceRelativePath(workspace, scriptPath);
+      const configArgument = workspaceRelativePath(workspace, configPath);
+      return await runProcess(process.execPath, [
+        runner.cliPath,
+        'test',
+        scriptArgument,
+        '--config',
+        configArgument,
+        '--reporter=line',
+        '--workers=1',
+      ], { cwd: workspace });
+    } catch (error) {
+      return { exitCode: 127, stdout: '', stderr: error?.message ?? String(error) };
+    }
+  };
+
   let result;
+  let protocol = { receipts: [], invalidEvidenceCount: 0, invalidReceiptCount: 0 };
+  let serverFailure = null;
+  let managedServer = null;
   try {
-    const scriptArgument = workspaceRelativePath(workspace, scriptPath);
-    const configArgument = workspaceRelativePath(workspace, configPath);
-    result = await runProcess(process.execPath, [
-      runner.cliPath,
-      'test',
-      scriptArgument,
-      '--config',
-      configArgument,
-      '--reporter=line',
-      '--workers=1',
-    ], { cwd: workspace });
-  } catch (error) {
-    result = { exitCode: 127, stdout: '', stderr: error?.message ?? String(error) };
+    result = await invokeRunner();
+    protocol = await parseBrowserProtocol(result?.stdout, target, {
+      workspace,
+      flowArtifactDirectory,
+      flowEvidencePrefix,
+    });
+
+    const initialFailure = classifyBrowserRunnerFailure(result, protocol);
+    if (protocol.receipts.length === 0 && initialFailure.code === 'FM_XRAY_BROWSER_TARGET_UNAVAILABLE') {
+      const serverCandidate = await resolveLocalBrowserServer(workspace, target);
+      if (serverCandidate) {
+        try {
+          managedServer = await startProcess(serverCandidate.command, serverCandidate.args, serverCandidate.options);
+          const ready = managedServer && await waitForBrowserTarget(target, probeUrl, managedServer);
+          if (!ready) {
+            serverFailure = {
+              code: 'FM_XRAY_BROWSER_SERVER_START_FAILED',
+              message: `The detected local ${serverCandidate.label} server did not become reachable at the explicit test URL.`,
+              nextAction: 'Inspect the local server startup output, correct the test URL or development-server configuration, and rerun Xray.',
+            };
+          } else {
+            result = await invokeRunner();
+            protocol = await parseBrowserProtocol(result?.stdout, target, {
+              workspace,
+              flowArtifactDirectory,
+              flowEvidencePrefix,
+            });
+          }
+        } catch (error) {
+          result = {
+            exitCode: 1,
+            stdout: '',
+            stderr: redactText(error?.message ?? String(error)).text,
+          };
+          serverFailure = {
+            code: 'FM_XRAY_BROWSER_SERVER_START_FAILED',
+            message: `The detected local ${serverCandidate.label} server could not be started safely.`,
+            nextAction: 'Repair the declared workspace-local development server, then rerun Xray against the same explicit test URL.',
+          };
+        }
+      }
+    }
   } finally {
+    await stopManagedBrowserProcess(managedServer);
     await Promise.allSettled([
       rm(scriptPath, { force: true }),
       rm(configPath, { force: true }),
     ]);
   }
 
-  const receipts = parseBrowserProtocol(result?.stdout, target);
-  if (receipts.length > 0 && result?.exitCode === 0 && !result?.truncated) return receipts;
+  const { receipts } = protocol;
+  if (receipts.length > 0 && result?.exitCode === 0 && !result?.truncated && protocol.invalidEvidenceCount === 0) {
+    return receipts;
+  }
 
-  const failure = classifyBrowserRunnerFailure(result);
+  const failure = serverFailure ?? classifyBrowserRunnerFailure(result, protocol);
   const gap = browserGapResult(failure.code, failure.message, failure.nextAction, {
     stdout: redactText(result?.stdout ?? '').text,
     stderr: redactText(result?.stderr ?? '').text,
@@ -258,6 +321,54 @@ export function isSafeBrowserTarget(value) {
 }
 
 export const isLocalOrTestBrowserUrl = isSafeBrowserTarget;
+
+export function isSafeBrowserHttpRequest({ targetUrl, url, method = 'GET' } = {}) {
+  const normalizedTarget = normalizeBrowserTarget(targetUrl);
+  if (!normalizedTarget || !SAFE_BROWSER_HTTP_METHODS.has(String(method).toUpperCase())) return false;
+  try {
+    const candidate = new URL(String(url ?? ''), normalizedTarget);
+    if (['http:', 'https:'].includes(candidate.protocol)) {
+      return candidate.origin === new URL(normalizedTarget).origin;
+    }
+    if (candidate.protocol === 'blob:') return candidate.origin === new URL(normalizedTarget).origin;
+    return ['about:', 'data:'].includes(candidate.protocol);
+  } catch {
+    return false;
+  }
+}
+
+export function isSafeBrowserLink({
+  targetUrl,
+  currentUrl,
+  linkUrl,
+  explicitlySafe = false,
+  download = false,
+} = {}) {
+  const normalizedTarget = normalizeBrowserTarget(targetUrl);
+  if (!normalizedTarget || download) return false;
+  try {
+    const current = new URL(String(currentUrl ?? ''), normalizedTarget);
+    const candidate = new URL(String(linkUrl ?? ''), current);
+    if (!['http:', 'https:'].includes(candidate.protocol)
+      || candidate.origin !== new URL(normalizedTarget).origin) return false;
+    const sameDocument = Boolean(candidate.hash)
+      && `${candidate.origin}${candidate.pathname}${candidate.search}`
+        === `${current.origin}${current.pathname}${current.search}`;
+    return sameDocument || explicitlySafe === true;
+  } catch {
+    return false;
+  }
+}
+
+export function browserValidationCandidates({ required = false, type = '', pattern } = {}) {
+  const normalizedType = String(type ?? '').trim().toLowerCase();
+  if (normalizedType === 'email') return ['xray-invalid-email'];
+  if (pattern !== undefined && pattern !== null && BROWSER_PATTERN_TYPES.has(normalizedType)) {
+    return ['xray-invalid-pattern'];
+  }
+  if (required && !['checkbox', 'file', 'radio'].includes(normalizedType)) return [''];
+  return [];
+}
 
 async function resolveLocalPlaywright(workspace) {
   let manifest;
@@ -292,6 +403,155 @@ async function resolveLocalPlaywright(workspace) {
     }
   }
   return null;
+}
+
+async function resolveLocalBrowserServer(workspace, target) {
+  const parsedTarget = new URL(target);
+  if (parsedTarget.protocol !== 'http:') return null;
+  let manifest;
+  try {
+    manifest = JSON.parse(await readFile(path.join(workspace, 'package.json'), 'utf8'));
+  } catch {
+    return null;
+  }
+  const declared = new Set([
+    ...Object.keys(manifest.dependencies ?? {}),
+    ...Object.keys(manifest.devDependencies ?? {}),
+    ...Object.keys(manifest.optionalDependencies ?? {}),
+  ]);
+  const scripts = [manifest.scripts?.dev, manifest.scripts?.start, manifest.scripts?.serve]
+    .map((script) => String(script ?? '').trim())
+    .filter(Boolean);
+  const hostname = parsedTarget.hostname.toLowerCase().replace(/^\[|\]$/g, '');
+  const bindHost = hostname === '::1' || isIP(hostname) === 4 ? hostname : '127.0.0.1';
+  const port = parsedTarget.port || '80';
+  const definitions = [
+    {
+      packageName: 'vite', binName: 'vite', label: 'Vite',
+      detected: scripts.some((script) => /\bvite\b/i.test(script) && !/\bvite\s+(?:build|preview)\b/i.test(script)),
+      args: ['--host', bindHost, '--port', port, '--strictPort'],
+    },
+    {
+      packageName: 'next', binName: 'next', label: 'Next.js',
+      detected: scripts.some((script) => /\bnext\s+dev\b/i.test(script)),
+      args: ['dev', '--hostname', bindHost, '--port', port],
+    },
+    {
+      packageName: 'astro', binName: 'astro', label: 'Astro',
+      detected: scripts.some((script) => /\bastro\s+dev\b/i.test(script)),
+      args: ['dev', '--host', bindHost, '--port', port],
+    },
+    {
+      packageName: 'nuxt', binName: 'nuxt', label: 'Nuxt',
+      detected: scripts.some((script) => /\bnuxt\s+dev\b/i.test(script)),
+      args: ['dev', '--host', bindHost, '--port', port],
+    },
+  ];
+  for (const definition of definitions) {
+    if (!definition.detected || !declared.has(definition.packageName)) continue;
+    const cliPath = await resolveDeclaredPackageBinary(workspace, definition.packageName, definition.binName);
+    if (!cliPath) continue;
+    return {
+      command: process.execPath,
+      args: [cliPath, ...definition.args],
+      label: definition.label,
+      options: {
+        cwd: workspace,
+        shell: false,
+        windowsHide: true,
+        stdio: ['ignore', 'pipe', 'pipe'],
+      },
+    };
+  }
+  return null;
+}
+
+async function resolveDeclaredPackageBinary(workspace, packageName, binName) {
+  const packageDirectory = path.join(workspace, 'node_modules', ...packageName.split('/'));
+  try {
+    const manifest = JSON.parse(await readFile(path.join(packageDirectory, 'package.json'), 'utf8'));
+    const bin = manifest.bin;
+    const relativeCli = typeof bin === 'string' ? bin : bin?.[binName];
+    if (!relativeCli) return null;
+    const cliPath = path.resolve(packageDirectory, relativeCli);
+    const relative = path.relative(path.resolve(packageDirectory), cliPath);
+    if (!relative || relative.startsWith('..') || path.isAbsolute(relative)) return null;
+    await access(cliPath);
+    return cliPath;
+  } catch {
+    return null;
+  }
+}
+
+async function startManagedBrowserProcess(command, args, options) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(command, args, options);
+    let stderr = '';
+    let stdout = '';
+    child.stdout?.on('data', (chunk) => { stdout = `${stdout}${chunk}`.slice(-12_000); });
+    child.stderr?.on('data', (chunk) => { stderr = `${stderr}${chunk}`.slice(-12_000); });
+    child.once('error', reject);
+    child.once('spawn', () => resolve({
+      child,
+      get exited() { return child.exitCode !== null || child.signalCode !== null; },
+      get stdout() { return stdout; },
+      get stderr() { return stderr; },
+      stop: async () => {
+        if (child.exitCode !== null || child.signalCode !== null) return;
+        const closed = new Promise((done) => child.once('close', done));
+        child.kill();
+        const timer = new Promise((done) => {
+          const timeout = setTimeout(done, 3_000);
+          timeout.unref?.();
+        });
+        await Promise.race([closed, timer]);
+        if (child.exitCode === null && child.signalCode === null) child.kill('SIGKILL');
+      },
+    }));
+  });
+}
+
+async function stopManagedBrowserProcess(server) {
+  if (!server) return;
+  try {
+    if (typeof server.stop === 'function') await server.stop();
+    else if (typeof server.kill === 'function') server.kill();
+  } catch {
+    // Cleanup is best effort after the Browser result has already been captured.
+  }
+}
+
+async function waitForBrowserTarget(target, probeUrl, server) {
+  for (let attempt = 0; attempt < 60; attempt += 1) {
+    try {
+      if (await probeUrl(target)) return true;
+    } catch {
+      // Retry until the bounded startup window expires.
+    }
+    if (server?.exited) return false;
+    await new Promise((resolve) => setTimeout(resolve, 250));
+  }
+  return false;
+}
+
+async function probeBrowserUrl(target) {
+  if (!normalizeBrowserTarget(target)) return false;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 1_000);
+  timeout.unref?.();
+  try {
+    await fetch(target, {
+      method: 'GET',
+      redirect: 'manual',
+      signal: controller.signal,
+      headers: { 'user-agent': 'ForgeMind-Xray/1' },
+    });
+    return true;
+  } catch {
+    return false;
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 function normalizeBrowserTarget(value) {
@@ -332,7 +592,7 @@ function browserGapResult(code, message, nextAction, execution = {}) {
   };
 }
 
-function classifyBrowserRunnerFailure(result = {}) {
+function classifyBrowserRunnerFailure(result = {}, protocol = {}) {
   const output = `${result.stderr ?? ''}\n${result.stdout ?? ''}`;
   if (result.truncated) {
     return {
@@ -355,6 +615,13 @@ function classifyBrowserRunnerFailure(result = {}) {
       nextAction: 'Start the local test server, verify the supplied --test-url, and rerun Xray.',
     };
   }
+  if (protocol.invalidEvidenceCount > 0) {
+    return {
+      code: 'FM_XRAY_BROWSER_EVIDENCE_INVALID',
+      message: 'The Playwright runner emitted a receipt whose screenshot, trace, or snapshot evidence was missing or did not belong to this Xray run.',
+      nextAction: 'Rerun Xray and inspect the current run artifact directory before treating the Browser flow as scored evidence.',
+    };
+  }
   if (result.exitCode === 0) {
     return {
       code: 'FM_XRAY_BROWSER_PROTOCOL_INVALID',
@@ -369,8 +636,10 @@ function classifyBrowserRunnerFailure(result = {}) {
   };
 }
 
-function parseBrowserProtocol(stdout, target) {
+async function parseBrowserProtocol(stdout, target, evidenceContext) {
   const receipts = [];
+  let invalidEvidenceCount = 0;
+  let invalidReceiptCount = 0;
   for (const line of String(stdout ?? '').split(/\r?\n/)) {
     let envelope;
     try {
@@ -379,55 +648,90 @@ function parseBrowserProtocol(stdout, target) {
       continue;
     }
     if (envelope?.protocol !== BROWSER_PROTOCOL || envelope?.type !== 'receipt') continue;
-    const receipt = normalizeBrowserReceipt(envelope.receipt, target);
-    if (receipt) receipts.push(receipt);
+    const normalized = await normalizeBrowserReceipt(envelope.receipt, target, evidenceContext);
+    if (normalized.receipt) receipts.push(normalized.receipt);
+    else if (normalized.invalidEvidence) invalidEvidenceCount += 1;
+    else invalidReceiptCount += 1;
   }
-  return receipts;
+  return { receipts, invalidEvidenceCount, invalidReceiptCount };
 }
 
-function normalizeBrowserReceipt(candidate, target) {
-  if (!candidate || !BROWSER_STATUSES.has(candidate.status)) return null;
+async function normalizeBrowserReceipt(candidate, target, evidenceContext) {
+  if (!candidate || !BROWSER_STATUSES.has(candidate.status)) return {};
   const fields = ['coverageArea', 'controlLabel', 'action', 'expected', 'actual', 'reproduction'];
   const flow = Object.fromEntries(fields.map((field) => [field, redactField(candidate[field])]));
-  if (fields.some((field) => !flow[field])) return null;
+  if (fields.some((field) => !flow[field])) return {};
   const receiptUrl = normalizeBrowserTarget(candidate.url);
-  if (!receiptUrl || new URL(receiptUrl).origin !== new URL(target).origin) return null;
+  if (!receiptUrl || new URL(receiptUrl).origin !== new URL(target).origin) return {};
   const candidateEvidence = Array.isArray(candidate.evidence) ? candidate.evidence : [];
-  const evidence = [...new Set(candidateEvidence.map(normalizeBrowserEvidence).filter(Boolean))];
-  const screenshot = normalizeBrowserEvidence(candidate.screenshot);
-  const trace = normalizeBrowserEvidence(candidate.trace);
-  if (!screenshot || !trace || evidence.length === 0) return null;
-  if (!evidence.includes(screenshot)) evidence.push(screenshot);
-  if (!evidence.includes(trace)) evidence.push(trace);
+  const evidence = [...new Set(candidateEvidence
+    .map((value) => normalizeBrowserEvidence(value, evidenceContext.flowEvidencePrefix))
+    .filter(Boolean))];
+  const screenshot = normalizeBrowserEvidence(candidate.screenshot, evidenceContext.flowEvidencePrefix);
+  const trace = normalizeBrowserEvidence(candidate.trace, evidenceContext.flowEvidencePrefix);
+  if (!screenshot || !trace || evidence.length !== candidateEvidence.length) return { invalidEvidence: true };
+  if (!evidence.includes(screenshot) || !evidence.includes(trace)) return { invalidEvidence: true };
+  if (!/\.png$/i.test(screenshot) || !/\.zip$/i.test(trace)) return { invalidEvidence: true };
+  if (!evidence.some((value) => /-before\.json$/i.test(value))
+    || !evidence.some((value) => /-after\.json$/i.test(value))) return { invalidEvidence: true };
+  const artifactsExist = await Promise.all(evidence.map((value) => browserEvidenceExists(value, evidenceContext)));
+  if (artifactsExist.some((exists) => !exists)) return { invalidEvidence: true };
   const safetyAction = flow.action.replace(/\bwithout\s+(?:submit|submitting|submission)\b/gi, '');
   const dangerous = DANGEROUS_BROWSER_CONTROL_PATTERN.test(`${flow.controlLabel} ${safetyAction}`);
   const status = dangerous && ['passed', 'failed'].includes(candidate.status) ? 'skipped' : candidate.status;
   return {
-    adapter: 'browser',
-    control: 'playwright',
-    surfaceId: 'web-gui',
-    surfaceIds: ['web-gui'],
-    componentIds: [...BROWSER_COMPONENT_IDS],
-    status,
-    ...(status === 'failed' ? {
-      severity: BROWSER_FAILURE_SEVERITIES.has(candidate.severity) ? candidate.severity : 'high',
-    } : {}),
-    url: redactField(receiptUrl),
-    ...flow,
-    ...(dangerous ? {
-      actual: 'The unsafe browser control was intentionally not exercised.',
-    } : {}),
-    evidence,
-    screenshot,
-    trace,
+    receipt: {
+      adapter: 'browser',
+      control: 'playwright',
+      surfaceId: 'web-gui',
+      surfaceIds: ['web-gui'],
+      componentIds: [...BROWSER_COMPONENT_IDS],
+      status,
+      ...(status === 'failed' ? {
+        severity: BROWSER_FAILURE_SEVERITIES.has(candidate.severity) ? candidate.severity : 'high',
+      } : {}),
+      url: redactField(receiptUrl),
+      ...flow,
+      ...(dangerous ? {
+        actual: 'The unsafe browser control was intentionally not exercised.',
+      } : {}),
+      evidence,
+      screenshot,
+      trace,
+    },
   };
 }
 
-function normalizeBrowserEvidence(value) {
+function normalizeBrowserEvidence(value, evidencePrefix = BROWSER_EVIDENCE_PREFIX) {
   const normalized = String(value ?? '').trim().replaceAll('\\', '/').replace(/^\.\//, '');
-  if (!normalized.startsWith(`${BROWSER_EVIDENCE_PREFIX}/`)) return null;
+  if (!normalized.startsWith(`${evidencePrefix}/`)) return null;
   if (normalized.split('/').some((segment) => segment === '..') || normalized.includes('\0')) return null;
   return redactText(normalized).text;
+}
+
+async function browserEvidenceExists(value, { workspace, flowArtifactDirectory, flowEvidencePrefix }) {
+  const relativeEvidence = value.slice(flowEvidencePrefix.length + 1);
+  const artifactRoot = path.resolve(flowArtifactDirectory);
+  const artifactPath = path.resolve(artifactRoot, ...relativeEvidence.split('/'));
+  const relative = path.relative(artifactRoot, artifactPath);
+  if (!relative || relative.startsWith('..') || path.isAbsolute(relative)) return false;
+  try {
+    const metadata = await lstat(artifactPath);
+    if (!metadata.isFile() || metadata.isSymbolicLink() || metadata.size === 0) return false;
+    const [realWorkspace, realRoot, realArtifact] = await Promise.all([
+      realpath(path.resolve(workspace)),
+      realpath(artifactRoot),
+      realpath(artifactPath),
+    ]);
+    const workspaceRelative = path.relative(realWorkspace, realRoot);
+    if (!workspaceRelative || workspaceRelative.startsWith('..') || path.isAbsolute(workspaceRelative)) return false;
+    const realRelative = path.relative(realRoot, realArtifact);
+    if (!realRelative || realRelative.startsWith('..') || path.isAbsolute(realRelative)) return false;
+    if (/\.json$/i.test(artifactPath)) JSON.parse(await readFile(artifactPath, 'utf8'));
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function redactField(value) {
@@ -461,10 +765,17 @@ function createBrowserRunnerConfig({ artifactDirectory, outputDirectory, scriptN
   }, null, 2)};\n`;
 }
 
-function createBrowserRunnerScript({ target, artifactDirectory, evidencePrefix, importSpecifier }) {
+function createBrowserRunnerScript({
+  target,
+  artifactDirectory,
+  evidencePrefix,
+  importSpecifier,
+  adapterImportSpecifier,
+}) {
   return String.raw`import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { test } from ${JSON.stringify(importSpecifier)};
+import { browserValidationCandidates, isSafeBrowserHttpRequest, isSafeBrowserLink } from ${JSON.stringify(adapterImportSpecifier)};
 
 const PROTOCOL = ${JSON.stringify(BROWSER_PROTOCOL)};
 const TEST_URL = ${JSON.stringify(target)};
@@ -520,16 +831,6 @@ function isAllowedNavigation(value) {
   }
 }
 
-function isAllowedRequest(value) {
-  try {
-    const candidate = new URL(value);
-    if (['http:', 'https:'].includes(candidate.protocol)) return candidate.origin === new URL(TEST_URL).origin;
-    return ['about:', 'blob:', 'data:'].includes(candidate.protocol);
-  } catch {
-    return false;
-  }
-}
-
 function isAllowedSocket(value) {
   try {
     const candidate = new URL(value);
@@ -574,7 +875,15 @@ async function recordFlow({ page, context, url, area, controlLabel, action, expe
     tracing = true;
     await page.screenshot({ path: path.join(ARTIFACT_DIRECTORY, beforeScreenshot), fullPage: true });
     await domSnapshot(page, path.join(ARTIFACT_DIRECTORY, beforeSnapshot));
-    if (!skipReason) actual = cleanText(await operation());
+    if (!skipReason) {
+      const outcome = await operation();
+      if (outcome && typeof outcome === 'object') {
+        if (outcome.status === 'skipped' || outcome.status === 'passed') status = outcome.status;
+        actual = cleanText(outcome.actual);
+      } else {
+        actual = cleanText(outcome);
+      }
+    }
     await page.screenshot({ path: path.join(ARTIFACT_DIRECTORY, afterScreenshot), fullPage: true });
     await domSnapshot(page, path.join(ARTIFACT_DIRECTORY, afterSnapshot));
   } catch (error) {
@@ -616,7 +925,8 @@ async function recordFlow({ page, context, url, area, controlLabel, action, expe
 test('ForgeMind Xray maps safe local browser flows', async ({ page, context }) => {
   await mkdir(ARTIFACT_DIRECTORY, { recursive: true });
   await context.route('**/*', async (route) => {
-    if (!isAllowedRequest(route.request().url())
+    const request = route.request();
+    if (!isSafeBrowserHttpRequest({ targetUrl: TEST_URL, url: request.url(), method: request.method() })
       || (route.request().isNavigationRequest() && !isAllowedNavigation(route.request().url()))) {
       await route.abort('blockedbyclient');
       return;
@@ -661,20 +971,28 @@ test('ForgeMind Xray maps safe local browser flows', async ({ page, context }) =
     const links = await page.locator('a[href]').evaluateAll((elements) => elements.slice(0, 100).map((element) => ({
       href: element.href,
       label: element.getAttribute('aria-label') || element.textContent || element.href,
+      explicitlySafe: element.getAttribute('data-xray-safe') === 'true',
+      download: element.hasAttribute('download'),
       visible: Boolean(element.getClientRects().length),
     })));
     let recordedUnsafeLinks = 0;
     for (const link of links.filter(({ visible }) => visible)) {
       const label = cleanText(link.label);
       if (!isAllowedNavigation(link.href)) continue;
-      if (DANGEROUS.test(label + ' ' + link.href)) {
+      if (!isSafeBrowserLink({
+        targetUrl: TEST_URL,
+        currentUrl,
+        linkUrl: link.href,
+        explicitlySafe: link.explicitlySafe,
+        download: link.download,
+      })) {
         if (recordedUnsafeLinks < MAX_CONTROLS) {
           recordedUnsafeLinks += 1;
           await recordFlow({
-            page, context, url: currentUrl, area, controlLabel: label || 'Unsafe link', action: 'open local link',
-            expected: 'The destructive or privileged link remains unvisited.',
+            page, context, url: currentUrl, area, controlLabel: label || 'Unclassified link', action: 'inspect local link without navigation',
+            expected: 'The link remains unvisited unless it is a same-document anchor or explicitly marked safe for Xray.',
             reproduction: 'Open ' + currentUrl + ' and inspect ' + (label || link.href) + ' without activating it.',
-            skipReason: 'The unsafe browser control was intentionally not exercised.',
+            skipReason: 'The link was not structurally opted in for safe Browser navigation and was intentionally not exercised.',
           });
         }
         continue;
@@ -771,16 +1089,24 @@ test('ForgeMind Xray maps safe local browser flows', async ({ page, context }) =
             const details = await field.evaluate((element) => ({
               required: element.required,
               type: element.getAttribute('type') || '',
+              pattern: element.hasAttribute('pattern') ? element.getAttribute('pattern') : null,
             }));
-            if (details.type === 'email') await field.fill('xray-invalid-email');
-            else if (details.required && !['checkbox', 'radio', 'file'].includes(details.type)) await field.fill('');
+            for (const candidate of browserValidationCandidates(details)) {
+              await field.fill(candidate);
+              if (!await field.evaluate((element) => element.checkValidity())) break;
+            }
           }
           const valid = await formLocator.evaluate((element) => {
             const result = element.checkValidity();
             element.reportValidity();
             return result;
           });
-          if (valid) throw new Error('The isolated invalid input was accepted by browser validation.');
+          if (valid) {
+            return {
+              status: 'skipped',
+              actual: 'Xray could not induce a browser-native invalid state with isolated non-submitting test data.',
+            };
+          }
           return 'Browser validation rejected the isolated invalid input without submission.';
         },
       });

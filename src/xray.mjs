@@ -78,6 +78,10 @@ export async function discoverXrayMission({
   const files = await projectFileNames(profile.root);
   const guiSignals = await detectGuiProjectSignals(profile.root, files, manifest, profile);
   const surfaces = detectSurfaces({ ...profile, files, manifest, ...guiSignals });
+  const normalizedTestUrl = canonicalBrowserUrl(testUrl);
+  if (isSafeBrowserTarget(normalizedTestUrl) && !surfaces.some(({ id }) => id === 'web-gui')) {
+    surfaces.push({ id: 'web-gui', label: 'Web GUI', control: 'browser' });
+  }
   const commandChecks = selectedAdapters.includes('command')
     ? selectXrayChecks({ ...profile, manifest, surfaces })
     : [];
@@ -88,7 +92,7 @@ export async function discoverXrayMission({
     id: `xray-${Date.now().toString(36)}`,
     goal: String(goal ?? '').trim() || 'Autonomously assess this software quality.',
     adapters: selectedAdapters,
-    testUrl: canonicalBrowserUrl(testUrl),
+    testUrl: normalizedTestUrl,
     surfaces,
     checks: [...commandChecks, ...guiChecks],
     gaps,
@@ -357,11 +361,19 @@ export async function runXray({
   guiReceipts = [],
   adapters,
   testUrl,
+  startProcess,
+  probeUrl,
 }) {
   const selectedAdapters = parseXrayAdapters(adapters);
   const normalizedTestUrl = canonicalBrowserUrl(testUrl);
   const browserResults = normalizedTestUrl && selectedAdapters.includes('browser')
-    ? await executeBrowserAdapter({ url: normalizedTestUrl, workspace, runProcess })
+    ? await executeBrowserAdapter({
+      url: normalizedTestUrl,
+      workspace,
+      runProcess,
+      ...(startProcess ? { startProcess } : {}),
+      ...(probeUrl ? { probeUrl } : {}),
+    })
     : [];
   const browserReceipts = browserResults.filter((result) => !result.gap);
   const browserGaps = browserResults.filter((result) => result.gap).map((result) => ({
