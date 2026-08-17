@@ -154,15 +154,81 @@ test('Xray reports browser coverage and prioritized recommendations from finding
       url: 'http://127.0.0.1:4173/login', coverageArea: 'login', controlLabel: 'Sign in',
       action: 'submit invalid credentials', expected: 'A clear validation message appears.',
       actual: 'The form becomes unresponsive.', reproduction: 'Open login and submit invalid credentials.',
+    }, {
+      surfaceId: 'web-gui', control: 'browser', status: 'blocked',
+      componentIds: ['gui-usability'], evidence: ['screenshots/account-auth-wall.png'],
+      url: 'http://127.0.0.1:4173/account', coverageArea: 'account', controlLabel: 'Save',
+      action: 'submit profile', expected: 'The test profile saves.',
+      actual: 'Test authentication was unavailable.', reproduction: 'Open account and submit the test profile.',
+    }, {
+      surfaceId: 'web-gui', control: 'browser', status: 'skipped',
+      componentIds: ['gui-usability'], evidence: ['screenshots/settings-skipped.png'],
+      url: 'http://127.0.0.1:4173/settings', coverageArea: 'settings', controlLabel: 'Delete account',
+      action: 'open destructive action', expected: 'The destructive action remains unsubmitted.',
+      actual: 'The unsafe flow was intentionally not exercised.', reproduction: 'Open settings without submitting the destructive action.',
     }],
     runCommand: async () => ({ exitCode: 0, stdout: 'ok', stderr: '' }),
   });
   assert.deepEqual(report.coverage.areas, ['login']);
-  assert.equal(report.recommendations[0].priority, 'high');
-  assert.match(report.recommendations[0].verification, /Open login/);
+  const findingProposal = report.recommendations.find(({ evidence }) => evidence.includes('gui-1'));
+  assert.equal(findingProposal.priority, 'high');
+  assert.equal(
+    findingProposal.recommendation,
+    'Address the verified finding "GUI control check failed: web-gui" by achieving the recorded expected outcome: A clear validation message appears.',
+  );
+  assert.equal(findingProposal.benefit, 'Expected outcome: A clear validation message appears.');
+  assert.equal(findingProposal.verification, 'Open login and submit invalid credentials.');
+  const blockedProposal = report.recommendations.find(({ evidence }) => evidence.includes('FM_XRAY_GUI_FLOW_BLOCKED'));
+  assert.equal(
+    blockedProposal.recommendation,
+    'Close the recorded gap FM_XRAY_GUI_FLOW_BLOCKED for account: The recorded browser GUI flow was blocked.',
+  );
+  assert.equal(blockedProposal.benefit, 'Expected outcome: The test profile saves.');
+  assert.equal(blockedProposal.verification, 'Open account and submit the test profile.');
+  assert.equal(report.recommendations.length, report.findings.length + report.gaps.length);
+  for (const gap of report.gaps) {
+    const proposal = report.recommendations.find(({ evidence }) => evidence.includes(gap.code)
+      && (!gap.checkId || evidence.includes(gap.checkId)));
+    assert.ok(proposal, `missing proposal for ${gap.code}`);
+    for (const field of ['priority', 'area', 'recommendation', 'benefit', 'verification']) {
+      assert.ok(typeof proposal[field] === 'string' && proposal[field].trim(), `${gap.code} proposal lacks ${field}`);
+    }
+    assert.ok(proposal.evidence.length > 0, `${gap.code} proposal lacks evidence`);
+  }
   const markdown = await readFile(path.join(root, 'docs', 'forgemind', 'xray-report.md'), 'utf8');
   assert.match(markdown, /GUI coverage/);
   assert.match(markdown, /Improvement proposals/);
+});
+
+test('Xray safely defaults malformed failed Browser receipt severities before scoring', async (t) => {
+  for (const invalidSeverity of ['bogus', 'toString']) {
+    await t.test(invalidSeverity, async (t) => {
+      const root = await fixture(t, {
+        packageJson: { scripts: { dev: 'vite' }, dependencies: { vite: '^6' } },
+      });
+      const report = await runXray({
+        workspace: root,
+        guiReceipts: [{
+          surfaceId: 'web-gui', control: 'browser', status: 'failed', severity: invalidSeverity,
+          componentIds: ['gui-usability', 'accessibility-visual'], evidence: ['screenshots/failure.png'],
+          url: 'http://127.0.0.1:4173/', coverageArea: 'home', controlLabel: 'Continue',
+          action: 'click', expected: 'The next view opens.', actual: 'The current view remains visible.',
+          reproduction: 'Open the home page and click Continue.',
+        }],
+      });
+      const persisted = JSON.parse(await readFile(
+        path.join(root, '.codex-orchestrator', 'xray', 'report-latest.json'),
+        'utf8',
+      ));
+
+      assert.equal(report.receipts[0].severity, 'high');
+      assert.equal(report.findings[0].severity, 'high');
+      assert.equal(report.score.value, 81);
+      assert.equal(report.score.components.find(({ id }) => id === 'gui-usability').score, 75);
+      assert.equal(persisted.score.value, 81);
+      assert.equal(persisted.score.components.find(({ id }) => id === 'gui-usability').score, 75);
+    });
+  }
 });
 
 test('Xray identifies an API route without creating an inferred runnable check', async (t) => {

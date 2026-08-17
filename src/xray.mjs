@@ -32,7 +32,13 @@ const SCORE_COMPONENTS = [
   { id: 'robustness-error-paths', label: 'Robustness and error paths', configuredWeight: 10 },
   { id: 'evidence-coverage', label: 'Evidence coverage of detected surfaces', configuredWeight: 10 },
 ];
-const SEVERITY_DEDUCTIONS = { critical: 40, high: 25, medium: 10, low: 3 };
+const SEVERITY_DEDUCTIONS = new Map([
+  ['critical', 40],
+  ['high', 25],
+  ['medium', 10],
+  ['low', 3],
+]);
+const DEFAULT_FAILURE_SEVERITY = 'high';
 
 export async function discoverXrayMission({
   workspace,
@@ -197,7 +203,7 @@ function guiFinding(check) {
   const receipt = check.importedReceipt ?? {};
   return {
     id: `finding-${check.id}`,
-    severity: receipt.severity ?? 'high',
+    severity: normalizeFailureSeverity(receipt.severity),
     surfaces: [...(check.surfaceIds ?? [])],
     componentIds: [...(check.componentIds ?? [])],
     title: `GUI control check failed: ${surfaceId}`,
@@ -251,11 +257,14 @@ export function scoreXrayQuality({ mission, findings = [], receipts = [], gaps =
     const status = applicability[definition.id];
     const effectiveWeight = effectiveWeights.get(definition.id) ?? 0;
     const relevantFindings = findings.filter((finding) => findingAppliesToComponent(finding, definition.id));
-    const deductions = relevantFindings.map((finding) => ({
-      findingId: finding.id ?? null,
-      severity: finding.severity,
-      value: SEVERITY_DEDUCTIONS[finding.severity] ?? 0,
-    }));
+    const deductions = relevantFindings.map((finding) => {
+      const severity = normalizeFailureSeverity(finding.severity);
+      return {
+        findingId: finding.id ?? null,
+        severity,
+        value: SEVERITY_DEDUCTIONS.get(severity),
+      };
+    });
     const deductionTotal = deductions.reduce((total, deduction) => total + deduction.value, 0);
     return {
       ...definition,
@@ -385,32 +394,59 @@ function browserCoverage(receipts) {
 }
 
 function priorityForSeverity(severity) {
-  return ['critical', 'high', 'medium', 'low'].includes(severity) ? severity : 'medium';
+  return SEVERITY_DEDUCTIONS.has(severity) ? severity : 'medium';
 }
 
 function improvementRecommendations(findings, gaps) {
   return [
-    ...findings.map((finding) => ({
-      priority: priorityForSeverity(finding.severity),
-      area: finding.surfaces?.join(', ') || finding.componentIds?.join(', ') || finding.id,
-      evidence: [...(finding.evidence ?? [])],
-      recommendation: finding.title,
-      benefit: finding.actual || finding.expected || finding.title,
-      verification: finding.reproduction || finding.nextVerification || finding.title,
-    })),
-    ...gaps.map((gap) => ({
-      priority: priorityForSeverity(gap.severity),
-      area: gap.coverageArea || gap.surfaceId || gap.componentId || gap.checkId || gap.code,
-      evidence: [...(gap.evidence ?? []), ...[gap.checkId, gap.code].filter(Boolean)],
-      recommendation: gap.message || gap.code,
-      benefit: gap.message || gap.code,
-      verification: gap.reproduction || gap.expected || gap.actual || gap.message || gap.code,
-    })),
+    ...findings.map((finding) => findingRecommendation(finding)),
+    ...gaps.map((gap) => gapRecommendation(gap)),
   ].sort((left, right) => priorityRank(left.priority) - priorityRank(right.priority));
+}
+
+function findingRecommendation(finding) {
+  const area = finding.surfaces?.join(', ') || finding.componentIds?.join(', ') || finding.id;
+  const title = finding.title || finding.id || area;
+  const recommendation = finding.expected
+    ? `Address the verified finding "${title}" by achieving the recorded expected outcome: ${finding.expected}`
+    : `Address the verified finding: ${title}`;
+  const benefit = finding.expected
+    ? `Expected outcome: ${finding.expected}`
+    : finding.userImpact
+      ? `User impact addressed: ${finding.userImpact}`
+      : `Expected outcome: ${title} is addressed.`;
+  return {
+    priority: priorityForSeverity(finding.severity),
+    area,
+    evidence: [...(finding.evidence ?? [])],
+    recommendation,
+    benefit,
+    verification: finding.reproduction || finding.nextVerification || `Verify that ${title} is addressed for ${area}.`,
+  };
+}
+
+function gapRecommendation(gap) {
+  const code = gap.code || 'recorded-gap';
+  const area = gap.coverageArea || gap.surfaceId || gap.componentId || gap.checkId || code;
+  const description = gap.message || code;
+  return {
+    priority: priorityForSeverity(gap.severity),
+    area,
+    evidence: [...new Set([...(gap.evidence ?? []), ...[gap.checkId, code].filter(Boolean)])],
+    recommendation: `Close the recorded gap ${code} for ${area}: ${description}`,
+    benefit: gap.expected
+      ? `Expected outcome: ${gap.expected}`
+      : `Expected outcome: evidence resolves ${code} for ${area}.`,
+    verification: gap.reproduction || gap.nextVerification || `Verify that ${code} is closed for ${area} and capture the resulting evidence.`,
+  };
 }
 
 function priorityRank(priority) {
   return ['critical', 'high', 'medium', 'low'].indexOf(priority);
+}
+
+function normalizeFailureSeverity(severity) {
+  return SEVERITY_DEDUCTIONS.has(severity) ? severity : DEFAULT_FAILURE_SEVERITY;
 }
 
 function isUnsafeCommand(command) {
@@ -579,7 +615,7 @@ function createGuiChecks(surfaces, guiControl = {}, guiReceipts = []) {
         componentIds,
         evidence,
         ...(surface.control === 'browser' ? flow : {}),
-        ...(candidate.severity ? { severity: candidate.severity } : {}),
+        ...(candidate.status === 'failed' ? { severity: normalizeFailureSeverity(candidate.severity) } : {}),
       },
     });
   }
