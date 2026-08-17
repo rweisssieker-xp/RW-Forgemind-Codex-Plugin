@@ -28,7 +28,7 @@
 - `plugins/forgemind/src/xray.mjs` and `plugins/forgemind/entry-skills/forgemind-xray/SKILL.md`: exact distribution mirrors.
 - `tests/xray.test.mjs`: executable contract for receipt validation, reporting, gaps, recommendations, and score evidence.
 - `tests/journey-surface.test.mjs`: entry-skill contract regression checks.
-- `package.json`, `.codex-plugin/plugin.json`, and their distribution mirrors: synchronized version bump.
+- `package.json`, `package-lock.json`, `.codex-plugin/plugin.json`, and their distribution mirrors: synchronized version bump.
 - `CHANGELOG.md`: user-visible summary of the Browser orchestration behavior.
 
 ### Task 1: Define and validate browser-flow receipt evidence
@@ -249,6 +249,7 @@ git commit -m "feat: orchestrate Xray browser coverage"
 
 **Files:**
 - Modify: `package.json`
+- Modify: `package-lock.json`
 - Modify: `.codex-plugin/plugin.json`
 - Modify: `plugins/forgemind/package.json`
 - Modify: `plugins/forgemind/.codex-plugin/plugin.json`
@@ -275,7 +276,7 @@ Expected: FAIL until the distribution skill and version metadata are synchronize
 
 - [ ] **Step 3: Update release metadata and changelog**
 
-Set all four manifests to `1.40.0`. Add a `CHANGELOG.md` entry stating that Xray now uses Codex Browser to exercise every reachable local/test web-GUI flow, persists detailed evidence, and provides evidence-backed improvement proposals.
+Set the source and distribution manifests and both root-package version entries in `package-lock.json` to `1.40.0`. Add a `CHANGELOG.md` entry stating that Xray now uses Codex Browser to exercise every reachable local/test web-GUI flow, persists detailed evidence, and provides evidence-backed improvement proposals.
 
 - [ ] **Step 4: Run focused and full verification**
 
@@ -305,7 +306,7 @@ Expected: both commands exit `0` with no diff.
 Then commit:
 
 ```bash
-git add package.json .codex-plugin/plugin.json plugins/forgemind/package.json plugins/forgemind/.codex-plugin/plugin.json CHANGELOG.md tests/package.test.mjs
+git add package.json package-lock.json .codex-plugin/plugin.json plugins/forgemind/package.json plugins/forgemind/.codex-plugin/plugin.json CHANGELOG.md tests/package.test.mjs
 git commit -m "release: Xray 1.40.0"
 ```
 
