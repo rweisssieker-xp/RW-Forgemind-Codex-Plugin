@@ -142,6 +142,29 @@ test('Xray retains each blocked Browser flow on the same surface as a distinct g
   ]);
 });
 
+test('Xray reports browser coverage and prioritized recommendations from findings and gaps', async (t) => {
+  const root = await fixture(t, {
+    packageJson: { scripts: { test: 'node --test', dev: 'vite' }, dependencies: { vite: '^6' } },
+  });
+  const report = await runXray({
+    workspace: root,
+    guiReceipts: [{
+      surfaceId: 'web-gui', control: 'browser', status: 'failed', severity: 'high',
+      componentIds: ['gui-usability'], evidence: ['screenshots/login-error.png'],
+      url: 'http://127.0.0.1:4173/login', coverageArea: 'login', controlLabel: 'Sign in',
+      action: 'submit invalid credentials', expected: 'A clear validation message appears.',
+      actual: 'The form becomes unresponsive.', reproduction: 'Open login and submit invalid credentials.',
+    }],
+    runCommand: async () => ({ exitCode: 0, stdout: 'ok', stderr: '' }),
+  });
+  assert.deepEqual(report.coverage.areas, ['login']);
+  assert.equal(report.recommendations[0].priority, 'high');
+  assert.match(report.recommendations[0].verification, /Open login/);
+  const markdown = await readFile(path.join(root, 'docs', 'forgemind', 'xray-report.md'), 'utf8');
+  assert.match(markdown, /GUI coverage/);
+  assert.match(markdown, /Improvement proposals/);
+});
+
 test('Xray identifies an API route without creating an inferred runnable check', async (t) => {
   const root = await fixture(t, { files: { 'src/routes.mjs': 'router.get("/health", () => {});' } });
 

@@ -194,15 +194,16 @@ export function commandFinding(check, result) {
 
 function guiFinding(check) {
   const surfaceId = check.surfaceIds?.[0] ?? 'gui';
+  const receipt = check.importedReceipt ?? {};
   return {
     id: `finding-${check.id}`,
-    severity: check.importedReceipt?.severity ?? 'high',
+    severity: receipt.severity ?? 'high',
     surfaces: [...(check.surfaceIds ?? [])],
     componentIds: [...(check.componentIds ?? [])],
     title: `GUI control check failed: ${surfaceId}`,
-    reproduction: `Repeat the recorded ${check.control ?? 'GUI'} interaction for ${surfaceId}.`,
-    expected: 'The recorded GUI interaction satisfies its expected visible behavior.',
-    actual: 'The surface-specific GUI execution receipt recorded a failure.',
+    reproduction: receipt.reproduction || `Repeat the recorded ${check.control ?? 'GUI'} interaction for ${surfaceId}.`,
+    expected: receipt.expected || 'The recorded GUI interaction satisfies its expected visible behavior.',
+    actual: receipt.actual || 'The surface-specific GUI execution receipt recorded a failure.',
     evidence: [check.id],
     suspectedCause: 'The visible application behavior did not match the tested expectation.',
     userImpact: 'Users may encounter the failed behavior on the affected GUI surface.',
@@ -298,6 +299,8 @@ export async function runXray({
   const score = scoreXrayQuality({ mission: discoveredMission, ...execution });
   const gaps = deduplicateGaps([...execution.gaps, ...score.gaps]);
   const mission = enrichMission(discoveredMission, execution.receipts, gaps);
+  const coverage = browserCoverage(execution.receipts);
+  const recommendations = improvementRecommendations(execution.findings, gaps);
   const report = {
     schemaVersion: 1,
     status: deriveStatus({ ...execution, gaps }, score),
@@ -307,6 +310,8 @@ export async function runXray({
     findings: execution.findings,
     gaps,
     score,
+    coverage,
+    recommendations,
     errors: [],
   };
   await writeJsonAtomic(artifactStatePath(workspace, 'xray', 'test-mission-latest.json'), mission);
@@ -360,8 +365,52 @@ export function renderXrayMarkdown(report) {
     '',
     ...(report.gaps.length ? report.gaps.map((gap) => `- ${gap.code}${gap.message ? `: ${gap.message}` : ''}`) : ['No test gaps recorded.']),
     '',
+    '## GUI coverage',
+    '',
+    ...(report.coverage.areas.length ? report.coverage.areas.map((area) => `- ${area}`) : ['No Browser GUI coverage recorded.']),
+    '',
+    '## Improvement proposals',
+    '',
+    ...(report.recommendations.length ? report.recommendations.map((proposal) => `- **${proposal.priority}** ${proposal.area}: ${proposal.recommendation}\n  - Evidence: ${proposal.evidence.join(', ')}\n  - Benefit: ${proposal.benefit}\n  - Verification: ${proposal.verification}`) : ['No improvement proposals recorded.']),
+    '',
   ];
   return lines.join('\n');
+}
+
+function browserCoverage(receipts) {
+  const areas = [...new Set(receipts
+    .filter(({ control, status, coverageArea }) => control === 'browser' && ['passed', 'failed'].includes(status) && coverageArea)
+    .map(({ coverageArea }) => coverageArea))].sort();
+  return { areas, covered: areas.length };
+}
+
+function priorityForSeverity(severity) {
+  return ['critical', 'high', 'medium', 'low'].includes(severity) ? severity : 'medium';
+}
+
+function improvementRecommendations(findings, gaps) {
+  return [
+    ...findings.map((finding) => ({
+      priority: priorityForSeverity(finding.severity),
+      area: finding.surfaces?.join(', ') || finding.componentIds?.join(', ') || finding.id,
+      evidence: [...(finding.evidence ?? [])],
+      recommendation: finding.title,
+      benefit: finding.actual || finding.expected || finding.title,
+      verification: finding.reproduction || finding.nextVerification || finding.title,
+    })),
+    ...gaps.map((gap) => ({
+      priority: priorityForSeverity(gap.severity),
+      area: gap.coverageArea || gap.surfaceId || gap.componentId || gap.checkId || gap.code,
+      evidence: [...(gap.evidence ?? []), ...[gap.checkId, gap.code].filter(Boolean)],
+      recommendation: gap.message || gap.code,
+      benefit: gap.message || gap.code,
+      verification: gap.reproduction || gap.expected || gap.actual || gap.message || gap.code,
+    })),
+  ].sort((left, right) => priorityRank(left.priority) - priorityRank(right.priority));
+}
+
+function priorityRank(priority) {
+  return ['critical', 'high', 'medium', 'low'].indexOf(priority);
 }
 
 function isUnsafeCommand(command) {
