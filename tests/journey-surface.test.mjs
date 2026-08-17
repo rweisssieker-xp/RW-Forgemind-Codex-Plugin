@@ -53,5 +53,12 @@ test('Xray remains an explicit-only primary journey with the bundled runner and 
   assert.match(instructions, /execution receipt/i);
   assert.match(instructions, /internal Browser/);
   assert.match(instructions, /Computer Use/);
+  assert.match(instructions, /MUST use the internal Browser.*every reachable/i);
+  assert.match(instructions, /local or designated test environment/i);
+  assert.match(instructions, /production.*payment.*deploy.*credential.*administration/i);
+  assert.match(instructions, /coverageArea.*controlLabel.*reproduction/i);
+  assert.match(instructions, /positive flow.*validation or error flow/i);
+  assert.match(instructions, /rerun.*xray run.*--gui-receipts/i);
+  assert.match(instructions, /Improvement proposals/i);
   assert.match(ui, /allow_implicit_invocation: false/);
 });
