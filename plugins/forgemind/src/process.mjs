@@ -6,6 +6,9 @@ export async function runProcess(command, args = [], options = {}) {
   const startedAt = new Date().toISOString();
   const maxOutputBytes = options.maxOutputBytes ?? 256 * 1024;
   const invocation = await resolveInvocation(command, args, options.env ?? process.env);
+  if (invocation.error) {
+    return result(127, [], [Buffer.from(invocation.error)], false, startedAt);
+  }
 
   return new Promise((resolve) => {
     const stdout = [];
@@ -50,6 +53,9 @@ export async function runProcess(command, args = [], options = {}) {
 
 async function resolveInvocation(command, args, env) {
   if (process.platform === 'win32' && /\.(?:bat|cmd)$/i.test(command)) {
+    if ([command, ...args].some((value) => /[&|<>()^%!"\r\n]/.test(String(value)))) {
+      return { error: 'Unsafe Windows batch invocation: command and arguments must not contain shell metacharacters.' };
+    }
     return {
       command: env.ComSpec ?? env.COMSPEC ?? 'cmd.exe',
       args: ['/d', '/s', '/c', windowsBatchInvocation(command, args)],

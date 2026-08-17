@@ -100,3 +100,13 @@ test('process adapter executes a Windows batch wrapper without enabling a shell'
   assert.match(result.stdout, /wrapper-test/);
   assert.equal(result.shell, false);
 });
+
+test('process adapter rejects Windows batch command-chain arguments before invoking cmd', { skip: process.platform !== 'win32' }, async (t) => {
+  const root = await workspace(t, { 'gradlew.bat': '@echo off\r\necho wrapper-%1\r\nexit /b 0\r\n' });
+
+  const result = await runProcess('gradlew.bat', ['test', '&', 'whoami'], { cwd: root });
+
+  assert.equal(result.exitCode, 127);
+  assert.match(result.stderr, /unsafe Windows batch invocation/i);
+  assert.doesNotMatch(result.stdout, /wrapper-test/);
+});
