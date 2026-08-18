@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [1.42.0] - 2026-08-18
+
+- Fixed Xray to honor `--artifacts none`, so it no longer publishes a project report in no-persistence runs.
+- Added repository-derived Xray project context, validated local Web-flow configuration, and safe local GET/HEAD API checks with timing evidence.
+
 - Added `$forgemind-start`, a recommendation-only guided entry that selects and explains the next ForgeMind journey from context, outcome, and working style.
 - `$forgemind-xray` now uses the internal Codex Browser for safe explicit local/test GUI flows and submits complete receipts to the canonical Xray report; direct CLI use retains the local Playwright adapter.
 
