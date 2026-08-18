@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict';
-import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { access, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 
 import { discoverXrayMission, executeXrayMission, getXrayStatus, runXray, scoreXrayQuality } from '../src/xray.mjs';
+import { runCli } from '../src/cli.mjs';
 
 async function fixture(t, { packageJson, files = {} } = {}) {
   const root = await mkdtemp(path.join(tmpdir(), 'forgemind-xray-'));
@@ -721,6 +722,18 @@ test('Xray writes canonical evidence and a readable Markdown report without chan
     Object.fromEntries(Object.entries(report).filter(([key]) => !['evidencePath', 'projectDocuments'].includes(key))),
   );
   assert.equal(await readFile(path.join(root, 'package.json'), 'utf8'), JSON.stringify(packageJson, null, 2));
+});
+
+test('Xray artifacts none leaves no report or project document', async (t) => {
+  const root = await fixture(t, { packageJson: { scripts: { test: 'node --test' } } });
+  const sink = { write() {} };
+
+  const result = await runCli(['xray', 'run', '--workspace', root, '--artifacts', 'none', '--json'], { stdout: sink, stderr: sink });
+
+  assert.equal(result.exitCode, 0);
+  assert.deepEqual(result.data.projectDocuments, []);
+  await assert.rejects(access(path.join(root, 'docs', 'forgemind', 'xray-report.md')));
+  await assert.rejects(access(path.join(root, '.codex-orchestrator', 'xray', 'report-latest.json')));
 });
 
 test('Xray imports GUI receipts and persists executed and skipped mission outcomes', async (t) => {

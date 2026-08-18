@@ -17,7 +17,8 @@ import {
 } from './xray-adapters.mjs';
 import { redactText } from './redact.mjs';
 import { artifactStatePath } from './artifact-store.mjs';
-import { writeJsonAtomic, writeTextAtomic } from './io.mjs';
+import { writeJsonAtomic } from './io.mjs';
+import { publishProjectDocument } from './project-documents.mjs';
 
 const API_DEPENDENCIES = new Set([
   'express', '@hapi/hapi', 'fastify', 'koa', '@nestjs/core', 'hono', 'restify',
@@ -480,11 +481,11 @@ export async function runXray({
   };
   await writeJsonAtomic(artifactStatePath(workspace, 'xray', 'test-mission-latest.json'), mission);
   await writeJsonAtomic(artifactStatePath(workspace, 'xray', 'report-latest.json'), report);
-  await writeTextAtomic(path.join(workspace, 'docs', 'forgemind', 'xray-report.md'), renderXrayMarkdown(report));
+  const document = await publishProjectDocument({ workspace, name: 'xray-report.md', title: 'ForgeMind Xray Report', body: renderXrayMarkdown(report) });
   return {
     ...report,
     evidencePath: '.codex-orchestrator/xray/report-latest.json',
-    projectDocuments: ['docs/forgemind/xray-report.md'],
+    projectDocuments: document ? ['docs/forgemind/xray-report.md'] : [],
   };
 }
 
