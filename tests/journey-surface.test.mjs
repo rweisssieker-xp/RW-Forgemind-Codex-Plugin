@@ -66,6 +66,10 @@ test('Xray remains an explicit-only primary journey with internal Browser orches
   assert.match(instructions, /non-destructive interactions/i);
   assert.match(instructions, /provide complete.*--gui-receipts/i);
   assert.match(instructions, /Only that second CLI result is canonical/i);
+  assert.match(instructions, /discovery pass[\s\S]*criticalFlows/i);
+  assert.match(instructions, /each safe route[\s\S]*desktop[\s\S]*mobile/i);
+  assert.match(instructions, /executor.*internal-browser/i);
+  assert.match(instructions, /continue command and API tests/i);
   assert.match(instructions, /Improvement proposals/i);
   assert.equal(distributionInstructions, instructions);
   assert.match(ui, /allow_implicit_invocation: false/);
