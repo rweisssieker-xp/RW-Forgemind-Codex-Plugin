@@ -4,6 +4,8 @@ import path from 'node:path';
 import { invalidInput } from './errors.mjs';
 import { inspectProject } from './project.mjs';
 import { deriveProjectProfile } from './project-profile.mjs';
+import { loadXrayConfig } from './xray-config.mjs';
+import { planCriticalFlows } from './xray-flows.mjs';
 import { runProcess as runLocalProcess } from './process.mjs';
 import {
   classifyPrerequisiteFailure,
@@ -78,6 +80,7 @@ export async function discoverXrayMission({
   const profile = await inspectProject(workspace);
   const projectProfile = await deriveProjectProfile({ workspace: profile.root });
   const projectContext = xrayProjectContext(projectProfile);
+  const { value: xrayConfig, gaps: configGaps } = await loadXrayConfig({ workspace: profile.root });
   const manifest = await readPackageManifest(profile.root);
   const files = await projectFileNames(profile.root);
   const guiSignals = await detectGuiProjectSignals(profile.root, files, manifest, profile);
@@ -90,12 +93,14 @@ export async function discoverXrayMission({
     ? selectXrayChecks({ ...profile, manifest, surfaces })
     : [];
   const { checks: guiChecks, gaps: guiReceiptGaps } = createGuiChecks(surfaces, guiControl, guiReceipts);
-  const gaps = [...guiGap(surfaces, guiControl, guiChecks), ...guiReceiptGaps];
+  const { flows: criticalFlows, gaps: flowGaps } = planCriticalFlows({ files, config: xrayConfig, testUrl: normalizedTestUrl });
+  const gaps = [...configGaps, ...flowGaps, ...guiGap(surfaces, guiControl, guiChecks), ...guiReceiptGaps];
 
   return {
     id: `xray-${Date.now().toString(36)}`,
     goal: String(goal ?? '').trim() || defaultXrayGoal(projectContext),
     projectContext,
+    criticalFlows,
     adapters: selectedAdapters,
     testUrl: normalizedTestUrl,
     surfaces,

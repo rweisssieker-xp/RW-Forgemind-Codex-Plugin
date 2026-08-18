@@ -74,6 +74,18 @@ test('Xray carries the repository-derived application purpose into its test miss
   assert.match(mission.goal, /resolve operational incidents faster/i);
 });
 
+test('Xray exposes configured repository-derived critical flows in its mission', async (t) => {
+  const root = await fixture(t, {
+    packageJson: { forgemind: { xray: { web: { baseUrl: 'http://127.0.0.1:4173', viewports: ['desktop', 'mobile'] } } } },
+    files: { 'src/app/page.tsx': '', 'src/app/settings/page.tsx': '' },
+  });
+
+  const mission = await discoverXrayMission({ workspace: root });
+
+  assert.deepEqual(mission.criticalFlows.map(({ route }) => route), ['/', '/settings']);
+  assert.deepEqual(mission.criticalFlows[0].viewports, ['desktop', 'mobile']);
+});
+
 test('Xray reports unavailable GUI control as a gap rather than a test result', async (t) => {
   const root = await fixture(t, {
     packageJson: { scripts: { dev: 'vite' }, dependencies: { vite: '^6.0.0' } },
