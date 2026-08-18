@@ -6,6 +6,7 @@ import { inspectProject } from './project.mjs';
 import { deriveProjectProfile } from './project-profile.mjs';
 import { loadXrayConfig } from './xray-config.mjs';
 import { planCriticalFlows } from './xray-flows.mjs';
+import { executeApiChecks } from './xray-api.mjs';
 import { runProcess as runLocalProcess } from './process.mjs';
 import {
   classifyPrerequisiteFailure,
@@ -101,6 +102,7 @@ export async function discoverXrayMission({
     goal: String(goal ?? '').trim() || defaultXrayGoal(projectContext),
     projectContext,
     criticalFlows,
+    xrayConfig,
     adapters: selectedAdapters,
     testUrl: normalizedTestUrl,
     surfaces,
@@ -460,7 +462,15 @@ export async function runXray({
       ...androidGaps,
     ];
   }
-  const execution = await executeXrayMission({ workspace, mission: discoveredMission, runCommand });
+  const commandExecution = await executeXrayMission({ workspace, mission: discoveredMission, runCommand });
+  const apiExecution = discoveredMission.xrayConfig?.api
+    ? await executeApiChecks({ config: discoveredMission.xrayConfig.api })
+    : { receipts: [], findings: [], gaps: [] };
+  const execution = {
+    receipts: [...commandExecution.receipts, ...apiExecution.receipts],
+    findings: [...commandExecution.findings, ...apiExecution.findings],
+    gaps: [...commandExecution.gaps, ...apiExecution.gaps],
+  };
   const score = scoreXrayQuality({ mission: discoveredMission, ...execution });
   const gaps = deduplicateGaps([...execution.gaps, ...score.gaps]);
   const mission = enrichMission(discoveredMission, execution.receipts, gaps);
