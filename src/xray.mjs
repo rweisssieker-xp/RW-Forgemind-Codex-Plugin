@@ -7,6 +7,7 @@ import { deriveProjectProfile } from './project-profile.mjs';
 import { loadXrayConfig } from './xray-config.mjs';
 import { planCriticalFlows } from './xray-flows.mjs';
 import { executeApiChecks } from './xray-api.mjs';
+import { compareVisualEvidence, performanceFinding } from './xray-evidence.mjs';
 import { runProcess as runLocalProcess } from './process.mjs';
 import {
   classifyPrerequisiteFailure,
@@ -86,6 +87,11 @@ export async function discoverXrayMission({
   const files = await projectFileNames(profile.root);
   const guiSignals = await detectGuiProjectSignals(profile.root, files, manifest, profile);
   const surfaces = detectSurfaces({ ...profile, files, manifest, ...guiSignals });
+  const platformGaps = surfaces.filter((surface) => surface.id === 'native-gui' || (surface.id === 'mobile-gui' && surface.platform === 'ios')).map((surface) => ({
+    code: surface.id === 'native-gui' ? 'FM_XRAY_NATIVE_EMULATOR_UNSUPPORTED' : 'FM_XRAY_IOS_EMULATOR_UNAVAILABLE', surfaceId: surface.id,
+    message: surface.id === 'native-gui' ? 'The detected native desktop GUI has no supported emulator adapter.' : 'The detected iOS GUI requires a macOS/Xcode simulator; the Android adapter cannot execute it.',
+    nextAction: surface.id === 'native-gui' ? 'Record a Computer Use receipt from the supported native environment.' : 'Run the documented internal-browser web flow where available, plus an iOS Simulator receipt on macOS.',
+  }));
   const normalizedTestUrl = canonicalBrowserUrl(testUrl);
   if (isSafeBrowserTarget(normalizedTestUrl) && !surfaces.some(({ id }) => id === 'web-gui')) {
     surfaces.push({ id: 'web-gui', label: 'Web GUI', control: 'browser' });
@@ -95,7 +101,7 @@ export async function discoverXrayMission({
     : [];
   const { checks: guiChecks, gaps: guiReceiptGaps } = createGuiChecks(surfaces, guiControl, guiReceipts);
   const { flows: criticalFlows, gaps: flowGaps } = planCriticalFlows({ files, config: xrayConfig, testUrl: normalizedTestUrl });
-  const gaps = [...configGaps, ...flowGaps, ...guiGap(surfaces, guiControl, guiChecks), ...guiReceiptGaps];
+  const gaps = [...configGaps, ...platformGaps, ...flowGaps, ...guiGap(surfaces, guiControl, guiChecks), ...guiReceiptGaps];
 
   return {
     id: `xray-${Date.now().toString(36)}`,
@@ -152,8 +158,8 @@ export function detectSurfaces(profile) {
   if (hasWebDependency || hasWebStart) {
     surfaces.push({ id: 'web-gui', label: 'Web GUI', control: 'browser' });
   }
-  if (profile.nativeGui) surfaces.push({ id: 'native-gui', label: 'Native desktop GUI', control: 'computer-use' });
-  if (profile.mobileGui) surfaces.push({ id: 'mobile-gui', label: 'Mobile emulator GUI', control: 'computer-use' });
+  if (profile.nativeGui) surfaces.push({ id: 'native-gui', label: 'Native desktop GUI', control: 'computer-use', platform: 'desktop' });
+  if (profile.mobileGui) surfaces.push({ id: 'mobile-gui', label: 'Mobile emulator GUI', control: 'computer-use', platform: profile.iosGui ? 'ios' : 'android' });
 
   return surfaces;
 }
@@ -397,6 +403,7 @@ export async function runXray({
   testUrl,
   startProcess,
   probeUrl,
+  visualMode = 'compare',
 }) {
   const selectedAdapters = parseXrayAdapters(adapters);
   const normalizedTestUrl = canonicalBrowserUrl(testUrl);
@@ -471,14 +478,18 @@ export async function runXray({
     findings: [...commandExecution.findings, ...apiExecution.findings],
     gaps: [...commandExecution.gaps, ...apiExecution.gaps],
   };
-  const score = scoreXrayQuality({ mission: discoveredMission, ...execution });
-  const gaps = deduplicateGaps([...execution.gaps, ...score.gaps]);
+  const performance = performanceEvidence(execution.receipts, discoveredMission, discoveredMission.xrayConfig);
+  const visual = await visualEvidence({ workspace, receipts: execution.receipts, mission: discoveredMission, config: discoveredMission.xrayConfig, mode: visualMode });
+  const enrichedFindings = [...execution.findings, ...performance.findings, ...visual.findings];
+  const preliminaryGaps = deduplicateGaps([...execution.gaps, ...performance.gaps, ...visual.gaps]);
+  const score = scoreXrayQuality({ mission: discoveredMission, receipts: execution.receipts, findings: enrichedFindings, gaps: preliminaryGaps });
+  const gaps = deduplicateGaps([...preliminaryGaps, ...score.gaps]);
   const mission = enrichMission(discoveredMission, execution.receipts, gaps);
   const coverage = browserCoverage(execution.receipts);
   const recommendations = improvementRecommendations(execution.findings, gaps);
   const report = {
     schemaVersion: 1,
-    status: deriveStatus({ ...execution, gaps }, score),
+    status: deriveStatus({ ...execution, findings: enrichedFindings, gaps }, score),
     generatedAt: now.toISOString(),
     adapters: {
       selected: selectedAdapters,
@@ -487,10 +498,12 @@ export async function runXray({
     },
     mission,
     receipts: execution.receipts,
-    findings: execution.findings,
+    findings: enrichedFindings,
     gaps,
     score,
     coverage,
+    visual,
+    performance,
     recommendations,
     errors: [],
   };
@@ -522,8 +535,6 @@ export async function getXrayStatus({ workspace }) {
 
 export function renderXrayMarkdown(report) {
   const lines = [
-    '# ForgeMind Xray report',
-    '',
     `Generated: ${report.generatedAt}`,
     `Status: ${report.status}`,
     '',
@@ -539,6 +550,18 @@ export function renderXrayMarkdown(report) {
     `Primary job: ${report.mission?.projectContext?.primaryJob ?? 'Not identified'}`,
     `Deployment: ${report.mission?.projectContext?.deploymentModel ?? 'Not identified'}`,
     `Evidence: ${report.mission?.projectContext?.evidence ?? 'missing'}`,
+    '',
+    '## Critical flows',
+    '',
+    ...(report.mission?.criticalFlows?.length ? report.mission.criticalFlows.map((flow) => `- ${flow.id}: ${flow.url ?? flow.route ?? 'no URL'} (${flow.viewports?.join(', ') ?? 'default viewport'})`) : ['No safe web flow was discovered or configured.']),
+    '',
+    '## API evidence',
+    '',
+    ...(report.receipts.filter((receipt) => (receipt.surfaceIds ?? []).includes('api')).length ? report.receipts.filter((receipt) => (receipt.surfaceIds ?? []).includes('api')).map((receipt) => `- ${receipt.id}: ${receipt.statusCode ?? receipt.status} (${receipt.durationMs ?? '—'}ms)`) : ['No configured API execution receipt was recorded.']),
+    '',
+    '## Responsive coverage',
+    '',
+    ...(report.receipts.filter((receipt) => receipt.viewport).length ? report.receipts.filter((receipt) => receipt.viewport).map((receipt) => `- ${receipt.coverageArea ?? receipt.id}: ${receipt.viewport}`) : ['No viewport-specific GUI receipt was recorded.']),
     '',
     '## Quality score',
     '',
@@ -561,6 +584,14 @@ export function renderXrayMarkdown(report) {
     '## GUI coverage',
     '',
     ...(report.coverage.areas.length ? report.coverage.areas.map((area) => `- ${area}`) : ['No Browser GUI coverage recorded.']),
+    '',
+    '## Visual regression evidence',
+    '',
+    ...(report.visual?.checks?.length ? report.visual.checks.map((check) => `- ${check.flowId}: ${check.differencePercent?.toFixed(2) ?? '—'}% changed (${check.mode})`) : ['No screenshot-backed visual comparison was recorded.']),
+    '',
+    '## Performance budgets',
+    '',
+    ...(report.performance?.checks?.length ? report.performance.checks.map((check) => `- ${check.id}: ${check.durationMs ?? '—'}ms / ${check.budgetMs}ms`) : ['No configured performance budget was evaluated.']),
     '',
     '## Improvement proposals',
     '',
@@ -814,10 +845,11 @@ function createGuiChecks(surfaces, guiControl = {}, guiReceipts = []) {
 function browserFlowFields(candidate) {
   const fields = ['url', 'coverageArea', 'controlLabel', 'action', 'expected', 'actual', 'reproduction'];
   const normalized = Object.fromEntries(fields.map((key) => [key, String(candidate?.[key] ?? '').trim()]));
-  const artifacts = Object.fromEntries(['screenshot', 'trace']
+  const artifacts = Object.fromEntries(['screenshot', 'trace', 'viewport']
     .map((key) => [key, String(candidate?.[key] ?? '').trim()])
     .filter(([, value]) => value));
-  return { ...normalized, ...artifacts, complete: fields.every((key) => normalized[key]) };
+  const durationMs = Number(candidate?.durationMs);
+  return { ...normalized, ...artifacts, ...(Number.isFinite(durationMs) && durationMs >= 0 ? { durationMs } : {}), complete: fields.every((key) => normalized[key]) };
 }
 
 function isValidAndroidReceipt(candidate, evidence) {
@@ -1070,7 +1102,41 @@ async function detectGuiProjectSignals(root, files, manifest, profile) {
   return {
     nativeGui: windowsDesktop && (profile.stacks?.includes('dotnet') || normalizedFiles.some((name) => /\.(?:sln|csproj|fsproj)$/i.test(name))),
     mobileGui: androidProject || iosProject || mauiMobile || flutterMobile || scriptedMobile,
+    iosGui: iosProject || /<TargetFrameworks?>[^<]*ios/i.test(descriptorText) || Boolean(manifest.scripts?.ios),
   };
+}
+
+function performanceEvidence(receipts, mission, config) {
+  const checks = []; const findings = []; const gaps = [];
+  for (const receipt of receipts) {
+    const surfaceIds = receiptSurfaceIds(receipt, mission);
+    const webBudget = surfaceIds.includes('web-gui') ? config?.web?.performance?.navigationMs : undefined;
+    const budgetMs = webBudget;
+    if (budgetMs === undefined) continue;
+    checks.push({ id: receipt.id, budgetMs, durationMs: receipt.durationMs });
+    const result = performanceFinding(receipt, budgetMs);
+    if (!result) continue;
+    if (result.code) gaps.push(result); else findings.push(result);
+  }
+  return { checks, findings, gaps };
+}
+
+async function visualEvidence({ workspace, receipts, mission, config, mode }) {
+  const visualConfig = config?.web?.visualBaseline;
+  if (!visualConfig?.enabled) return { mode, checks: [], findings: [], gaps: [] };
+  const checks = []; const findings = []; const gaps = [];
+  for (const receipt of receipts) {
+    if (!receiptSurfaceIds(receipt, mission).includes('web-gui') || !receipt.screenshot) continue;
+    const result = await compareVisualEvidence({ workspace, flowId: receipt.coverageArea || receipt.id, screenshot: receipt.screenshot, thresholdPercent: visualConfig.thresholdPercent, baseline: mode === 'baseline' });
+    checks.push({ flowId: receipt.coverageArea || receipt.id, mode, differencePercent: result.differencePercent, evidence: result.evidence });
+    if (result.finding) findings.push(result.finding);
+    if (result.gap) gaps.push(result.gap);
+  }
+  return { mode, checks, findings, gaps };
+}
+
+function receiptSurfaceIds(receipt, mission) {
+  return receipt.surfaceIds ?? mission.checks?.find((check) => check.id === receipt.id)?.surfaceIds ?? [];
 }
 
 async function projectFileNames(root, relative = '') {

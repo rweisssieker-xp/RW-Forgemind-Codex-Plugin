@@ -278,15 +278,16 @@ export async function runCli(argv, context = {}) {
       const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
       const action = positionals[0] ?? 'run';
       const xray = await import('./xray.mjs');
-      if (action === 'run') data = await xray.runXray({
+      if (action === 'run' || action === 'baseline') data = await xray.runXray({
         workspace,
         goal: options.goal,
         testUrl: options['test-url'],
         adapters: xray.parseXrayAdapters(options.adapters),
         guiReceipts: parseJsonArray(options['gui-receipts'], 'FM_XRAY_GUI_RECEIPTS_INVALID'),
+        visualMode: action === 'baseline' ? 'baseline' : 'compare',
       });
       else if (action === 'status') data = await xray.getXrayStatus({ workspace });
-      else throw invalidInput('FM_XRAY_ACTION_INVALID', 'Xray supports run and status.');
+      else throw invalidInput('FM_XRAY_ACTION_INVALID', 'Xray supports run, baseline, and status.');
     } else if (command === 'leap') {
       const action = positionals[0] ?? 'run';
       const { advanceLeap, continueLeap, getLeapStatus, runLeap } = await import('./leap.mjs');

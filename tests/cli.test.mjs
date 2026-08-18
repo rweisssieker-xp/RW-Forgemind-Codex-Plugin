@@ -75,6 +75,14 @@ test('xray rejects unsupported actions', async () => {
   assert.match(result.data.error, /FM_XRAY_ACTION_INVALID/);
 });
 
+test('xray accepts baseline as an Xray action', async (t) => {
+  const workspace = await xrayWorkspace(t);
+  const result = await runCli(['xray', 'baseline', '--workspace', workspace, '--json'], { stdout: outputBuffer().stream, stderr: outputBuffer().stream });
+
+  assert.equal(result.exitCode, 0);
+  assert.equal(result.data.visual.mode, 'baseline');
+});
+
 test('xray run accepts surface-specific GUI receipts for the canonical report', async (t) => {
   const workspace = await mkdtemp(path.join(tmpdir(), 'forgemind-xray-cli-gui-'));
   await writeFile(path.join(workspace, 'package.json'), JSON.stringify({

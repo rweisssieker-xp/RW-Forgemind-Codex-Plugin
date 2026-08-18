@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [1.43.0] - 2026-08-18
+
+- Added Xray's explicit `baseline` action, decoded PNG pixel comparison with configurable thresholds, and reportable visual evidence.
+- Added canonical navigation/API performance-budget evaluation, timing-evidence gaps, and explicit native-desktop/iOS simulator boundaries.
+
 ## [1.42.0] - 2026-08-18
 
 - Fixed Xray to honor `--artifacts none`, so it no longer publishes a project report in no-persistence runs.

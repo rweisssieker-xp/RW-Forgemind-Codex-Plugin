@@ -29,4 +29,6 @@ For direct CLI use without the internal Browser, Xray retains its workspace-loca
 
 For local native GUI or mobile testing, Xray uses Android ADB only when it detects an Android surface and exactly one authorized emulator; it does not choose physical devices autonomously. Preserve `FM_XRAY_ANDROID_EMULATOR_UNAVAILABLE` or `FM_XRAY_ADB_UNAVAILABLE` when appropriate.
 
+For visual regression testing, configure an explicit local web target plus `web.visualBaseline.enabled` and a `thresholdPercent` in the project-local ForgeMind Xray configuration. Review the UI first, then establish a baseline with `xray baseline`; normal `xray run` compares only workspace-local PNG screenshots against it. Configured navigation and API time budgets become findings only when receipt timing evidence exists. Native desktop and iOS simulator testing remain explicit environment gaps; never claim Android execution covers them.
+
 Finally run `node <plugin-root>/bin/forgemind.mjs xray status --artifacts workspace --json` and hand off its detailed findings, explicit gaps, evidence references, Browser-covered areas, and informative score.
