@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 const PNG_SIGNATURE = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
 
 export async function pngDifferencePercent(baselinePath, candidatePath) {
-  const [baseline, candidate] = await Promise.all([readPng(baselinePath), readPng(candidatePath)]);
+  const [baseline, candidate] = await Promise.all([decodePng(baselinePath), decodePng(candidatePath)]);
   if (baseline.width !== candidate.width || baseline.height !== candidate.height) return 100;
   let changed = 0;
   for (let pixel = 0; pixel < baseline.width * baseline.height; pixel += 1) {
@@ -17,7 +17,7 @@ export async function pngDifferencePercent(baselinePath, candidatePath) {
   return (changed / (baseline.width * baseline.height)) * 100;
 }
 
-async function readPng(file) {
+export async function decodePng(file) {
   const bytes = await readFile(file);
   if (!bytes.subarray(0, 8).equals(PNG_SIGNATURE)) throw new Error('not a PNG image');
   let offset = 8; let header; const data = [];
