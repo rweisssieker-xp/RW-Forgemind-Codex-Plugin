@@ -1,4 +1,4 @@
-import { copyFile, mkdir, readFile } from 'node:fs/promises';
+import { mkdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { ForgeMindError } from './errors.mjs';
 import { artifactMetadata, artifactStatePath } from './artifact-store.mjs';
@@ -6,6 +6,7 @@ import { writeJsonAtomic } from './io.mjs';
 import { publishProjectDocument } from './project-documents.mjs';
 import { loadDesignContracts } from './design-fidelity-contract.mjs';
 import { compareDesignImages } from './design-fidelity-diff.mjs';
+import { captureBrowserScreenshot } from './visual-qa.mjs';
 
 export const ALLOWED_UI_EXTENSIONS = ['.css', '.scss', '.sass', '.less', '.html', '.jsx', '.tsx', '.vue', '.svelte', '.svg', '.png', '.jpg', '.jpeg', '.webp'];
 export function isAllowedUiEdit(file) { const normalized = String(file).replaceAll('\\', '/').toLowerCase(); return !/(^|\/)(package(?:-lock)?\.json|pnpm-lock\.yaml|yarn\.lock|\.env[^/]*|terraform|infra|deploy|payment|identity)(\/|$)/.test(normalized) && ALLOWED_UI_EXTENSIONS.some((extension) => normalized.endsWith(extension)); }
@@ -17,7 +18,8 @@ export async function runDesignFidelity({ workspace, references, route, viewport
   for (const contract of contracts) {
     const screenshot = artifactStatePath(workspace, 'design-fidelity', 'screenshots', `${contract.id}.png`);
     await mkdir(path.dirname(screenshot), { recursive: true });
-    if (capture) await capture({ contract, output: screenshot }); else await copyFile(path.resolve(workspace, contract.referencePath), screenshot);
+    if (capture) await capture({ contract, output: screenshot });
+    else await captureBrowserScreenshot({ workspace, url: contract.route, output: screenshot, label: contract.id, viewport: contract.viewport === 'mobile' ? '390x844' : '1440x900' });
     const diff = artifactStatePath(workspace, 'design-fidelity', 'diffs', `${contract.id}.png`);
     try { const comparison = await compareDesignImages({ baseline: path.resolve(workspace, contract.referencePath), candidate: screenshot, output: diff }); const status = comparison.differencePercent <= contract.thresholdPercent ? 'matched' : 'needs-correction'; results.push({ ...contract, screenshot: relative(workspace, screenshot), diff: relative(workspace, diff), comparison, status }); if (status === 'needs-correction') corrections.push({ contractId: contract.id, changedBounds: comparison.changedBounds, allowedExtensions: ALLOWED_UI_EXTENSIONS, reason: `${comparison.differencePercent.toFixed(2)}% differs from reference.` }); } catch { gaps.push({ code: 'FM_DESIGN_FIDELITY_IMAGE_INVALID', contractId: contract.id, message: 'Reference or captured screenshot is not a compatible PNG.' }); }
   }

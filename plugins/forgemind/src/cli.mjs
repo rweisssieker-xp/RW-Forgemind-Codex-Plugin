@@ -75,6 +75,7 @@ const PRIMARY_COMMANDS = [
   'selftest',
   'uninstall',
   'xray',
+  'design-fidelity',
 ];
 
 const HELP = `ForgeMind — vendor-neutral trust and evidence-driven delivery for Codex
@@ -288,6 +289,13 @@ export async function runCli(argv, context = {}) {
       });
       else if (action === 'status') data = await xray.getXrayStatus({ workspace });
       else throw invalidInput('FM_XRAY_ACTION_INVALID', 'Xray supports run, baseline, and status.');
+    } else if (command === 'design-fidelity') {
+      const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
+      const action = positionals[0] ?? 'run';
+      const designFidelity = await import('./design-fidelity.mjs');
+      if (action === 'run') data = await designFidelity.runDesignFidelity({ workspace, references: options.references, route: options.route, viewport: options.viewport, thresholdPercent: options.threshold, maxIterations: options['max-iterations'] });
+      else if (action === 'status') data = await designFidelity.getDesignFidelityStatus({ workspace });
+      else throw invalidInput('FM_DESIGN_FIDELITY_ACTION_INVALID', 'Design Fidelity supports run and status.');
     } else if (command === 'leap') {
       const action = positionals[0] ?? 'run';
       const { advanceLeap, continueLeap, getLeapStatus, runLeap } = await import('./leap.mjs');

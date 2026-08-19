@@ -9,7 +9,7 @@ import { listForgeRecords } from './forge/store.mjs';
 
 const SECTION_IDS = [
   'verification', 'risks', 'readiness', 'proof', 'traceability', 'decisions', 'memory-conflicts', 'outcomes', 'routing', 'usp-experiments',
-  'experiments', 'discovery-scorecard', 'checkpoints', 'visual-qa', 'capabilities', 'composition', 'delegation', 'hero-control', 'autopilot', 'portfolio', 'twin', 'ux-evolution', 'product-lab', 'outcome-memory', 'growth', 'integration-mesh', 'forge-trust', 'forge-strategy', 'forge-genome', 'forge-flight', 'forge-tournament', 'forge-shrink', 'forge-loop', 'forge-escrow', 'forge-federation',
+  'experiments', 'discovery-scorecard', 'checkpoints', 'visual-qa', 'design-fidelity', 'capabilities', 'composition', 'delegation', 'hero-control', 'autopilot', 'portfolio', 'twin', 'ux-evolution', 'product-lab', 'outcome-memory', 'growth', 'integration-mesh', 'forge-trust', 'forge-strategy', 'forge-genome', 'forge-flight', 'forge-tournament', 'forge-shrink', 'forge-loop', 'forge-escrow', 'forge-federation',
 ];
 
 export async function generateDashboard({ workspace, sources = {} }) {
@@ -35,6 +35,7 @@ export async function generateDashboard({ workspace, sources = {} }) {
     'discovery-scorecard': await readJson(root, `${product}/discovery-scorecard-latest.json`),
     checkpoints: await listJson(root, '.codex-orchestrator/checkpoints'),
     'visual-qa': await listJson(root, '.codex-orchestrator/visual-qa'),
+    'design-fidelity': await readJson(root, '.codex-orchestrator/design-fidelity/report-latest.json'),
     capabilities: await readJson(root, `${reports}/capability-manifest-latest.json`),
     composition: await readJson(root, '.codex-orchestrator/composition/latest.json'),
     delegation: await readJson(root, '.codex-orchestrator/delegation/latest.json'),

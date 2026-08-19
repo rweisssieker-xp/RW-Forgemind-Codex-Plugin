@@ -38,6 +38,7 @@ Compass — choose the smallest safe path
 | Transform | `$forgemind-transform` | Transform the repository through autonomous reversible experiments. |
 | Twin | `$forgemind-twin` | Build a repository-derived application model and show knowledge gaps. |
 | Evolve UI | `$forgemind-evolve-ui` | Plan a reversible UX experiment with functional, visual, accessibility, and rollback gates. |
+| Design Fidelity | `$forgemind-design-fidelity` | Match local UI implementation to PNG references with measured correction loops. |
 | Growth | `$forgemind-growth` | Plan bounded activation, retention, monetization, and value-proof experiments. |
 
 Leap is the automode. It continues through ordinary design and engineering decisions, but stops for credentials, production access, data deletion, irreversible migration, external spend, and high-stakes decisions.

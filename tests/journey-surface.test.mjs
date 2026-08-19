@@ -4,7 +4,7 @@ import path from 'node:path';
 import test from 'node:test';
 
 const root = path.resolve(import.meta.dirname, '..');
-const JOURNEYS = ['forgemind-start', 'forgemind-compass', 'forgemind-spark', 'forgemind-evolve', 'forgemind-venture', 'forgemind-council', 'forgemind-ship', 'forgemind-leap', 'forgemind-autopilot', 'forgemind-portfolio', 'forgemind-transform', 'forgemind-twin', 'forgemind-evolve-ui', 'forgemind-growth', 'forgemind-xray'];
+const JOURNEYS = ['forgemind-start', 'forgemind-compass', 'forgemind-spark', 'forgemind-evolve', 'forgemind-venture', 'forgemind-council', 'forgemind-ship', 'forgemind-leap', 'forgemind-autopilot', 'forgemind-portfolio', 'forgemind-transform', 'forgemind-twin', 'forgemind-evolve-ui', 'forgemind-growth', 'forgemind-xray', 'forgemind-design-fidelity'];
 
 test('Marketplace exposes the primary journeys while retaining internal modules', async () => {
   const manifest = JSON.parse(await readFile(path.join(root, '.codex-plugin', 'plugin.json'), 'utf8'));
@@ -24,7 +24,7 @@ test('Marketplace exposes the primary journeys while retaining internal modules'
       assert.match(instructions, /node <plugin-root>\/bin\/forgemind\.mjs autopilot start/);
       assert.doesNotMatch(instructions, /Run `forgemind autopilot start/);
     }
-    if (!['forgemind-start', 'forgemind-autopilot', 'forgemind-portfolio', 'forgemind-transform', 'forgemind-twin', 'forgemind-evolve-ui', 'forgemind-growth', 'forgemind-xray'].includes(journey)) { assert.match(instructions, /zero-input-defaults\.md/i); assert.match(ui, /Zero-Input Default/); }
+    if (!['forgemind-start', 'forgemind-autopilot', 'forgemind-portfolio', 'forgemind-transform', 'forgemind-twin', 'forgemind-evolve-ui', 'forgemind-growth', 'forgemind-xray', 'forgemind-design-fidelity'].includes(journey)) { assert.match(instructions, /zero-input-defaults\.md/i); assert.match(ui, /Zero-Input Default/); }
   }
   assert.match(await readFile(path.join(root, 'docs', 'HIERARCHY.md'), 'utf8'), /Compass[\s\S]*Spark[\s\S]*Evolve[\s\S]*Venture[\s\S]*Council[\s\S]*Ship[\s\S]*Leap/);
 });

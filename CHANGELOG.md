@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [1.44.0] - 2026-08-19
+
+- Added Design Fidelity: local PNG reference contracts, screenshot-diff evidence, and a bounded automatic UI-only correction loop for Codex.
+
 ## [1.43.0] - 2026-08-18
 
 - Added Xray's explicit `baseline` action, decoded PNG pixel comparison with configurable thresholds, and reportable visual evidence.

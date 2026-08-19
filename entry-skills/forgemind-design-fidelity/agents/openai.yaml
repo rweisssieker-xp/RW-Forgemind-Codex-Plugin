@@ -1,0 +1,6 @@
+interface:
+  display_name: "ForgeMind Design Fidelity"
+  short_description: "Turn local PNG references into measured UI corrections."
+  default_prompt: "Use $forgemind-design-fidelity to match a local UI to its PNG references."
+policy:
+  allow_implicit_invocation: false

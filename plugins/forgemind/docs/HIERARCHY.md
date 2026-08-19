@@ -1,8 +1,9 @@
 # ForgeMind Journey Hierarchy
 
-ForgeMind has fourteen primary entry points. They are the complete Marketplace surface; supporting commands are called by the relevant journey and remain available to advanced users.
+ForgeMind has fifteen primary entry points. They are the complete Marketplace surface; supporting commands are called by the relevant journey and remain available to advanced users.
 
 ```text
+Start — choose the next ForgeMind action
 Compass — choose the smallest safe path
 ├── Spark   — generate disruptive directions
 ├── Evolve  — transform an existing app
@@ -23,6 +24,7 @@ Compass — choose the smallest safe path
 
 | Journey | Invocation | Best for |
 | --- | --- | --- |
+| Start | `$forgemind-start` | Turning an idea, project, or quality concern into one explained next action. |
 | Compass | `$forgemind-compass` | Choosing a path for an unclear outcome. |
 | Spark | `$forgemind-spark` | Radical ideation, story, pitch, and creative direction. |
 | Evolve | `$forgemind-evolve` | Making an existing application materially more valuable through AI. |
@@ -36,9 +38,12 @@ Compass — choose the smallest safe path
 | Transform | `$forgemind-transform` | Transform the repository through autonomous reversible experiments. |
 | Twin | `$forgemind-twin` | Build a repository-derived application model and show knowledge gaps. |
 | Evolve UI | `$forgemind-evolve-ui` | Plan a reversible UX experiment with functional, visual, accessibility, and rollback gates. |
+| Design Fidelity | `$forgemind-design-fidelity` | Match local UI implementation to PNG references with measured correction loops. |
 | Growth | `$forgemind-growth` | Plan bounded activation, retention, monetization, and value-proof experiments. |
 
 Leap is the automode. It continues through ordinary design and engineering decisions, but stops for credentials, production access, data deletion, irreversible migration, external spend, and high-stakes decisions.
+
+Start asks only for context, desired outcome, and working style. It recommends—but does not execute—the appropriate journey; incomplete or conflicting input falls back to Compass with a visible confidence level and alternative route.
 
 Autopilot is the persistent goal-driven mode. It advances only with policy- and grant-authorized adapters, records previews, receipts, rollback declarations, and checkpoints, and holds at the same consequential boundaries.
 

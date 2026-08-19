@@ -20,6 +20,7 @@ ForgeMind is an evidence-first product innovation and delivery plugin for Codex,
 | Transform | `$forgemind-transform` | Autonomous, reversible portfolio transformation of the active repository. |
 | Twin | `$forgemind-twin` | Evidence-labelled live model of the active application. |
 | Evolve UI | `$forgemind-evolve-ui` | Reversible outcome-first UX experiment with proof gates. |
+| Design Fidelity | `$forgemind-design-fidelity` | Match a local UI to PNG references with measured correction loops. |
 | Growth | `$forgemind-growth` | Activation, retention, monetization, and value-proof experiments. |
 
 Every entry also works without appended text. For example, `$forgemind-spark` automatically runs its radical-idea default for the current project, and `$forgemind-leap` starts autonomous product mode. The first response states the derived goal; any supplied text overrides it.
