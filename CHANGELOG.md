@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [1.45.0] - 2026-08-20
+
+- Design Fidelity now turns image-derived design contracts into accessible controls and safe interaction evidence, alongside visual matching.
+
 ## [1.44.0] - 2026-08-19
 
 - Added Design Fidelity: local PNG reference contracts, screenshot-diff evidence, and a bounded automatic UI-only correction loop for Codex.
