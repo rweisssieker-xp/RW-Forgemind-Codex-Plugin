@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [1.46.0] - 2026-08-20
+
+- Added explicit Product Design PNG handoff: a user-selected local draft is copied immutably, identified by digest, and used directly by Design Fidelity runs.
+- Design Fidelity now rejects inferred or remote draft selection and records the selected draft in its evidence report.
+
 ## [1.45.0] - 2026-08-20
 
 - Design Fidelity now turns image-derived design contracts into accessible controls and safe interaction evidence, alongside visual matching.

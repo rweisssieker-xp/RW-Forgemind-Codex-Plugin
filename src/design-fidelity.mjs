@@ -9,13 +9,16 @@ import { compareDesignImages } from './design-fidelity-diff.mjs';
 import { captureBrowserScreenshot } from './visual-qa.mjs';
 import { loadControlContract } from './design-fidelity-controls.mjs';
 import { verifyControlContract } from './design-fidelity-control-receipts.mjs';
+import { loadProductDesignDraft } from './design-fidelity-drafts.mjs';
 
 export const ALLOWED_UI_EXTENSIONS = ['.css', '.scss', '.sass', '.less', '.html', '.jsx', '.tsx', '.vue', '.svelte', '.svg', '.png', '.jpg', '.jpeg', '.webp'];
 export function isAllowedUiEdit(file) { const normalized = String(file).replaceAll('\\', '/').toLowerCase(); return !/(^|\/)(package(?:-lock)?\.json|pnpm-lock\.yaml|yarn\.lock|\.env[^/]*|terraform|infra|deploy|payment|identity)(\/|$)/.test(normalized) && ALLOWED_UI_EXTENSIONS.some((extension) => normalized.endsWith(extension)); }
 
-export async function runDesignFidelity({ workspace, references, route, viewport, thresholdPercent, maxIterations, capture, controlContractId, controlObservations = [] }) {
+export async function runDesignFidelity({ workspace, references, route, viewport, thresholdPercent, maxIterations, capture, controlContractId, controlObservations = [], draftId }) {
   if (artifactMetadata().artifactMode === 'none') throw new ForgeMindError('FM_DESIGN_FIDELITY_ARTIFACTS_REQUIRED', 'Design Fidelity requires workspace artifacts for its measured correction loop.');
-  const { contracts, gaps } = await loadDesignContracts({ workspace, references, route, viewport, thresholdPercent, maxIterations });
+  const draft = draftId ? await loadProductDesignDraft({ workspace, draftId }) : null;
+  if (draftId && !draft) throw new ForgeMindError('FM_DESIGN_FIDELITY_DRAFT_NOT_FOUND', `Selected Product Design draft not found: ${draftId}.`);
+  const { contracts, gaps } = await loadDesignContracts({ workspace, references: draft?.referencePath ?? references, route: draft?.route ?? route, viewport: draft?.viewport ?? viewport, thresholdPercent, maxIterations });
   const results = []; const corrections = [];
   for (const contract of contracts) {
     const screenshot = artifactStatePath(workspace, 'design-fidelity', 'screenshots', `${contract.id}.png`);
@@ -28,7 +31,7 @@ export async function runDesignFidelity({ workspace, references, route, viewport
   const controlContract = controlContractId ? await loadControlContract({ workspace, contractId: controlContractId }) : null;
   const controlEvidence = controlContract ? verifyControlContract({ contract: controlContract, observations: controlObservations }) : { receipts: [], gaps: [] };
   const status = gaps.length ? 'blocked' : results.every(({ status }) => status === 'matched') && !controlEvidence.gaps.length ? 'matched' : 'needs-correction';
-  const report = { schemaVersion: 1, status, contracts: results, corrections, gaps, controlEvidence: controlEvidence.receipts, controlGaps: controlEvidence.gaps, generatedAt: new Date().toISOString(), errors: [] };
+  const report = { schemaVersion: 1, status, draft: draft ? { id: draft.id, source: draft.source, selectedBy: draft.selectedBy, sha256: draft.sha256 } : null, contracts: results, corrections, gaps, controlEvidence: controlEvidence.receipts, controlGaps: controlEvidence.gaps, generatedAt: new Date().toISOString(), errors: [] };
   await writeJsonAtomic(artifactStatePath(workspace, 'design-fidelity', 'report-latest.json'), report);
   await publishProjectDocument({ workspace, name: 'design-fidelity-report.md', title: 'ForgeMind Design Fidelity Report', body: render(report) });
   return { ...report, evidencePath: '.codex-orchestrator/design-fidelity/report-latest.json', projectDocuments: ['docs/forgemind/design-fidelity-report.md'] };

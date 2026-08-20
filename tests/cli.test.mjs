@@ -5,6 +5,7 @@ import path from 'node:path';
 import test from 'node:test';
 
 import { runCli } from '../src/cli.mjs';
+import { encodeRgbaPng } from '../src/design-fidelity-diff.mjs';
 
 function outputBuffer() {
   let value = '';
@@ -73,6 +74,18 @@ test('xray rejects unsupported actions', async () => {
 
   assert.equal(result.exitCode, 2);
   assert.match(result.data.error, /FM_XRAY_ACTION_INVALID/);
+});
+
+test('Design Fidelity imports a user-selected Product Design draft through the CLI', async (t) => {
+  const workspace = await mkdtemp(path.join(tmpdir(), 'forgemind-design-cli-'));
+  await writeFile(path.join(workspace, 'selected.png'), encodeRgbaPng({ width: 1, height: 1, pixels: Buffer.from([255, 0, 0, 255]) }));
+  t.after(() => rm(workspace, { recursive: true, force: true }));
+
+  const result = await runCli(['design-fidelity', 'import-draft', '--workspace', workspace, '--input', 'selected.png', '--route', 'http://127.0.0.1:4173/', '--json'], { stdout: outputBuffer().stream, stderr: outputBuffer().stream });
+
+  assert.equal(result.exitCode, 0);
+  assert.equal(result.data.source, 'product-design');
+  assert.equal(result.data.selectedBy, 'user');
 });
 
 test('xray accepts baseline as an Xray action', async (t) => {

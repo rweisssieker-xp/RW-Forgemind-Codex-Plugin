@@ -5,6 +5,14 @@ description: Use when local PNG design references must be implemented and verifi
 
 # ForgeMind Design Fidelity
 
+## Product Design handoff
+
+When Product Design presents PNG variants, first ask the user to choose one concrete PNG. Never infer a variant from its order, name, or recency. The user must place or export that selected PNG inside the target workspace, then import it as the immutable visual input:
+
+`node <plugin-root>/bin/forgemind.mjs design-fidelity import-draft --input <selected-local-png> --route <local-or-test-url> --viewport desktop --artifacts workspace --json`
+
+Use the returned draft ID in every fidelity run for that chosen design: `node <plugin-root>/bin/forgemind.mjs design-fidelity run --draft-id <draft-id> --control-contract <contract-id> --control-observations '<json-array>' --artifacts workspace --json`. Do not substitute `--references`, an ordinal, or a newer PNG for the selected draft. If there is no explicitly selected local PNG, stop and ask the user to choose/export one.
+
 Inspect the local PNG reference and write only observable controls as a contract: roles, accessible names, visible text, optional state, regions, and safe interactions. Mark uncertain content as an assumption; never invent it. Persist it before implementation with `node <plugin-root>/bin/forgemind.mjs design-fidelity contract --contract '<json>' --artifacts workspace --json`.
 
 Run `node <plugin-root>/bin/forgemind.mjs design-fidelity run --references <local-png-paths> --route <local-or-test-url> --control-contract <contract-id> --control-observations '<json-array>' --artifacts workspace --json` before changing UI code. Read the visual report, control evidence, gaps, correction bounds, and allowed file extensions.

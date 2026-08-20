@@ -293,10 +293,11 @@ export async function runCli(argv, context = {}) {
       const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
       const action = positionals[0] ?? 'run';
       const designFidelity = await import('./design-fidelity.mjs');
-      if (action === 'run') data = await designFidelity.runDesignFidelity({ workspace, references: options.references, route: options.route, viewport: options.viewport, thresholdPercent: options.threshold, maxIterations: options['max-iterations'], controlContractId: options['control-contract'], controlObservations: parseJsonArray(options['control-observations'], 'FM_DESIGN_FIDELITY_CONTROLS_INVALID') });
+      if (action === 'run') data = await designFidelity.runDesignFidelity({ workspace, references: options.references, route: options.route, viewport: options.viewport, thresholdPercent: options.threshold, maxIterations: options['max-iterations'], controlContractId: options['control-contract'], controlObservations: parseJsonArray(options['control-observations'], 'FM_DESIGN_FIDELITY_CONTROLS_INVALID'), draftId: options['draft-id'] });
+      else if (action === 'import-draft') { const drafts = await import('./design-fidelity-drafts.mjs'); data = await drafts.importProductDesignDraft({ workspace, input: options.input, route: options.route, viewport: options.viewport }); }
       else if (action === 'contract') { const controls = await import('./design-fidelity-controls.mjs'); data = await controls.saveControlContract({ workspace, contract: parseJson(options.contract, 'FM_DESIGN_FIDELITY_CONTROL_INVALID') }); }
       else if (action === 'status') data = await designFidelity.getDesignFidelityStatus({ workspace });
-      else throw invalidInput('FM_DESIGN_FIDELITY_ACTION_INVALID', 'Design Fidelity supports run, contract, and status.');
+      else throw invalidInput('FM_DESIGN_FIDELITY_ACTION_INVALID', 'Design Fidelity supports run, import-draft, contract, and status.');
     } else if (command === 'leap') {
       const action = positionals[0] ?? 'run';
       const { advanceLeap, continueLeap, getLeapStatus, runLeap } = await import('./leap.mjs');
