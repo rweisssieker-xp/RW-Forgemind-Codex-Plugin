@@ -23,6 +23,9 @@ test('the primary journeys produce decision-ready, evidence-labelled outputs', a
     assert.match(venture.data.claimBoundary, /not market facts/i);
     const council = await runCli(['council', 'decide', '--workspace', workspace, '--goal', 'case triage', '--json'], context());
     assert.equal(council.data.perspectives.length, 5);
+    const ship = await runCli(['ship', 'plan', '--workspace', workspace, '--goal', 'Add authenticated API synchronization to dashboard', '--json'], context());
+    assert.equal(ship.data.foundation.scope, 'foundation-required');
+    assert.ok(ship.data.foundation.nextStory);
     await readFile(path.join(workspace, 'docs', 'forgemind', 'venture-case.md'), 'utf8');
     await readFile(path.join(workspace, 'docs', 'forgemind', 'council-decision.md'), 'utf8');
   } finally { await rm(workspace, { recursive: true, force: true }); }

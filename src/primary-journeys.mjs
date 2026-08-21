@@ -12,6 +12,7 @@ import { planUiTesting } from './product-ops-lab.mjs';
 import { resolveWorkspace } from './paths.mjs';
 import { deriveProjectProfile, deriveVentureContext } from './project-profile.mjs';
 import { createMarketIntelligence } from './market-intelligence.mjs';
+import { runFoundation } from './foundation.mjs';
 
 export async function runCompass({ workspace, goal }) {
   const root = await resolveWorkspace(workspace);
@@ -118,9 +119,9 @@ export async function runShowcase({ workspace, goal }) {
 
 export async function runShip({ workspace, goal }) {
   const root = await resolveWorkspace(workspace); const { outcome, goalSource } = resolveGoal(goal, 'ship');
-  const [projectProfile, contract, canvas, uiTestPlan] = await Promise.all([deriveProjectProfile({ workspace: root }), createCompletionContract({ workspace: root, goal: outcome }), createExperienceCanvas({ workspace: root, goal: outcome }), planUiTesting({ workspace: root })]);
+  const [projectProfile, contract, canvas, uiTestPlan, foundation] = await Promise.all([deriveProjectProfile({ workspace: root }), createCompletionContract({ workspace: root, goal: outcome }), createExperienceCanvas({ workspace: root, goal: outcome }), planUiTesting({ workspace: root }), runFoundation({ workspace: root, goal: outcome, mode: 'embedded' })]);
   const result = { schemaVersion: 1, status: 'passed', generatedAt: new Date().toISOString(), goal: outcome, goalSource, projectProfile, contract, canvas, uiTestPlan,
-    executionMode: 'developer-autonomous-with-hard-stops', hardStops: contract.executionPolicy.pauseOnlyFor, nextAction: 'Implement the first open criterion, run the smallest relevant tests, and continue until the contract is satisfied or a hard stop is reached.', artifactPath: '.codex-orchestrator/primary/ship-latest.json', errors: [] };
+    foundation: { scope: foundation.scope, readiness: foundation.readiness, nextStory: foundation.nextStory }, executionMode: 'developer-autonomous-with-hard-stops', hardStops: contract.executionPolicy.pauseOnlyFor, nextAction: foundation.scope === 'foundation-required' ? `Implement Foundation story: ${foundation.nextStory?.title ?? 'resolve Foundation readiness blockers'}.` : 'Implement the first open criterion, run the smallest relevant tests, and continue until the contract is satisfied or a hard stop is reached.', artifactPath: '.codex-orchestrator/primary/ship-latest.json', errors: [] };
   await save(root, 'ship-latest.json', result); return result;
 }
 

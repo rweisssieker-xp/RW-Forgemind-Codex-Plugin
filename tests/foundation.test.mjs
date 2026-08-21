@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 
-import { runFoundation } from '../src/foundation.mjs';
+import { classifyFoundationScope, evaluateFoundationReadiness, refreshFoundation, runFoundation } from '../src/foundation.mjs';
 
 async function workspace(t) {
   const root = await mkdtemp(path.join(tmpdir(), 'forgemind-foundation-'));
@@ -23,4 +23,17 @@ test('Foundation drafts a complete evidence-labelled planning chain without ques
   assert.equal(result.foundation.stories.length, 1);
   await readFile(path.join(root, '.codex-orchestrator', 'foundation', 'latest.json'), 'utf8');
   await readFile(path.join(root, 'docs', 'forgemind', 'project-context.md'), 'utf8');
+});
+
+test('Foundation requires planning for integration work and invalidates dependent artifacts on refresh', async (t) => {
+  const root = await workspace(t);
+  const result = await runFoundation({ workspace: root, goal: 'Add authenticated API integration across dashboard and data model' });
+
+  assert.equal(result.scope, 'foundation-required');
+  assert.equal(classifyFoundationScope({ goal: 'Correct one button label', projectProfile: { commands: [] } }), 'lightweight');
+  assert.deepEqual(evaluateFoundationReadiness({ ...result.foundation, architecture: null }), { status: 'fail', blockers: ['architecture-missing'] });
+  const refreshed = await refreshFoundation({ workspace: root, changes: { prd: { scope: 'Add partner synchronization' } } });
+  assert.equal(refreshed.revision, 2);
+  assert.equal(refreshed.foundation.epics[0].state, 'stale');
+  assert.ok(refreshed.readiness.blockers.includes('stories-stale'));
 });
