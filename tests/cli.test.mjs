@@ -57,6 +57,16 @@ test('Compass has a portable CLI entrypoint and routes an explicit goal', async 
   assert.equal(result.data.goalSource, 'user');
 });
 
+test('Foundation has a zero-input CLI entrypoint', async (t) => {
+  const workspace = await mkdtemp(path.join(tmpdir(), 'forgemind-foundation-cli-'));
+  t.after(() => rm(workspace, { recursive: true, force: true }));
+  const result = await runCli(['foundation', 'run', '--workspace', workspace, '--json'], { stdout: outputBuffer().stream, stderr: outputBuffer().stream });
+
+  assert.equal(result.exitCode, 0);
+  assert.equal(result.data.goalSource, 'zero-input-default');
+  assert.ok(result.data.nextStory);
+});
+
 test('xray run dispatches the QA report and xray status reads it', async (t) => {
   const workspace = await xrayWorkspace(t);
   const run = await runCli(['xray', 'run', '--workspace', workspace, '--json'], { stdout: outputBuffer().stream, stderr: outputBuffer().stream });

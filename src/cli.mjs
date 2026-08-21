@@ -21,6 +21,7 @@ const PRIMARY_COMMANDS = [
   'route',
   'signals',
   'start',
+  'foundation',
   'compass',
   'hero',
   'innovation',
@@ -120,6 +121,14 @@ export async function runCli(argv, context = {}) {
       const pluginRoot = await resolvePluginRoot(options.plugin ?? MODULE_PLUGIN_ROOT);
       const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
       data = await diagnose({ pluginRoot, workspace, installation: Boolean(options.installation) });
+    } else if (command === 'foundation') {
+      const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
+      const action = positionals[0] ?? 'run';
+      const foundation = await import('./foundation.mjs');
+      if (action === 'run') data = await foundation.runFoundation({ workspace, goal: options.goal, mode: 'direct' });
+      else if (action === 'status') data = await foundation.getFoundationStatus({ workspace });
+      else if (action === 'refresh') data = await foundation.refreshFoundation({ workspace });
+      else throw invalidInput('FM_FOUNDATION_ACTION_INVALID', 'Foundation supports run, status, and refresh.');
     } else if (command === 'inspect') {
       const { inspectProject } = await import('./project.mjs');
       const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
