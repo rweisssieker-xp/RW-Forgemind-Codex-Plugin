@@ -25,6 +25,13 @@ test('process execution truncates output at the configured byte limit', async ()
   assert.ok(Buffer.byteLength(result.stdout) <= 64);
 });
 
+test('process execution terminates a command that exceeds its timeout', async () => {
+  const result = await runProcess(process.execPath, ['-e', 'setTimeout(() => {}, 5000)'], { timeoutMs: 50 });
+
+  assert.equal(result.timedOut, true);
+  assert.notEqual(result.exitCode, 0);
+});
+
 test('verification executes detected project commands and persists their evidence', async (t) => {
   const root = await mkdtemp(path.join(tmpdir(), 'forgemind-verify-'));
   t.after(() => rm(root, { recursive: true, force: true }));

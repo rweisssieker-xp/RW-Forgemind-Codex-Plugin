@@ -1,6 +1,6 @@
 # ForgeMind Journey Hierarchy
 
-ForgeMind has fifteen primary entry points. They are the complete Marketplace surface; supporting commands are called by the relevant journey and remain available to advanced users.
+ForgeMind has sixteen Marketplace entry points. Ten are recommended starting journeys; six are focused extensions normally reached through Compass or a parent journey. Supporting CLI commands remain available to advanced users.
 
 ```text
 Start — choose the next ForgeMind action
@@ -34,12 +34,12 @@ Compass — choose the smallest safe path
 | Leap | `$forgemind-leap` | Autonomous developer delivery without routine questions. |
 | Xray | `$forgemind-xray` | Evidence-backed, read-only QA across detected local surfaces. |
 | Autopilot | `$forgemind-autopilot` | Persistent Codex-goal delivery with scoped adapters and recovery. |
-| Portfolio | `$forgemind-portfolio` | Discover and prioritize every evidence-labelled AI-native USP. |
-| Transform | `$forgemind-transform` | Transform the repository through autonomous reversible experiments. |
-| Twin | `$forgemind-twin` | Build a repository-derived application model and show knowledge gaps. |
-| Evolve UI | `$forgemind-evolve-ui` | Plan a reversible UX experiment with functional, visual, accessibility, and rollback gates. |
-| Design Fidelity | `$forgemind-design-fidelity` | Match local UI implementation to PNG references with measured correction loops. |
-| Growth | `$forgemind-growth` | Plan bounded activation, retention, monetization, and value-proof experiments. |
+| Portfolio *(extension)* | `$forgemind-portfolio` | Discover and prioritize every evidence-labelled AI-native USP. |
+| Transform *(extension)* | `$forgemind-transform` | Transform the repository through autonomous reversible experiments. |
+| Twin *(extension)* | `$forgemind-twin` | Build a repository-derived application model and show knowledge gaps. |
+| Evolve UI *(extension)* | `$forgemind-evolve-ui` | Plan a reversible UX experiment with functional, visual, accessibility, and rollback gates. |
+| Design Fidelity *(extension)* | `$forgemind-design-fidelity` | Match local UI implementation to PNG references with measured correction loops. |
+| Growth *(extension)* | `$forgemind-growth` | Plan bounded activation, retention, monetization, and value-proof experiments. |
 
 Leap is the automode. It continues through ordinary design and engineering decisions, but stops for credentials, production access, data deletion, irreversible migration, external spend, and high-stakes decisions.
 

@@ -1,7 +1,6 @@
 import { createHash } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
-import { spawn } from 'node:child_process';
 import path from 'node:path';
 
 import { ForgeMindError } from './errors.mjs';
@@ -11,6 +10,7 @@ import { artifactStatePath } from './artifact-store.mjs';
 import { inspectProject } from './project.mjs';
 import { listSignals } from './signals.mjs';
 import { markdownTable, publishProjectDocument } from './project-documents.mjs';
+import { runProcess } from './process.mjs';
 
 const ROOT = ['.codex-orchestrator', 'product-ops'];
 
@@ -100,10 +100,11 @@ export async function planUiTesting({ workspace, url }) {
 }
 
 export async function runUiTest({ workspace, command, timeoutSeconds = 120 }) {
-  const root = await resolveWorkspace(workspace); if (!command) throw new ForgeMindError('FM_UI_TEST_COMMAND_REQUIRED', 'UI test execution requires --command.');
+  const root = await resolveWorkspace(workspace); if (!command) throw new ForgeMindError('FM_UI_TEST_COMMAND_REQUIRED', 'UI test execution requires --command with a declared package.json script name.');
+  const script = await resolveUiTestScript(root, command);
   const timeout = Math.min(600, Math.max(1, Number(timeoutSeconds) || 120)) * 1000;
-  const run = await execute(String(command), root, timeout);
-  const result = { schemaVersion: 1, status: run.exitCode === 0 && !run.timedOut ? 'passed' : 'failed', ranAt: new Date().toISOString(), command: String(command), timeoutSeconds: timeout / 1000, ...run, claimBoundary: 'This proves only the recorded command result; inspect its artifacts and critical user flow before release.', errors: [] };
+  const run = await executePackageScript(script, root, timeout);
+  const result = { schemaVersion: 1, status: run.exitCode === 0 && !run.timedOut ? 'passed' : 'failed', ranAt: new Date().toISOString(), command: `npm run ${script}`, script, timeoutSeconds: timeout / 1000, ...run, claimBoundary: 'This proves only the recorded declared package script result; inspect its artifacts and critical user flow before release.', errors: [] };
   await save(root, 'ui-test-run-latest.json', result); return result;
 }
 
@@ -147,7 +148,19 @@ function scenario(name, a, revenueFactor, churnFactor, cacFactor) {
   return { name, acquiredCustomers: round(acquired), churnedCustomers: round(churned), endCustomers: round(endCustomers), annualRevenue: round(revenue), grossProfit: round(grossProfit), acquisitionCost: round(acquisitionCost), twelveMonthNet: round(net), ltv: ltv === null ? null : round(ltv), ltvToCac: ltv === null || !a.customerAcquisitionCost ? null : round(ltv / (a.customerAcquisitionCost * cacFactor)), viabilityScore };
 }
 function summarizeTelemetry(events) { const names = {}; const users = new Set(); for (const e of events) { names[e.name] = (names[e.name] ?? 0) + 1; if (e.user) users.add(e.user); } return { eventCount: events.length, uniqueKnownUsers: users.size, eventsByName: names }; }
-function execute(command, cwd, timeout) { return new Promise((resolve) => { const child = spawn(command, { cwd, shell: true, windowsHide: true }); let stdout = ''; let stderr = ''; let timedOut = false; const timer = setTimeout(() => { timedOut = true; child.kill(); }, timeout); child.stdout.on('data', (data) => { stdout += data; }); child.stderr.on('data', (data) => { stderr += data; }); child.on('close', (code) => { clearTimeout(timer); resolve({ exitCode: code ?? 1, timedOut, stdout: stdout.slice(-12000), stderr: stderr.slice(-12000) }); }); }); }
+async function resolveUiTestScript(workspace, command) {
+  const script = String(command).trim();
+  if (!/^[A-Za-z0-9:_-]+$/.test(script)) throw new ForgeMindError('FM_UI_TEST_SCRIPT_INVALID', 'UI test command must be a simple declared package.json script name.');
+  let packageJson;
+  try { packageJson = JSON.parse(await readFile(path.join(workspace, 'package.json'), 'utf8')); } catch { throw new ForgeMindError('FM_UI_TEST_SCRIPT_INVALID', 'UI test execution requires a readable package.json with declared scripts.'); }
+  if (typeof packageJson.scripts?.[script] !== 'string' || !packageJson.scripts[script].trim()) throw new ForgeMindError('FM_UI_TEST_SCRIPT_INVALID', `UI test script "${script}" is not declared in package.json.`);
+  return script;
+}
+
+async function executePackageScript(script, cwd, timeout) {
+  const run = await runProcess('npm', ['run', script], { cwd, timeoutMs: timeout, maxOutputBytes: 12_000 });
+  return { ...run, stdout: run.stdout.slice(-12000), stderr: run.stderr.slice(-12000) };
+}
 function required(value, name) { if (!String(value ?? '').trim()) throw new ForgeMindError('FM_INPUT_REQUIRED', `Research record requires ${name}.`); return String(value); }
 function numeric(value, fallback) { const parsed = Number(value); return Number.isFinite(parsed) ? Math.max(0, parsed) : fallback; }
 function bounded(value, fallback) { return Math.min(1, Math.max(0, numeric(value, fallback))); }

@@ -4,7 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 
-import { createFinancialModel, createPortfolioCockpit, planUiTesting, recordPerceptualComparison, recordResearch, recordTelemetry, runDiscoveryLoop, stageTestRepair } from '../src/product-ops-lab.mjs';
+import { createFinancialModel, createPortfolioCockpit, planUiTesting, recordPerceptualComparison, recordResearch, recordTelemetry, runDiscoveryLoop, runUiTest, stageTestRepair } from '../src/product-ops-lab.mjs';
 
 async function workspace(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forgemind-product-ops-'));
@@ -42,4 +42,19 @@ test('Product Ops Lab plans executable UI evidence and leaves visual repair unde
   const repair = await stageTestRepair({ workspace: root, failure: 'login CTA renamed', replacement: "getByRole('button', { name: 'Sign in' })" });
   assert.equal(repair.status, 'review-required');
   assert.equal(repair.mode, 'staged-no-source-write');
+});
+
+test('UI test runner executes only a declared package script', async (t) => {
+  const root = await workspace(t);
+  await writeFile(path.join(root, 'package.json'), JSON.stringify({ scripts: { smoke: "node -e \"console.log('safe')\"" } }));
+
+  const result = await runUiTest({ workspace: root, command: 'smoke' });
+
+  assert.equal(result.status, 'passed');
+  assert.equal(result.command, 'npm run smoke');
+  assert.equal(result.script, 'smoke');
+  await assert.rejects(
+    () => runUiTest({ workspace: root, command: 'smoke; Remove-Item -Force important-file' }),
+    (error) => error.code === 'FM_UI_TEST_SCRIPT_INVALID',
+  );
 });

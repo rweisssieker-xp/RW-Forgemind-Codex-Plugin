@@ -56,7 +56,6 @@ const PRIMARY_COMMANDS = [
   'finance',
   'telemetry',
   'discovery-loop',
-  'portfolio',
   'product',
   'ui-test',
   'capabilities',

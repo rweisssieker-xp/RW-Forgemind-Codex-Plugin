@@ -8,7 +8,7 @@ export async function runProcess(command, args = [], options = {}) {
   const binaryOutput = options.binaryOutput === true;
   const invocation = await resolveInvocation(command, args, options.env ?? process.env);
   if (invocation.error) {
-    return result(127, [], [Buffer.from(invocation.error)], false, startedAt, binaryOutput);
+    return result(127, [], [Buffer.from(invocation.error)], false, false, startedAt, binaryOutput);
   }
 
   return new Promise((resolve) => {
@@ -17,7 +17,16 @@ export async function runProcess(command, args = [], options = {}) {
     let stdoutBytes = 0;
     let stderrBytes = 0;
     let truncated = false;
+    let timedOut = false;
+    let finished = false;
     let child;
+    let timer;
+    const finish = (code, error = null) => {
+      if (finished) return;
+      finished = true;
+      if (timer) clearTimeout(timer);
+      resolve(result(code ?? 1, stdout, error ? [...stderr, Buffer.from(error.message)] : stderr, truncated, timedOut, startedAt, binaryOutput));
+    };
     try {
       child = spawn(invocation.command, invocation.args, {
         cwd: options.cwd,
@@ -27,7 +36,7 @@ export async function runProcess(command, args = [], options = {}) {
         stdio: ['ignore', 'pipe', 'pipe'],
       });
     } catch (error) {
-      resolve(result(127, stdout, [Buffer.from(error.message)], truncated, startedAt, binaryOutput));
+      finish(127, error);
       return;
     }
 
@@ -44,11 +53,17 @@ export async function runProcess(command, args = [], options = {}) {
       stderrBytes += Math.min(chunk.length, remaining);
     });
     child.on('error', (error) => {
-      resolve(result(127, stdout, [...stderr, Buffer.from(error.message)], truncated, startedAt, binaryOutput));
+      finish(127, error);
     });
     child.on('close', (code) => {
-      resolve(result(code ?? 1, stdout, stderr, truncated, startedAt, binaryOutput));
+      finish(code);
     });
+    if (Number.isFinite(options.timeoutMs) && options.timeoutMs > 0) {
+      timer = setTimeout(() => {
+        timedOut = true;
+        child.kill();
+      }, options.timeoutMs);
+    }
   });
 }
 
@@ -92,7 +107,7 @@ function windowsBatchInvocation(command, args) {
   return `call ${[command, ...args].map(String).join(' ')}`;
 }
 
-function result(exitCode, stdout, stderr, truncated, startedAt, binaryOutput) {
+function result(exitCode, stdout, stderr, truncated, timedOut, startedAt, binaryOutput) {
   const stdoutBuffer = Buffer.concat(stdout);
   return {
     exitCode,
@@ -100,6 +115,7 @@ function result(exitCode, stdout, stderr, truncated, startedAt, binaryOutput) {
     ...(binaryOutput ? { stdoutBuffer } : {}),
     stderr: Buffer.concat(stderr).toString('utf8'),
     truncated,
+    timedOut,
     shell: false,
     startedAt,
     endedAt: new Date().toISOString(),

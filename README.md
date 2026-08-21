@@ -2,7 +2,9 @@
 
 ForgeMind is an evidence-first product innovation and delivery plugin for Codex, published by [Aivana GmbH](https://aivana-gmbh.ai/). It turns ideas and existing applications into disruptive, market-aware, testable MVPs while keeping a clear boundary between facts, assumptions, and release proof.
 
-## The starting points
+## Recommended starting points
+
+Start with one of the first ten journeys below. The remaining entries are focused extensions for a specific delivery phase, available directly and recommended by Compass when relevant.
 
 | Start | Prompt | Result |
 | --- | --- | --- |
@@ -16,12 +18,12 @@ ForgeMind is an evidence-first product innovation and delivery plugin for Codex,
 | Leap | `$forgemind-leap Autonomously turn this app or idea into a disruptive MVP: …` | Developer automode from idea/app to bounded MVP. |
 | Xray | `$forgemind-xray Assess this application with read-only local QA.` | Evidence-backed quality findings, explicit test gaps, and an informative score. |
 | Autopilot | `$forgemind-autopilot Autonomously achieve this Codex goal end to end.` | Persistent goal-driven delivery with adapters, recovery, and evidence gates. |
-| Portfolio | `$forgemind-portfolio` | All evidence-labelled AI-native USP opportunities in the active repository. |
-| Transform | `$forgemind-transform` | Autonomous, reversible portfolio transformation of the active repository. |
-| Twin | `$forgemind-twin` | Evidence-labelled live model of the active application. |
-| Evolve UI | `$forgemind-evolve-ui` | Reversible outcome-first UX experiment with proof gates. |
-| Design Fidelity | `$forgemind-design-fidelity` | Match a local UI to PNG references with measured correction loops. |
-| Growth | `$forgemind-growth` | Activation, retention, monetization, and value-proof experiments. |
+| Portfolio *(extension)* | `$forgemind-portfolio` | All evidence-labelled AI-native USP opportunities in the active repository. |
+| Transform *(extension)* | `$forgemind-transform` | Autonomous, reversible portfolio transformation of the active repository. |
+| Twin *(extension)* | `$forgemind-twin` | Evidence-labelled live model of the active application. |
+| Evolve UI *(extension)* | `$forgemind-evolve-ui` | Reversible outcome-first UX experiment with proof gates. |
+| Design Fidelity *(extension)* | `$forgemind-design-fidelity` | Match a local UI to PNG references with measured correction loops. |
+| Growth *(extension)* | `$forgemind-growth` | Activation, retention, monetization, and value-proof experiments. |
 
 Every entry also works without appended text. For example, `$forgemind-spark` automatically runs its radical-idea default for the current project, and `$forgemind-leap` starts autonomous product mode. The first response states the derived goal; any supplied text overrides it.
 
@@ -80,6 +82,14 @@ The target app remains the source for inspection, implementation, tests, signals
 - External `--artifact-dir` destinations are disabled; persistent artifacts always remain in the target project.
 
 Every JSON response includes `artifactMode` and absolute `artifactPath`.
+
+## Running a local UI-test script
+
+`ui-test run` intentionally accepts only the name of a script declared in the target project's `package.json`; it executes that script as `npm run <script>` without a shell. This keeps the command auditable and prevents shell syntax from being interpreted as part of a test command.
+
+```text
+node <plugin-root>/bin/forgemind.mjs ui-test run --command test:e2e --artifacts workspace --json
+```
 
 ## Portable CLI
 
