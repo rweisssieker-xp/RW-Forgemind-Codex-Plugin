@@ -5,6 +5,20 @@ description: Use when local PNG design references must be implemented and verifi
 
 # ForgeMind Design Fidelity
 
+## Product Design proposal and selection handoff
+
+When `@Product Design` creates visual alternatives, require exactly three local PNG proposals. Do not infer the preferred variant. Persist them first:
+
+`node <plugin-root>/bin/forgemind.mjs design-fidelity propose --inputs <proposal-1.png,proposal-2.png,proposal-3.png> --route <local-or-test-url> --artifacts workspace --json`
+
+Show the resulting proposal IDs and wait only for the user to choose one. Persist that choice, then obtain the implementation handoff:
+
+`node <plugin-root>/bin/forgemind.mjs design-fidelity select --proposal-set <set-id> --proposal <proposal-id> --artifacts workspace --json`
+
+`node <plugin-root>/bin/forgemind.mjs design-fidelity apply --proposal-set <set-id> --proposal <proposal-id> --artifacts workspace --json`
+
+After selection, implement only the returned immutable draft. Do not reinterpret or redesign its observable layout, copy, controls, states, or safe interactions; record any uncertainty as an assumption. `apply` is a controlled handoff, not permission to edit non-UI files or to skip the measured correction loop.
+
 ## Product Design handoff
 
 When Product Design presents PNG variants, first ask the user to choose one concrete PNG. Never infer a variant from its order, name, or recency. The user must place or export that selected PNG inside the target workspace, then import it as the immutable visual input:

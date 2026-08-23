@@ -124,6 +124,16 @@ Every JSON response includes `artifactMode` and absolute `artifactPath`.
 node <plugin-root>/bin/forgemind.mjs ui-test run --command test:e2e --artifacts workspace --json
 ```
 
+## Product Design to Design Fidelity
+
+For a controlled visual handoff, let `@Product Design` create exactly three local PNG variants, persist them with `design-fidelity propose`, and have the user explicitly select one proposal. `design-fidelity apply` returns the immutable selected draft and the measured Fidelity handoff; it never selects or redesigns a variant automatically.
+
+```text
+node <plugin-root>/bin/forgemind.mjs design-fidelity propose --inputs option-a.png,option-b.png,option-c.png --route http://127.0.0.1:4173/ --artifacts workspace --json
+node <plugin-root>/bin/forgemind.mjs design-fidelity select --proposal-set <set-id> --proposal proposal-2 --artifacts workspace --json
+node <plugin-root>/bin/forgemind.mjs design-fidelity apply --proposal-set <set-id> --proposal proposal-2 --artifacts workspace --json
+```
+
 ## Portable CLI
 
 For controlled installation, use `node bin/forgemind.mjs install --source <package-path> --home <codex-home>`. ForgeMind installs only to `<codex-home>/plugins/forgemind`; `--destination` is a compatible alias and `--plugin-path <codex-home>/plugins/forgemind` is available for explicit local or team targets.
