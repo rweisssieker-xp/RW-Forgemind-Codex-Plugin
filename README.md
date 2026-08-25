@@ -126,12 +126,14 @@ node <plugin-root>/bin/forgemind.mjs ui-test run --command test:e2e --artifacts 
 
 ## Product Design to Design Fidelity
 
-For a controlled visual handoff, let `@Product Design` create exactly three local PNG variants, persist them with `design-fidelity propose`, and have the user explicitly select one proposal. `design-fidelity apply` returns the immutable selected draft and the measured Fidelity handoff; it never selects or redesigns a variant automatically.
+For a controlled visual handoff, let `@Product Design` create exactly three local PNG variants, persist them with `design-fidelity propose`, and have the user explicitly select one proposal. ForgeMind binds that decision to the route and viewport, verifies its artifacts, requires an observable control contract, and creates a bounded implementation work order. The agent then implements the selected draft and re-measures it; ForgeMind blocks a regression or exhausted iteration limit.
 
 ```text
 node <plugin-root>/bin/forgemind.mjs design-fidelity propose --inputs option-a.png,option-b.png,option-c.png --route http://127.0.0.1:4173/ --artifacts workspace --json
-node <plugin-root>/bin/forgemind.mjs design-fidelity select --proposal-set <set-id> --proposal proposal-2 --artifacts workspace --json
-node <plugin-root>/bin/forgemind.mjs design-fidelity apply --proposal-set <set-id> --proposal proposal-2 --artifacts workspace --json
+node <plugin-root>/bin/forgemind.mjs design-fidelity select --proposal-set <set-id> --proposal proposal-2 --reason "Clearer customer hierarchy" --artifacts workspace --json
+node <plugin-root>/bin/forgemind.mjs design-fidelity contract --contract '{"id":"customer-controls","route":"http://127.0.0.1:4173/","controls":[{"id":"new-customer","role":"button","name":"New customer"}]}' --artifacts workspace --json
+node <plugin-root>/bin/forgemind.mjs design-fidelity prepare --proposal-set <set-id> --proposal proposal-2 --control-contract customer-controls --artifacts workspace --json
+node <plugin-root>/bin/forgemind.mjs design-fidelity run --draft-id <draft-id> --control-contract customer-controls --control-observations '<observations-json>' --artifacts workspace --json
 ```
 
 ## Portable CLI

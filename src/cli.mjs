@@ -305,11 +305,11 @@ export async function runCli(argv, context = {}) {
       else if (action === 'import-draft') { const drafts = await import('./design-fidelity-drafts.mjs'); data = await drafts.importProductDesignDraft({ workspace, input: options.input, route: options.route, viewport: options.viewport }); }
       else if (action === 'propose') { const drafts = await import('./design-fidelity-drafts.mjs'); data = await drafts.createProductDesignProposals({ workspace, inputs: options.inputs, route: options.route, viewport: options.viewport, goal: options.goal }); }
       else if (action === 'proposals') { const drafts = await import('./design-fidelity-drafts.mjs'); data = await drafts.loadProductDesignProposals({ workspace, proposalSetId: options['proposal-set'] }); if (!data) throw invalidInput('FM_DESIGN_FIDELITY_PROPOSALS_MISSING', 'Create a Product Design proposal set first.'); }
-      else if (action === 'select') { const drafts = await import('./design-fidelity-drafts.mjs'); data = await drafts.selectProductDesignProposal({ workspace, proposalSetId: options['proposal-set'], proposalId: options.proposal }); }
-      else if (action === 'apply') { const drafts = await import('./design-fidelity-drafts.mjs'); data = await drafts.applySelectedProductDesignProposal({ workspace, proposalSetId: options['proposal-set'], proposalId: options.proposal }); }
+      else if (action === 'select') { const drafts = await import('./design-fidelity-drafts.mjs'); data = await drafts.selectProductDesignProposal({ workspace, proposalSetId: options['proposal-set'], proposalId: options.proposal, reason: options.reason }); }
+      else if (action === 'prepare' || action === 'apply') { const drafts = await import('./design-fidelity-drafts.mjs'); data = await drafts.prepareSelectedProductDesignProposal({ workspace, proposalSetId: options['proposal-set'], proposalId: options.proposal, controlContractId: options['control-contract'] }); if (action === 'apply') data.deprecation = 'Use design-fidelity prepare; it creates an implementation plan but does not itself edit source files.'; }
       else if (action === 'contract') { const controls = await import('./design-fidelity-controls.mjs'); data = await controls.saveControlContract({ workspace, contract: parseJson(options.contract, 'FM_DESIGN_FIDELITY_CONTROL_INVALID') }); }
       else if (action === 'status') data = await designFidelity.getDesignFidelityStatus({ workspace });
-      else throw invalidInput('FM_DESIGN_FIDELITY_ACTION_INVALID', 'Design Fidelity supports run, import-draft, propose, proposals, select, apply, contract, and status.');
+      else throw invalidInput('FM_DESIGN_FIDELITY_ACTION_INVALID', 'Design Fidelity supports run, import-draft, propose, proposals, select, prepare, contract, and status.');
     } else if (command === 'leap') {
       const action = positionals[0] ?? 'run';
       const { advanceLeap, continueLeap, getLeapStatus, runLeap } = await import('./leap.mjs');
