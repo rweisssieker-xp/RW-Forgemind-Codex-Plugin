@@ -26,6 +26,13 @@ test('build creates reproducible standalone and marketplace packages', async (t)
   assert.equal((await verifyPackage(path.join(first.marketplacePath, 'plugins', 'forgemind-trust-fabric'))).status, 'passed');
   await assert.rejects(readFile(path.join(first.pluginPath, 'templates', 'forge', 'trust-contract.example.json'), 'utf8'));
   assert.equal(JSON.parse(await readFile(path.join(first.marketplacePath, 'plugins', 'forgemind-trust-fabric', 'templates', 'forge', 'trust-contract.example.json'), 'utf8')).title, 'Portable agent delivery contract');
+  await access(path.join(first.marketplacePath, 'plugins', 'forgemind', 'src', 'foundation.mjs'));
+  await access(path.join(first.marketplacePath, 'plugins', 'forgemind-trust-fabric', 'bin', 'forgemind.mjs'));
+  await access(path.join(first.marketplacePath, 'plugins', 'forgemind-trust-fabric', 'src', 'cli.mjs'));
+  const trustFabricSkill = await readFile(path.join(first.marketplacePath, 'plugins', 'forgemind-trust-fabric', 'skills', 'forgemind-trust-fabric', 'SKILL.md'), 'utf8');
+  assert.match(trustFabricSkill, /node <plugin-root>\/bin\/forgemind\.mjs forge help/);
+  const trustFabricManifest = JSON.parse(await readFile(path.join(first.marketplacePath, 'plugins', 'forgemind-trust-fabric', '.codex-plugin', 'plugin.json'), 'utf8'));
+  assert.doesNotMatch(trustFabricManifest.interface.longDescription, /requires ForgeMind Core/i);
 });
 
 test('built Marketplace package exposes the Xray skill and CLI runtime', async (t) => {
@@ -41,27 +48,28 @@ test('built Marketplace package exposes the Xray skill and CLI runtime', async (
 
   const built = await buildPackages({ pluginRoot, outputRoot: path.join(root, 'dist') });
 
-  assert.equal(sourceManifest.version, '1.46.1');
+  assert.match(sourceManifest.version, /^1\.46\.1(?:\+codex\.[a-z0-9-]+)?$/);
   assert.equal(sourceManifest.version, distributionManifest.version);
-  assert.equal(sourcePackage.version, sourceManifest.version);
-  assert.equal(distributionPackage.version, sourceManifest.version);
-  assert.equal(lockfile.version, sourceManifest.version);
-  assert.equal(lockfile.packages[''].version, sourceManifest.version);
-  const sourceSkill = await readFile(path.join(sourceRoot, 'entry-skills', 'forgemind-xray', 'SKILL.md'), 'utf8');
-  const distributionSkill = await readFile(path.join(pluginRoot, 'entry-skills', 'forgemind-xray', 'SKILL.md'), 'utf8');
+  const baseVersion = sourceManifest.version.split('+')[0];
+  assert.equal(sourcePackage.version, baseVersion);
+  assert.equal(distributionPackage.version, baseVersion);
+  assert.equal(lockfile.version, baseVersion);
+  assert.equal(lockfile.packages[''].version, baseVersion);
+  const sourceSkill = await readFile(path.join(sourceRoot, 'skills', 'forgemind-xray', 'SKILL.md'), 'utf8');
+  const distributionSkill = await readFile(path.join(pluginRoot, 'skills', 'forgemind-xray', 'SKILL.md'), 'utf8');
   for (const requiredContract of ['Playwright', 'ADB', 'FM_XRAY_PLAYWRIGHT_UNAVAILABLE', 'FM_XRAY_ANDROID_EMULATOR_UNAVAILABLE']) {
     assert.match(sourceSkill, new RegExp(requiredContract));
     assert.match(distributionSkill, new RegExp(requiredContract));
   }
-  await access(path.join(built.marketplacePath, 'plugins', 'forgemind', 'entry-skills', 'forgemind-xray', 'SKILL.md'));
-  const builtSkill = await readFile(path.join(built.marketplacePath, 'plugins', 'forgemind', 'entry-skills', 'forgemind-xray', 'SKILL.md'), 'utf8');
+  await access(path.join(built.marketplacePath, 'plugins', 'forgemind', 'skills', 'forgemind-xray', 'SKILL.md'));
+  const builtSkill = await readFile(path.join(built.marketplacePath, 'plugins', 'forgemind', 'skills', 'forgemind-xray', 'SKILL.md'), 'utf8');
   assert.equal(builtSkill, sourceSkill);
   await access(path.join(built.marketplacePath, 'plugins', 'forgemind', 'src', 'xray.mjs'));
-  const sourceStartSkill = await readFile(path.join(sourceRoot, 'entry-skills', 'forgemind-start', 'SKILL.md'), 'utf8');
-  const distributionStartSkill = await readFile(path.join(pluginRoot, 'entry-skills', 'forgemind-start', 'SKILL.md'), 'utf8');
-  const builtStartSkill = await readFile(path.join(built.marketplacePath, 'plugins', 'forgemind', 'entry-skills', 'forgemind-start', 'SKILL.md'), 'utf8');
-  assert.equal(distributionStartSkill, sourceStartSkill);
-  assert.equal(builtStartSkill, sourceStartSkill);
+  const sourceGuideSkill = await readFile(path.join(sourceRoot, 'skills', 'forgemind-guide', 'SKILL.md'), 'utf8');
+  const distributionGuideSkill = await readFile(path.join(pluginRoot, 'skills', 'forgemind-guide', 'SKILL.md'), 'utf8');
+  const builtGuideSkill = await readFile(path.join(built.marketplacePath, 'plugins', 'forgemind', 'skills', 'forgemind-guide', 'SKILL.md'), 'utf8');
+  assert.equal(distributionGuideSkill, sourceGuideSkill);
+  assert.equal(builtGuideSkill, sourceGuideSkill);
   await access(path.join(built.marketplacePath, 'plugins', 'forgemind', 'src', 'start.mjs'));
 });
 

@@ -18,7 +18,7 @@ test('release metadata uses the real project identity and consistent version', a
   assert.equal(manifest.author.name, 'Aivana GmbH');
   assert.equal(manifest.author.url, 'https://aivana-gmbh.ai/');
   assert.doesNotMatch(JSON.stringify(manifest), /example\.com|github\.com\/reinerw(?:["/])/i);
-  assert.equal(manifest.version, pkg.version);
+  assert.equal(manifest.version.split('+')[0], pkg.version);
 });
 
 test('release package includes community, support, privacy, and terms documents', async () => {

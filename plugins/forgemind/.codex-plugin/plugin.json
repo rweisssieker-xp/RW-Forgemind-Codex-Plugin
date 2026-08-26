@@ -17,7 +17,7 @@
     "category": "Productivity",
     "composerIcon": "./assets/icon.svg",
     "defaultPrompt": [
-      "Use $forgemind-compass. If no outcome is supplied, start with its Zero-Input Default."
+      "Use $forgemind-compass to run ForgeMind One. State the outcome and ForgeMind will create the shared plan, autonomous mission, and next safe action."
     ],
     "developerName": "Aivana GmbH",
     "displayName": "ForgeMind",
@@ -38,6 +38,6 @@
   "license": "MIT",
   "name": "forgemind",
   "repository": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin",
-  "skills": "./entry-skills/",
-  "version": "1.46.1"
+  "skills": "./skills/",
+  "version": "1.46.1+codex.20260826091132"
 }

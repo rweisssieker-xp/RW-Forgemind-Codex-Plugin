@@ -22,9 +22,9 @@ export async function runCompass({ workspace, goal }) {
   const recommendedJourney = compassJourney(outcome);
   const result = {
     schemaVersion: 1, status: 'passed', generatedAt: new Date().toISOString(), goal: outcome, goalSource, projectProfile,
-    recommendedJourney, handoff: `$forgemind-${recommendedJourney}`, foundation: foundationLink(foundation),
+    recommendedJourney, handoff: recommendedJourney === 'xray' ? '$forgemind-xray' : '$forgemind-compass', foundation: foundationLink(foundation),
     rationale: `Compass selected ${recommendedJourney} from the stated outcome and the project profile; this is routing guidance, not a claim about customer demand.`,
-    nextAction: `Continue with $forgemind-${recommendedJourney} using the same outcome.`,
+    nextAction: recommendedJourney === 'xray' ? 'Continue with $forgemind-xray using the same outcome.' : `Continue with $forgemind-compass; ForgeMind will apply the ${recommendedJourney} route internally.`,
     claimBoundary: 'Compass is a local routing recommendation. Any customer, market, pricing, or outcome claim remains evidence-labelled in the selected journey.',
     artifactPath: '.codex-orchestrator/primary/compass-latest.json', errors: [],
   };

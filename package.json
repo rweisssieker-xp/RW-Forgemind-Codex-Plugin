@@ -14,7 +14,7 @@
     "test": "node --test",
     "validate": "node bin/forgemind.mjs validate",
     "eval": "node bin/forgemind.mjs eval",
-    "coverage": "node -e \"require('node:fs').mkdirSync('coverage',{recursive:true})\" && node --test --experimental-test-coverage --test-reporter=lcov --test-reporter-destination=coverage/lcov.info && node -e \"const fs=require('node:fs');fs.mkdirSync('plugins/forgemind/coverage',{recursive:true});fs.copyFileSync('coverage/lcov.info','plugins/forgemind/coverage/lcov.info')\"",
+    "coverage": "node -e \"require('node:fs').mkdirSync('coverage',{recursive:true})\" && node --test --experimental-test-coverage --test-reporter=lcov --test-reporter-destination=coverage/lcov.info && node scripts/check-coverage.mjs coverage/lcov.info 90",
     "build": "node bin/forgemind.mjs package",
     "ci": "npm test && npm run validate && npm run eval && npm run build && node bin/forgemind.mjs validate --plugin dist/plugin --strict-release",
     "forgemind": "node bin/forgemind.mjs"

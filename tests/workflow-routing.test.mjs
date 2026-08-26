@@ -4,22 +4,22 @@ import path from 'node:path';
 import test from 'node:test';
 
 const root = path.resolve(import.meta.dirname, '..');
-const JOURNEYS = ['forgemind-start', 'forgemind-compass', 'forgemind-leap', 'forgemind-council', 'forgemind-venture', 'forgemind-spark', 'forgemind-evolve', 'forgemind-ship', 'forgemind-autopilot', 'forgemind-portfolio', 'forgemind-transform', 'forgemind-twin', 'forgemind-evolve-ui', 'forgemind-growth', 'forgemind-xray', 'forgemind-design-fidelity'];
+const JOURNEYS = ['forgemind-compass', 'forgemind-guide', 'forgemind-xray'];
 
-test('sixteen journeys are the complete primary skill hierarchy', async () => {
+test('three journeys are the complete public skill hierarchy', async () => {
   const directories = [];
-  for (const entry of (await readdir(path.join(root, 'entry-skills'), { withFileTypes: true })).filter((item) => item.isDirectory())) {
-    try { await readFile(path.join(root, 'entry-skills', entry.name, 'SKILL.md'), 'utf8'); directories.push(entry.name); } catch {}
+  for (const entry of (await readdir(path.join(root, 'skills'), { withFileTypes: true })).filter((item) => item.isDirectory())) {
+    try { await readFile(path.join(root, 'skills', entry.name, 'SKILL.md'), 'utf8'); directories.push(entry.name); } catch {}
   }
   directories.sort();
   assert.deepEqual(directories, [...JOURNEYS].sort());
-  const compass = await readFile(path.join(root, 'entry-skills', 'forgemind-compass', 'SKILL.md'), 'utf8');
-  for (const journey of JOURNEYS.filter((name) => !['forgemind-start', 'forgemind-compass', 'forgemind-autopilot', 'forgemind-portfolio', 'forgemind-transform', 'forgemind-twin', 'forgemind-evolve-ui', 'forgemind-growth', 'forgemind-design-fidelity'].includes(name))) assert.match(compass, new RegExp(`\\$${journey}`));
+  const compass = await readFile(path.join(root, 'skills', 'forgemind-compass', 'SKILL.md'), 'utf8');
+  assert.doesNotMatch(compass, /\$forgemind-(?:spark|evolve|venture|council|ship|leap|autopilot|portfolio|transform|twin|growth|design-fidelity)/);
 });
 
-test('journeys load compact playbooks instead of a specialist-skill library', async () => {
+test('public journeys load compact playbooks instead of a specialist-skill library', async () => {
   for (const journey of JOURNEYS) {
-    const content = await readFile(path.join(root, 'entry-skills', journey, 'SKILL.md'), 'utf8');
+    const content = await readFile(path.join(root, 'skills', journey, 'SKILL.md'), 'utf8');
     assert.doesNotMatch(content, /skills\//);
   }
   const playbooks = (await readdir(path.join(root, 'playbooks'))).filter((file) => file.endsWith('.md'));

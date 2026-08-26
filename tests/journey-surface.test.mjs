@@ -4,50 +4,48 @@ import path from 'node:path';
 import test from 'node:test';
 
 const root = path.resolve(import.meta.dirname, '..');
-const JOURNEYS = ['forgemind-start', 'forgemind-compass', 'forgemind-spark', 'forgemind-evolve', 'forgemind-venture', 'forgemind-council', 'forgemind-ship', 'forgemind-leap', 'forgemind-autopilot', 'forgemind-portfolio', 'forgemind-transform', 'forgemind-twin', 'forgemind-evolve-ui', 'forgemind-growth', 'forgemind-xray', 'forgemind-design-fidelity'];
+const PUBLIC_JOURNEYS = ['forgemind-compass', 'forgemind-guide', 'forgemind-xray'];
+const INTERNAL_JOURNEYS = ['forgemind-spark', 'forgemind-evolve', 'forgemind-venture', 'forgemind-council', 'forgemind-ship', 'forgemind-leap', 'forgemind-autopilot', 'forgemind-portfolio', 'forgemind-transform', 'forgemind-twin', 'forgemind-evolve-ui', 'forgemind-growth', 'forgemind-design-fidelity'];
 
-test('Marketplace exposes the primary journeys while retaining internal modules', async () => {
+test('Marketplace exposes only Compass, Guide, and Xray while retaining internal journeys', async () => {
   const manifest = JSON.parse(await readFile(path.join(root, '.codex-plugin', 'plugin.json'), 'utf8'));
-  assert.equal(manifest.skills, './entry-skills/');
-  const entries = await readdir(path.join(root, 'entry-skills'), { withFileTypes: true });
+  assert.equal(manifest.skills, './skills/');
+  const entries = await readdir(path.join(root, 'skills'), { withFileTypes: true });
   const journeys = [];
   for (const entry of entries.filter((entry) => entry.isDirectory())) {
-    try { await readFile(path.join(root, 'entry-skills', entry.name, 'SKILL.md'), 'utf8'); journeys.push(entry.name); } catch {}
+    try { await readFile(path.join(root, 'skills', entry.name, 'SKILL.md'), 'utf8'); journeys.push(entry.name); } catch {}
   }
-  assert.deepEqual(journeys.sort(), [...JOURNEYS].sort());
-  for (const journey of JOURNEYS) {
-    const instructions = await readFile(path.join(root, 'entry-skills', journey, 'SKILL.md'), 'utf8');
-    const ui = await readFile(path.join(root, 'entry-skills', journey, 'agents', 'openai.yaml'), 'utf8');
+  assert.deepEqual(journeys.sort(), [...PUBLIC_JOURNEYS].sort());
+  for (const journey of PUBLIC_JOURNEYS) {
+    const instructions = await readFile(path.join(root, 'skills', journey, 'SKILL.md'), 'utf8');
+    const ui = await readFile(path.join(root, 'skills', journey, 'agents', 'openai.yaml'), 'utf8');
     assert.match(instructions, new RegExp(`name: ${journey}`));
     assert.match(ui, new RegExp(`\\$${journey}`));
-    if (journey === 'forgemind-autopilot') {
-      assert.match(instructions, /node <plugin-root>\/bin\/forgemind\.mjs autopilot start/);
-      assert.doesNotMatch(instructions, /Run `forgemind autopilot start/);
-    }
-    if (!['forgemind-start', 'forgemind-autopilot', 'forgemind-portfolio', 'forgemind-transform', 'forgemind-twin', 'forgemind-evolve-ui', 'forgemind-growth', 'forgemind-xray', 'forgemind-design-fidelity'].includes(journey)) { assert.match(instructions, /zero-input-defaults\.md/i); assert.match(ui, /Zero-Input Default/); }
+    if (journey === 'forgemind-compass') assert.match(instructions, /zero-input-defaults\.md/i);
   }
-  assert.match(await readFile(path.join(root, 'docs', 'HIERARCHY.md'), 'utf8'), /Compass[\s\S]*Spark[\s\S]*Evolve[\s\S]*Venture[\s\S]*Council[\s\S]*Ship[\s\S]*Leap/);
+  for (const journey of INTERNAL_JOURNEYS) await readFile(path.join(root, 'playbooks', 'internal-journeys', journey, 'SKILL.md'), 'utf8');
+  assert.match(await readFile(path.join(root, 'docs', 'HIERARCHY.md'), 'utf8'), /Compass[\s\S]*Guide[\s\S]*Xray/);
 });
 
-test('zero-input defaults cover every primary journey without treating assumptions as facts', async () => {
+test('zero-input defaults support Compass without treating assumptions as facts', async () => {
   const defaults = await readFile(path.join(root, 'playbooks', 'zero-input-defaults.md'), 'utf8');
-  for (const name of ['Compass', 'Spark', 'Evolve', 'Venture', 'Council', 'Ship', 'Leap']) assert.match(defaults, new RegExp(`## ${name}`));
+  assert.match(defaults, /## Compass/);
   assert.match(defaults, /never as facts/i);
   assert.match(defaults, /hard safety boundary/i);
 });
 
-test('Compass is the sole implicit journey and routes natural-language requests to specialist journeys', async () => {
-  for (const journey of JOURNEYS) {
-    const ui = await readFile(path.join(root, 'entry-skills', journey, 'agents', 'openai.yaml'), 'utf8');
+test('Compass is the sole implicit public journey', async () => {
+  for (const journey of PUBLIC_JOURNEYS) {
+    const ui = await readFile(path.join(root, 'skills', journey, 'agents', 'openai.yaml'), 'utf8');
     const expected = journey === 'forgemind-compass';
     assert.match(ui, new RegExp(`allow_implicit_invocation: ${expected}`));
   }
 });
 
 test('Xray remains an explicit-only primary journey with internal Browser orchestration and canonical CLI evidence', async () => {
-  const instructions = await readFile(path.join(root, 'entry-skills', 'forgemind-xray', 'SKILL.md'), 'utf8');
-  const distributionInstructions = await readFile(path.join(root, 'plugins', 'forgemind', 'entry-skills', 'forgemind-xray', 'SKILL.md'), 'utf8');
-  const ui = await readFile(path.join(root, 'entry-skills', 'forgemind-xray', 'agents', 'openai.yaml'), 'utf8');
+  const instructions = await readFile(path.join(root, 'skills', 'forgemind-xray', 'SKILL.md'), 'utf8');
+  const distributionInstructions = await readFile(path.join(root, 'plugins', 'forgemind', 'skills', 'forgemind-xray', 'SKILL.md'), 'utf8');
+  const ui = await readFile(path.join(root, 'skills', 'forgemind-xray', 'agents', 'openai.yaml'), 'utf8');
   assert.match(instructions, /node <plugin-root>\/bin\/forgemind\.mjs xray run/);
   assert.match(instructions, /MUST execute.*xray run/i);
   assert.match(instructions, /Do not return a test plan, score, or report before the command has completed/i);

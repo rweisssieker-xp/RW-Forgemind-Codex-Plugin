@@ -4,19 +4,17 @@ ForgeMind is an evidence-first product innovation and delivery plugin for Codex,
 
 ## Recommended starting points
 
-Start with one of these five outcomes. The specialist journeys remain available for focused work but are routed internally by ForgeMind One when relevant.
+Start with one of three clear outcomes. Specialist playbooks are packaged internally and selected by ForgeMind when relevant.
 
 | Start | Prompt | Result |
 | --- | --- | --- |
-| ForgeMind One | `$forgemind-compass Build a CRM for our sales team autonomously.` | Shared Foundation chain, autonomous mission, and one next safe action. |
-| Existing product | `$forgemind-evolve Improve this application around …` | Repository-aware product transformation and a reversible MVP bet. |
-| Market decision | `$forgemind-venture Validate the market chance and business case for …` | Evidence-labelled market, USP, and financial scenarios. |
+| Compass | `$forgemind-compass Build a CRM for our sales team autonomously.` | Chooses and applies the appropriate internal playbook, then reports the next safe action. |
+| Guide | `$forgemind-guide Help me decide how to improve this application.` | A non-executing route recommendation with confidence and alternatives. |
 | Quality/release | `$forgemind-xray Assess this application with read-only local QA.` | Evidence-backed quality findings and release proof. |
-| Design implementation | `$forgemind-design-fidelity` | Three Product Design options, one user choice, and measured UI fidelity. |
 
-Every entry also works without appended text. For example, `$forgemind-spark` automatically runs its radical-idea default for the current project, and `$forgemind-leap` starts autonomous product mode. The first response states the derived goal; any supplied text overrides it.
+Every entry works without appended text. Compass is the default route; Guide explains the route without executing it; Xray is intentionally explicit. The first response states the derived goal; any supplied text overrides it.
 
-Use **ForgeMind One** by default. It persists the PRD → architecture → epics → stories chain, starts a bounded Autopilot mission, and reports the one next action through `forgemind status`. Specialist journeys can still be invoked directly when deliberate control is useful.
+Use **Compass** by default. It persists the PRD → architecture → epics → stories chain, starts a bounded autonomous mission when appropriate, and reports the one next action through `forgemind status`. Use the advanced CLI for deliberate control of an individual domain command.
 
 `forgemind insights` reports only local, aggregate command outcomes (success rate and duration); it never stores raw prompts or sends telemetry.
 

@@ -20,7 +20,7 @@ const PRIMARY_COMMANDS = [
   'outcome',
   'route',
   'signals',
-  'start',
+  'guide',
   'one',
   'status',
   'insights',
@@ -283,7 +283,7 @@ export async function runCli(argv, context = {}) {
       else if (action === 'execute') data = await hero.executeHeroControl({ workspace, run: Boolean(options.run) });
       else if (action === 'advance') data = await hero.advanceHeroMission({ workspace, packet: options.packet, outcome: options.outcome, evidence: options.evidence });
       else throw invalidInput('FM_HERO_ACTION_INVALID', 'Hero supports run, status, execute, and advance.');
-    } else if (command === 'start') {
+    } else if (command === 'guide' || command === 'start') {
       const { runStart } = await import('./start.mjs');
       data = await runStart({
         workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()),
@@ -540,9 +540,10 @@ export async function runCli(argv, context = {}) {
       const fixturesRoot = path.resolve(options.fixtures ?? path.join(pluginRoot, 'evals', 'fixtures'));
       data = await runStructuralEvals(await loadEvalFixtures(fixturesRoot));
     } else if (command === 'package') {
-      const { buildPackages } = await import('./package.mjs');
+      const { buildPackages, syncMarketplaceSources } = await import('./package.mjs');
       const pluginRoot = await resolvePluginRoot(options.plugin ?? MODULE_PLUGIN_ROOT);
       data = await buildPackages({ pluginRoot, outputRoot: options.output });
+      if (!options.output) data.marketplaceSync = await syncMarketplaceSources({ pluginRoot, marketplacePath: data.marketplacePath });
     } else if (command === 'install') {
       const { installPlugin } = await import('./lifecycle.mjs');
       data = await installPlugin({ packagePath: options.package ?? options.source, home: options.home ?? options.destination ?? await defaultHome(), pluginPath: options['plugin-path'] });

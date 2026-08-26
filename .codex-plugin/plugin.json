@@ -1,6 +1,6 @@
 {
   "name": "forgemind",
-  "version": "1.46.1",
+  "version": "1.46.1+codex.20260826091132",
   "description": "Evidence-first product discovery and delivery for Codex.",
   "author": {
     "name": "Aivana GmbH",
@@ -16,7 +16,7 @@
     "delivery",
     "verification"
   ],
-  "skills": "./entry-skills/",
+  "skills": "./skills/",
   "interface": {
     "displayName": "ForgeMind",
     "shortDescription": "Evidence-backed MVPs and verifiable delivery.",

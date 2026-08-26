@@ -30,7 +30,7 @@ test('help returns success and lists the stable primary commands', async () => {
 
   assert.equal(result.exitCode, 0);
   assert.match(stdout.text(), /ForgeMind/);
-  for (const command of ['doctor', 'validate', 'init', 'start', 'leap', 'verify', 'evidence', 'package']) {
+  for (const command of ['doctor', 'validate', 'init', 'guide', 'leap', 'verify', 'evidence', 'package']) {
     assert.match(stdout.text(), new RegExp(`\\b${command}\\b`));
   }
   assert.equal(stderr.text(), '');
@@ -53,7 +53,7 @@ test('Compass has a portable CLI entrypoint and routes an explicit goal', async 
 
   assert.equal(result.exitCode, 0);
   assert.equal(result.data.recommendedJourney, 'venture');
-  assert.equal(result.data.handoff, '$forgemind-venture');
+  assert.equal(result.data.handoff, '$forgemind-compass');
   assert.equal(result.data.goalSource, 'user');
 });
 

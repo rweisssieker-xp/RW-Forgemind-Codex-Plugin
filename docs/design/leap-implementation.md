@@ -44,8 +44,8 @@
 ### Task 3: Add the visible Leap journey
 
 **Files:**
-- Create: `entry-skills/forgemind-leap/SKILL.md`, `entry-skills/forgemind-leap/agents/openai.yaml`, `playbooks/leap.md`
-- Modify: `entry-skills/forgemind-guide/SKILL.md`, `README.md`, `docs/HIERARCHY.md`
+- Create: `skills/forgemind-leap/SKILL.md`, `skills/forgemind-leap/agents/openai.yaml`, `playbooks/leap.md`
+- Modify: `skills/forgemind-guide/SKILL.md`, `README.md`, `docs/HIERARCHY.md`
 - Test: `tests/journey-surface.test.mjs`, `tests/workflow-routing.test.mjs`
 
 - [ ] Register Leap in the eleven-journey fixtures and documentation hierarchy.

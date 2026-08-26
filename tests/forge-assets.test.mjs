@@ -41,7 +41,7 @@ test('release metadata and documentation expose the complete nine-capability sur
   const manifest = JSON.parse(await readFile(path.join(root, '.codex-plugin', 'plugin.json'), 'utf8'));
   const pkg = JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8'));
   const guide = await readFile(path.join(root, 'docs', 'TRUST_FABRIC.md'), 'utf8');
-  assert.equal(pkg.version, manifest.version);
+  assert.equal(pkg.version, manifest.version.split('+')[0]);
   for (const [capability] of CAPABILITIES) assert.match(guide, new RegExp(`\`${capability}(?: |\`)`));
   assert.match(guide, /not a cryptographic identity signature/i);
   assert.match(guide, /not claim formal differential privacy/i);

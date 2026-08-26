@@ -19,7 +19,7 @@
     ],
     "developerName": "Aivana GmbH",
     "displayName": "ForgeMind Trust Fabric",
-    "longDescription": "Adds nine evidence-native workflows for portable trust contracts, executable strategy, learning, replay, experiments, evidence escrow, and privacy-preserving federation. Requires ForgeMind Core.",
+    "longDescription": "Adds nine evidence-native workflows for portable trust contracts, executable strategy, learning, replay, experiments, evidence escrow, and privacy-preserving federation. Includes its own ForgeMind runner for independent execution.",
     "privacyPolicyURL": "https://aivana-gmbh.ai/Privacy",
     "shortDescription": "Optional advanced evidence workflows for ForgeMind Core.",
     "termsOfServiceURL": "https://aivana-gmbh.ai/Terms",
@@ -34,6 +34,6 @@
   "license": "MIT",
   "name": "forgemind-trust-fabric",
   "repository": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin",
-  "skills": "./entry-skills/",
-  "version": "1.26.0"
+  "skills": "./skills/",
+  "version": "1.46.1+codex.20260826091132"
 }

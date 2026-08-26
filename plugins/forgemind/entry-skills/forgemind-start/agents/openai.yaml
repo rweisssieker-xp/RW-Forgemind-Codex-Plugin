@@ -1,7 +1,0 @@
-interface:
-  display_name: "Start"
-  short_description: "Choose the next ForgeMind journey from your context and outcome."
-  default_prompt: "Use $forgemind-start to choose the next safe ForgeMind action."
-policy:
-  allow_implicit_invocation: false
-

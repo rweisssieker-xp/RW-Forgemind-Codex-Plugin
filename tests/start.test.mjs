@@ -19,7 +19,7 @@ test('start recommends Leap for an existing-project MVP', async (t) => {
   const result = await runStart({ workspace: root, context: 'project', outcome: 'mvp', mode: 'autonomous' });
 
   assert.equal(result.recommendedJourney, 'leap');
-  assert.equal(result.handoff, '$forgemind-leap');
+  assert.equal(result.handoff, '$forgemind-compass');
   assert.equal(result.inputs.mode, 'autonomous');
   assert.match(result.autonomyBoundary, /hard stop/i);
   const persisted = JSON.parse(await readFile(path.join(root, '.codex-orchestrator', 'primary', 'start-latest.json'), 'utf8'));
@@ -53,11 +53,11 @@ test('start validates declared enum values', async (t) => {
   );
 });
 
-test('start does not retain an artifact in none mode through the CLI', async (t) => {
+test('guide does not retain an artifact in none mode through the CLI', async (t) => {
   const root = await workspace(t);
   const { runCli } = await import('../src/cli.mjs');
   const result = await runCli([
-    'start', '--workspace', root, '--context', 'quality', '--outcome', 'ship',
+    'guide', '--workspace', root, '--context', 'quality', '--outcome', 'ship',
     '--mode', 'guided', '--artifacts', 'none', '--json',
   ], { stdout: { write() {} }, stderr: { write() {} } });
 

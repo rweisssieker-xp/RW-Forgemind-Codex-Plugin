@@ -2,7 +2,7 @@
   "directories": [
     ".codex-plugin",
     "assets",
-    "entry-skills",
+    "skills",
     "bin",
     "schemas",
     "playbooks",

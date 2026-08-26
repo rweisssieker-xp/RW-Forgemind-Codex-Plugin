@@ -652,7 +652,7 @@ Innovation First Autopilot: read app structure first and generate max AI/KI USPs
 
 - `plugins/forgemind/.codex-plugin/plugin.json`: plugin manifest
 - `plugins/forgemind/hooks.json`: trigger hooks
-- `plugins/forgemind/entry-skills/`: six Codex journeys
+- `plugins/forgemind/skills/`: six Codex journeys
 - `plugins/forgemind/playbooks/`: compact internal guidance
 - `plugins/forgemind/agents/`: persona profiles
 - `plugins/forgemind/templates/artifacts/`: PRD, epic, story, acceptance, workflow templates

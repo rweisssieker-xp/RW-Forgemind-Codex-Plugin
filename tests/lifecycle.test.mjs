@@ -40,9 +40,9 @@ test('install, upgrade, downgrade, and uninstall are recoverable in an isolated 
   assert.deepEqual(installed.selfTest.removedLegacyPluginArtifacts, []);
   assert.equal((await runInstallationSelfTest({ home })).commandSmokeTest, 'passed');
 
-  const upgraded = await installPlugin({ packagePath, home });
-  assert.equal(upgraded.status, 'upgraded');
-  assert.ok(upgraded.backupPath);
+  const reinstalled = await installPlugin({ packagePath, home });
+  assert.equal(reinstalled.status, 'reinstalled');
+  assert.ok(reinstalled.backupPath);
 
   const lowerSource = path.join(root, 'lower-source');
   await import('node:fs/promises').then(({ cp }) => cp(packagePath, lowerSource, { recursive: true }));
