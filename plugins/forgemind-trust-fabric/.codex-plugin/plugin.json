@@ -35,5 +35,5 @@
   "name": "forgemind-trust-fabric",
   "repository": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin",
   "skills": "./skills/",
-  "version": "1.46.1+codex.20260826094205"
+  "version": "1.46.2+codex.20260826094301"
 }

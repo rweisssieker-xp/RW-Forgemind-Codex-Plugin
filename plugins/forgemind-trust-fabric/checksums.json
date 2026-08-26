@@ -1,7 +1,7 @@
 {
   "algorithm": "sha256",
   "files": {
-    ".codex-plugin/plugin.json": "04875c2dc66ec9eded8a689f00d57acb5cd3f8dd6eecf241db5b376171ad1d7d",
+    ".codex-plugin/plugin.json": "518fe6dba5a9aaaebbc452dce0f611c4158dc3e3e840309b13c2e139a1612d49",
     "bin/forgemind": "20e6b5f1b06665fa58e3043197f90b07b019cd07ea74b7c90703d18782d33f81",
     "bin/forgemind.cmd": "388937f3aefc1b86dd7d4a655ce108851d1b030484c94b6d8287b6d25e1223bc",
     "bin/forgemind.mjs": "9e69303e5b4d26c4f7303eb282193d89747cf00bfb7c61245c857b0c4765f1ee",

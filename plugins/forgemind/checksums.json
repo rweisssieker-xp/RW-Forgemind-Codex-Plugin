@@ -1,7 +1,7 @@
 {
   "algorithm": "sha256",
   "files": {
-    ".codex-plugin/plugin.json": "e68026a8ff5b50d01dce623767f735f8c53ec4f9c18c54e336ff1d417f6bd0a5",
+    ".codex-plugin/plugin.json": "610764d787abdf68c6b1e9d46d05641f7961980f2d36a56115d29852a9927fc2",
     "assets/aivana-logo.png": "808767bca32f06ae37a5c9a149e9016e838c92e1aeab33f89f80651e6a08e8e0",
     "assets/icon.svg": "8b62076dcc8060cb07e0a4fa7610da94df65265ef1b20456bddb42be7ef48aca",
     "assets/logo.svg": "6a186637675f88d819bb6c0399a4e40837d400121ec044270b3bfbc39bf5e8d2",
@@ -10,7 +10,7 @@
     "bin/forgemind.mjs": "9e69303e5b4d26c4f7303eb282193d89747cf00bfb7c61245c857b0c4765f1ee",
     "LICENSE": "ea01fa8ec6c11a1b36084740fc73695ce494c15cc03d3cf855f9ff31d66adda4",
     "package-allowlist.json": "a26c8bc9430056aa87748a0ccfe41b2956e206115eaf380922953189acbb1581",
-    "package.json": "3e92a242770f723f9ffb10cffb239e95c67d9023b39454e26bb6e329622c30b3",
+    "package.json": "3b297288889f75a9f99dffe6a686fa38bc35b57de7e9c34b97688c4cdc903ece",
     "playbooks/creative-methods.md": "27037b1aee29d44380c3c389b83b0c21c1461c8c294478be14cb0a4860c35c65",
     "playbooks/debugging-refactoring.md": "47c3f7e3b37d4f8adb7980af5a292b2028aef5f784dc3c87948e5f1c367f4395",
     "playbooks/delivery-yolo.md": "b4cfabf57ef453539b8bb01a798eaa786f88f9985a2dc27392d7f8b20fbe8d23",
