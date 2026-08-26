@@ -1,7 +1,7 @@
 {
   "algorithm": "sha256",
   "files": {
-    ".codex-plugin/plugin.json": "11158798b79be59495357d7ee35a31e55668adcbba189078fa47befd862aba5e",
+    ".codex-plugin/plugin.json": "e5695d5a3fa71daf523ad0d9f49d836e3147f944145e145985b612c84babfe9c",
     "assets/aivana-logo.png": "808767bca32f06ae37a5c9a149e9016e838c92e1aeab33f89f80651e6a08e8e0",
     "assets/icon.svg": "8b62076dcc8060cb07e0a4fa7610da94df65265ef1b20456bddb42be7ef48aca",
     "assets/logo.svg": "6a186637675f88d819bb6c0399a4e40837d400121ec044270b3bfbc39bf5e8d2",
@@ -68,6 +68,8 @@
     "schemas/shrink-plan-v1.schema.json": "0d0c9de902d9754d019e2245b9ba5909310947615777009c7a893745c845e41d",
     "schemas/signal-v1.schema.json": "9768deb0d65263f7e66f27a452a0a18a62ca576a315a418fa4bb6c2d4774edf6",
     "schemas/usp-record-v1.schema.json": "555946132ee3a5f81eeadf19b2831ca555951fe59496c9f0d156aa0281c5e862",
+    "skills/forgemind-commands/agents/openai.yaml": "2ea4477dd95e6551207fd695c233135065d8d98ff0dfb023f2165168ca849677",
+    "skills/forgemind-commands/SKILL.md": "10034213c9c64a915a3a567a2e7a9a82e645718b7df3c4013f32b71523ae5875",
     "skills/forgemind-compass/agents/openai.yaml": "be367660127e74e08358b68feee66bd4c0069ee94c467b28beb25080815dba25",
     "skills/forgemind-compass/SKILL.md": "455b3883ee8a6be14c684b99f697855efe5770178b2760ae0924144eda04144d",
     "skills/forgemind-guide/agents/openai.yaml": "c0cd3a301cfb6a04f5f6f7b95fe8853478e5f4755f92a42ca613d142d05118d7",
