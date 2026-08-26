@@ -34,7 +34,7 @@
     "privacyPolicyURL": "https://aivana-gmbh.ai/Privacy",
     "termsOfServiceURL": "https://aivana-gmbh.ai/Terms",
     "defaultPrompt": [
-      "Use $forgemind-compass. If no outcome is supplied, start with its Zero-Input Default."
+      "Use $forgemind-compass to run ForgeMind One. State the outcome and ForgeMind will create the shared plan, autonomous mission, and next safe action."
     ],
     "brandColor": "#2563EB",
     "composerIcon": "./assets/icon.svg",

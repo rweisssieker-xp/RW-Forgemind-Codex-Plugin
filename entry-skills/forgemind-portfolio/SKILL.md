@@ -1,6 +1,6 @@
 ---
 name: forgemind-portfolio
-description: Discover and autonomously prioritize every evidence-labelled AI-native USP opportunity in the current repository.
+description: Use when the current repository needs discovery and autonomous prioritization of evidence-labelled AI-native USP opportunities.
 ---
 
 # ForgeMind Portfolio

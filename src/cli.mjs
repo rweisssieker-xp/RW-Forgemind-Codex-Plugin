@@ -21,6 +21,9 @@ const PRIMARY_COMMANDS = [
   'route',
   'signals',
   'start',
+  'one',
+  'status',
+  'insights',
   'foundation',
   'compass',
   'hero',
@@ -94,6 +97,7 @@ export async function runCli(argv, context = {}) {
   const stdout = context.stdout ?? process.stdout;
   const stderr = context.stderr ?? process.stderr;
   let artifactStoreActive = false;
+  const startedAt = Date.now();
   try {
     const command = argv[0] ?? 'help';
     if (command === 'help' || command === '--help' || command === '-h') {
@@ -129,6 +133,15 @@ export async function runCli(argv, context = {}) {
       else if (action === 'status') data = await foundation.getFoundationStatus({ workspace });
       else if (action === 'refresh') data = await foundation.refreshFoundation({ workspace });
       else throw invalidInput('FM_FOUNDATION_ACTION_INVALID', 'Foundation supports run, status, and refresh.');
+    } else if (command === 'one') {
+      const { runForgeMindOne } = await import('./one.mjs');
+      data = await runForgeMindOne({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), goal: options.goal });
+    } else if (command === 'status') {
+      const { getForgeMindStatus } = await import('./one.mjs');
+      data = await getForgeMindStatus({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()) });
+    } else if (command === 'insights') {
+      const { getCommandMetrics } = await import('./command-metrics.mjs');
+      data = await getCommandMetrics({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()) });
     } else if (command === 'inspect') {
       const { inspectProject } = await import('./project.mjs');
       const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
@@ -553,6 +566,10 @@ export async function runCli(argv, context = {}) {
       throw invalidInput('FM_COMMAND_UNKNOWN', `Unknown command: ${command}`);
     }
 
+    if (artifactStoreActive && !['status', 'insights'].includes(command)) {
+      const { recordCommandOutcome } = await import('./command-metrics.mjs');
+      await recordCommandOutcome({ workspace: options.workspace ?? context.cwd ?? process.cwd(), command, status: data.status, durationMs: Date.now() - startedAt });
+    }
     data = addArtifactMetadata(data);
     if (options.json) {
       stdout.write(`${JSON.stringify(data, null, 2)}\n`);

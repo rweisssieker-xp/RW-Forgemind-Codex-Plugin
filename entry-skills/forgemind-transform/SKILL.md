@@ -1,6 +1,6 @@
 ---
 name: forgemind-transform
-description: Autonomously transform the current repository through a portfolio of reversible, evidence-gated AI-native MVP experiments.
+description: Use when the current repository should be transformed through reversible, evidence-gated AI-native MVP experiments.
 ---
 
 # ForgeMind Transform

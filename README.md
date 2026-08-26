@@ -4,30 +4,21 @@ ForgeMind is an evidence-first product innovation and delivery plugin for Codex,
 
 ## Recommended starting points
 
-Start with one of the first ten journeys below. The remaining entries are focused extensions for a specific delivery phase, available directly and recommended by Compass when relevant.
+Start with one of these five outcomes. The specialist journeys remain available for focused work but are routed internally by ForgeMind One when relevant.
 
 | Start | Prompt | Result |
 | --- | --- | --- |
-| Start | `$forgemind-start` | One explainable next ForgeMind action for an idea, project, or quality concern. |
-| Compass | `$forgemind-compass Help me choose the right path for …` | The smallest safe journey. |
-| Spark | `$forgemind-spark Generate disruptive AI directions for …` | Five radical, measurable directions. |
-| Evolve | `$forgemind-evolve Transform this existing app around …` | Repository-aware product transformation and MVP bet. |
-| Venture | `$forgemind-venture Validate the market chance and business case for …` | Evidence-labelled market, USP, and financial scenarios. |
-| Council | `$forgemind-council Decide whether we should …` | One decision with visible dissent, metric, and kill condition. |
-| Ship | `$forgemind-ship Implement and prove …` | Delivery contract, UX test surface, and release path. |
-| Leap | `$forgemind-leap Autonomously turn this app or idea into a disruptive MVP: …` | Developer automode from idea/app to bounded MVP. |
-| Xray | `$forgemind-xray Assess this application with read-only local QA.` | Evidence-backed quality findings, explicit test gaps, and an informative score. |
-| Autopilot | `$forgemind-autopilot Autonomously achieve this Codex goal end to end.` | Persistent goal-driven delivery with adapters, recovery, and evidence gates. |
-| Portfolio *(extension)* | `$forgemind-portfolio` | All evidence-labelled AI-native USP opportunities in the active repository. |
-| Transform *(extension)* | `$forgemind-transform` | Autonomous, reversible portfolio transformation of the active repository. |
-| Twin *(extension)* | `$forgemind-twin` | Evidence-labelled live model of the active application. |
-| Evolve UI *(extension)* | `$forgemind-evolve-ui` | Reversible outcome-first UX experiment with proof gates. |
-| Design Fidelity *(extension)* | `$forgemind-design-fidelity` | Match a local UI to PNG references with measured correction loops. |
-| Growth *(extension)* | `$forgemind-growth` | Activation, retention, monetization, and value-proof experiments. |
+| ForgeMind One | `$forgemind-compass Build a CRM for our sales team autonomously.` | Shared Foundation chain, autonomous mission, and one next safe action. |
+| Existing product | `$forgemind-evolve Improve this application around …` | Repository-aware product transformation and a reversible MVP bet. |
+| Market decision | `$forgemind-venture Validate the market chance and business case for …` | Evidence-labelled market, USP, and financial scenarios. |
+| Quality/release | `$forgemind-xray Assess this application with read-only local QA.` | Evidence-backed quality findings and release proof. |
+| Design implementation | `$forgemind-design-fidelity` | Three Product Design options, one user choice, and measured UI fidelity. |
 
 Every entry also works without appended text. For example, `$forgemind-spark` automatically runs its radical-idea default for the current project, and `$forgemind-leap` starts autonomous product mode. The first response states the derived goal; any supplied text overrides it.
 
-Use **Start** when you do not yet know which ForgeMind journey fits. It asks only for your context, desired outcome, and working style, then recommends a next action. Start does not execute the recommended journey.
+Use **ForgeMind One** by default. It persists the PRD → architecture → epics → stories chain, starts a bounded Autopilot mission, and reports the one next action through `forgemind status`. Specialist journeys can still be invoked directly when deliberate control is useful.
+
+`forgemind insights` reports only local, aggregate command outcomes (success rate and duration); it never stores raw prompts or sends telemetry.
 
 ## Developer automode
 

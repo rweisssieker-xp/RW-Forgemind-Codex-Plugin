@@ -1,6 +1,6 @@
 ---
 name: forgemind-autopilot
-description: Autonomously achieve a Codex goal end to end with evidence, recovery, and hard-stop safety boundaries.
+description: Use when a Codex goal should be implemented end to end with evidence, recovery, and hard-stop safety boundaries.
 ---
 
 # ForgeMind Autopilot

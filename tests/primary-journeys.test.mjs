@@ -18,6 +18,7 @@ test('the primary journeys produce decision-ready, evidence-labelled outputs', a
       assert.equal(result.data.artifactMode, 'workspace');
       assert.ok(result.data.artifactPath.startsWith(path.join(workspace, '.codex-orchestrator')));
       assert.ok(result.data.projectProfile, `${command} should use the shared project profile`);
+      assert.ok(result.data.foundation?.foundationId, `${command} should link the canonical Foundation chain`);
     }
     const venture = await runCli(['venture', 'run', '--workspace', workspace, '--goal', 'case triage', '--json'], context());
     assert.match(venture.data.claimBoundary, /not market facts/i);
