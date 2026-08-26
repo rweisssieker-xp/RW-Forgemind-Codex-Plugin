@@ -1,6 +1,6 @@
 ---
 name: forgemind-twin
-description: Build the evidence-labelled Live Application Twin for the active repository.
+description: Use when the active repository needs an evidence-labelled Live Application Twin before broad product work.
 ---
 
 # ForgeMind Twin

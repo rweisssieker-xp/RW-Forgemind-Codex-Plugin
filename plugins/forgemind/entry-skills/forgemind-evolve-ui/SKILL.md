@@ -1,6 +1,6 @@
 ---
 name: forgemind-evolve-ui
-description: Stage a reversible, evidence-gated outcome-first UX evolution experiment.
+description: Use when a UI workflow needs a reversible, evidence-gated outcome-first evolution experiment.
 ---
 
 # ForgeMind Evolve UI

@@ -21,6 +21,10 @@ const PRIMARY_COMMANDS = [
   'route',
   'signals',
   'start',
+  'one',
+  'status',
+  'insights',
+  'foundation',
   'compass',
   'hero',
   'innovation',
@@ -56,7 +60,6 @@ const PRIMARY_COMMANDS = [
   'finance',
   'telemetry',
   'discovery-loop',
-  'portfolio',
   'product',
   'ui-test',
   'capabilities',
@@ -94,6 +97,7 @@ export async function runCli(argv, context = {}) {
   const stdout = context.stdout ?? process.stdout;
   const stderr = context.stderr ?? process.stderr;
   let artifactStoreActive = false;
+  const startedAt = Date.now();
   try {
     const command = argv[0] ?? 'help';
     if (command === 'help' || command === '--help' || command === '-h') {
@@ -121,6 +125,23 @@ export async function runCli(argv, context = {}) {
       const pluginRoot = await resolvePluginRoot(options.plugin ?? MODULE_PLUGIN_ROOT);
       const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
       data = await diagnose({ pluginRoot, workspace, installation: Boolean(options.installation) });
+    } else if (command === 'foundation') {
+      const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
+      const action = positionals[0] ?? 'run';
+      const foundation = await import('./foundation.mjs');
+      if (action === 'run') data = await foundation.runFoundation({ workspace, goal: options.goal, mode: 'direct' });
+      else if (action === 'status') data = await foundation.getFoundationStatus({ workspace });
+      else if (action === 'refresh') data = await foundation.refreshFoundation({ workspace });
+      else throw invalidInput('FM_FOUNDATION_ACTION_INVALID', 'Foundation supports run, status, and refresh.');
+    } else if (command === 'one') {
+      const { runForgeMindOne } = await import('./one.mjs');
+      data = await runForgeMindOne({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()), goal: options.goal });
+    } else if (command === 'status') {
+      const { getForgeMindStatus } = await import('./one.mjs');
+      data = await getForgeMindStatus({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()) });
+    } else if (command === 'insights') {
+      const { getCommandMetrics } = await import('./command-metrics.mjs');
+      data = await getCommandMetrics({ workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()) });
     } else if (command === 'inspect') {
       const { inspectProject } = await import('./project.mjs');
       const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
@@ -295,9 +316,13 @@ export async function runCli(argv, context = {}) {
       const designFidelity = await import('./design-fidelity.mjs');
       if (action === 'run') data = await designFidelity.runDesignFidelity({ workspace, references: options.references, route: options.route, viewport: options.viewport, thresholdPercent: options.threshold, maxIterations: options['max-iterations'], controlContractId: options['control-contract'], controlObservations: parseJsonArray(options['control-observations'], 'FM_DESIGN_FIDELITY_CONTROLS_INVALID'), draftId: options['draft-id'] });
       else if (action === 'import-draft') { const drafts = await import('./design-fidelity-drafts.mjs'); data = await drafts.importProductDesignDraft({ workspace, input: options.input, route: options.route, viewport: options.viewport }); }
+      else if (action === 'propose') { const drafts = await import('./design-fidelity-drafts.mjs'); data = await drafts.createProductDesignProposals({ workspace, inputs: options.inputs, route: options.route, viewport: options.viewport, goal: options.goal }); }
+      else if (action === 'proposals') { const drafts = await import('./design-fidelity-drafts.mjs'); data = await drafts.loadProductDesignProposals({ workspace, proposalSetId: options['proposal-set'] }); if (!data) throw invalidInput('FM_DESIGN_FIDELITY_PROPOSALS_MISSING', 'Create a Product Design proposal set first.'); }
+      else if (action === 'select') { const drafts = await import('./design-fidelity-drafts.mjs'); data = await drafts.selectProductDesignProposal({ workspace, proposalSetId: options['proposal-set'], proposalId: options.proposal, reason: options.reason }); }
+      else if (action === 'prepare' || action === 'apply') { const drafts = await import('./design-fidelity-drafts.mjs'); data = await drafts.prepareSelectedProductDesignProposal({ workspace, proposalSetId: options['proposal-set'], proposalId: options.proposal, controlContractId: options['control-contract'] }); if (action === 'apply') data.deprecation = 'Use design-fidelity prepare; it creates an implementation plan but does not itself edit source files.'; }
       else if (action === 'contract') { const controls = await import('./design-fidelity-controls.mjs'); data = await controls.saveControlContract({ workspace, contract: parseJson(options.contract, 'FM_DESIGN_FIDELITY_CONTROL_INVALID') }); }
       else if (action === 'status') data = await designFidelity.getDesignFidelityStatus({ workspace });
-      else throw invalidInput('FM_DESIGN_FIDELITY_ACTION_INVALID', 'Design Fidelity supports run, import-draft, contract, and status.');
+      else throw invalidInput('FM_DESIGN_FIDELITY_ACTION_INVALID', 'Design Fidelity supports run, import-draft, propose, proposals, select, prepare, contract, and status.');
     } else if (command === 'leap') {
       const action = positionals[0] ?? 'run';
       const { advanceLeap, continueLeap, getLeapStatus, runLeap } = await import('./leap.mjs');
@@ -541,6 +566,10 @@ export async function runCli(argv, context = {}) {
       throw invalidInput('FM_COMMAND_UNKNOWN', `Unknown command: ${command}`);
     }
 
+    if (artifactStoreActive && !['status', 'insights'].includes(command)) {
+      const { recordCommandOutcome } = await import('./command-metrics.mjs');
+      await recordCommandOutcome({ workspace: options.workspace ?? context.cwd ?? process.cwd(), command, status: data.status, durationMs: Date.now() - startedAt });
+    }
     data = addArtifactMetadata(data);
     if (options.json) {
       stdout.write(`${JSON.stringify(data, null, 2)}\n`);

@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [1.46.1] - 2026-08-26
+
+- Added ForgeMind One: one canonical Foundation-backed entrypoint, mission status cockpit, and local aggregate outcome metrics.
+- Synced the GitHub Marketplace payload so installed Codex plugins receive the current Fidelity and One workflow.
+
 ## [1.46.0] - 2026-08-20
 
 - Added explicit Product Design PNG handoff: a user-selected local draft is copied immutably, identified by digest, and used directly by Design Fidelity runs.

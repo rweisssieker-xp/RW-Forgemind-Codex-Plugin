@@ -1,6 +1,6 @@
 ---
 name: forgemind-growth
-description: Create evidence-labelled activation, retention, pricing, and value-proof experiments.
+description: Use when activation, retention, pricing, or value-proof experiments need evidence-labelled planning.
 ---
 
 # ForgeMind Growth
