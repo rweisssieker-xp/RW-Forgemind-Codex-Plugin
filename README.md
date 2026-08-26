@@ -10,9 +10,10 @@ Start with one of three clear outcomes. Specialist playbooks are packaged intern
 | --- | --- | --- |
 | Compass | `$forgemind-compass Build a CRM for our sales team autonomously.` | Chooses and applies the appropriate internal playbook, then reports the next safe action. |
 | Guide | `$forgemind-guide Help me decide how to improve this application.` | A non-executing route recommendation with confidence and alternatives. |
+| Innovate | `$forgemind-innovate Find disruptive AI opportunities for this SaaS product.` | AI-central USP hypotheses, moats, metrics, and safe cohort experiments. |
 | Quality/release | `$forgemind-xray Assess this application with read-only local QA.` | Evidence-backed quality findings and release proof. |
 
-Every entry works without appended text. Compass is the default route; Guide explains the route without executing it; Xray is intentionally explicit. The first response states the derived goal; any supplied text overrides it.
+Every entry works without appended text. Compass is the default route; Guide explains the route without executing it; Innovate and Xray are intentionally explicit. The first response states the derived goal; any supplied text overrides it.
 
 Use **Compass** by default. It persists the PRD → architecture → epics → stories chain, starts a bounded autonomous mission when appropriate, and reports the one next action through `forgemind status`. Use the advanced CLI for deliberate control of an individual domain command.
 

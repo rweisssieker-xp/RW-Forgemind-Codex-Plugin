@@ -48,7 +48,7 @@ test('built Marketplace package exposes the Xray skill and CLI runtime', async (
 
   const built = await buildPackages({ pluginRoot, outputRoot: path.join(root, 'dist') });
 
-  assert.match(sourceManifest.version, /^1\.46\.1(?:\+codex\.[a-z0-9-]+)?$/);
+  assert.match(sourceManifest.version, /^1\.46\.2(?:\+codex\.[a-z0-9-]+)?$/);
   assert.equal(sourceManifest.version, distributionManifest.version);
   const baseVersion = sourceManifest.version.split('+')[0];
   assert.equal(sourcePackage.version, baseVersion);

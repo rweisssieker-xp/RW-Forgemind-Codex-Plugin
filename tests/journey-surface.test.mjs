@@ -4,10 +4,10 @@ import path from 'node:path';
 import test from 'node:test';
 
 const root = path.resolve(import.meta.dirname, '..');
-const PUBLIC_JOURNEYS = ['forgemind-compass', 'forgemind-guide', 'forgemind-xray'];
+const PUBLIC_JOURNEYS = ['forgemind-compass', 'forgemind-guide', 'forgemind-innovate', 'forgemind-xray'];
 const INTERNAL_JOURNEYS = ['forgemind-spark', 'forgemind-evolve', 'forgemind-venture', 'forgemind-council', 'forgemind-ship', 'forgemind-leap', 'forgemind-autopilot', 'forgemind-portfolio', 'forgemind-transform', 'forgemind-twin', 'forgemind-evolve-ui', 'forgemind-growth', 'forgemind-design-fidelity'];
 
-test('Marketplace exposes only Compass, Guide, and Xray while retaining internal journeys', async () => {
+test('Marketplace exposes Compass, Guide, Innovate, and Xray while retaining internal journeys', async () => {
   const manifest = JSON.parse(await readFile(path.join(root, '.codex-plugin', 'plugin.json'), 'utf8'));
   assert.equal(manifest.skills, './skills/');
   const entries = await readdir(path.join(root, 'skills'), { withFileTypes: true });
@@ -24,7 +24,7 @@ test('Marketplace exposes only Compass, Guide, and Xray while retaining internal
     if (journey === 'forgemind-compass') assert.match(instructions, /zero-input-defaults\.md/i);
   }
   for (const journey of INTERNAL_JOURNEYS) await readFile(path.join(root, 'playbooks', 'internal-journeys', journey, 'SKILL.md'), 'utf8');
-  assert.match(await readFile(path.join(root, 'docs', 'HIERARCHY.md'), 'utf8'), /Compass[\s\S]*Guide[\s\S]*Xray/);
+  assert.match(await readFile(path.join(root, 'docs', 'HIERARCHY.md'), 'utf8'), /Compass[\s\S]*Guide[\s\S]*Innovate[\s\S]*Xray/);
 });
 
 test('zero-input defaults support Compass without treating assumptions as facts', async () => {
@@ -70,5 +70,14 @@ test('Xray remains an explicit-only primary journey with internal Browser orches
   assert.match(instructions, /continue command and API tests/i);
   assert.match(instructions, /Improvement proposals/i);
   assert.equal(distributionInstructions, instructions);
+  assert.match(ui, /allow_implicit_invocation: false/);
+});
+
+test('Innovate is explicit and runs the SaaS AI Opportunity Engine', async () => {
+  const instructions = await readFile(path.join(root, 'skills', 'forgemind-innovate', 'SKILL.md'), 'utf8');
+  const ui = await readFile(path.join(root, 'skills', 'forgemind-innovate', 'agents', 'openai.yaml'), 'utf8');
+  assert.match(instructions, /forgemind\.mjs innovation saas/);
+  assert.match(instructions, /AI-central|AI-central/i);
+  assert.match(instructions, /do not.*contact customers|does not contact customers/i);
   assert.match(ui, /allow_implicit_invocation: false/);
 });

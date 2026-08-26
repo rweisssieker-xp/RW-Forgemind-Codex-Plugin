@@ -14,6 +14,10 @@ The legacy CLI command `forgemind start` remains a compatibility alias for `forg
 
 Use `$forgemind-xray` for an evidence-backed, read-only QA pass. With an explicit loopback or `.test` URL, Xray can use the internal Codex Browser for safe, non-destructive local GUI flows and passes workspace-local receipts to its canonical report. Direct CLI use keeps the workspace-local Playwright adapter. Neither path tests production or external URLs, submits forms, logs in, downloads, uploads, or performs consequential actions.
 
+## Innovate: disruptive AI SaaS opportunities
+
+Use `$forgemind-innovate` when you need AI-central USP hypotheses rather than a generic AI feature list. It runs the SaaS AI Opportunity Engine and returns ranked outcome-agent, predictive-workflow, multimodal-intake, company-memory, simulation, and autonomous-QA opportunities. Each includes its replaced interaction, moat, cohort, metric, guardrails, and kill condition. It creates planning evidence only and never contacts customers, changes billing, reads production tenants, or invokes external integrations.
+
 ## Internal playbooks and advanced CLI
 
 Compass internally coordinates focused playbooks for ideation, existing-product evolution, market validation, difficult decisions, implementation and release proof, autonomous MVP delivery, autonomous missions, opportunity portfolios, repository modelling, UX experiments, visual-fidelity work, and growth experiments. They are part of the package rather than separate Marketplace entry points, preventing users from having to choose among a long list of overlapping commands.
