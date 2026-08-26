@@ -20,6 +20,12 @@ Compass internally coordinates focused playbooks for ideation, existing-product 
 
 For scripting and advanced operation, the CLI exposes the corresponding domain commands. All generated work remains project-local under `.codex-orchestrator/`, with concise reviewed records in `docs/forgemind/`. Consequential actions still require the configured policy, adapter, evidence, and rollback boundaries.
 
+### SaaS AI Opportunity Engine
+
+`forgemind innovation saas --goal "<outcome>"` creates a local, ranked set of AI-central SaaS opportunity cards. It covers outcome agents, predictive workflows, multimodal intake, company memory, simulations, and autonomous QA triage. Every card includes the replaced interaction, moat, metric, cohort, feature flag, guardrails, and kill condition.
+
+The report also defines an Activation Map, Churn Radar, Pricing Lab, Feature-to-Revenue Trace, Tenant-Safety Gate, Integration Health plan, and staged release cohorts. Customer demand, churn, pricing, and revenue remain hypotheses unless imported evidence and measured experiments support them. The command does not contact customers, alter billing, read production tenants, or invoke external integrations.
+
 ## One-Session MVP Launch compatibility
 
 `launch-mvp` remains an advanced CLI compatibility workflow for a resumable staged launch. It records market/MVP preparation, build, verification, and a tester evidence gate. New sessions should prefer Compass for autonomous discovery and delivery, or the advanced Ship CLI command for a deliberately selected scope.

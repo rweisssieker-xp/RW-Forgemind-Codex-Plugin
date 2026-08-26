@@ -383,12 +383,14 @@ export async function runCli(argv, context = {}) {
       data = await runners[command]({ workspace, goal: options.goal, options });
     } else if (command === 'innovation') {
       const action = positionals[0] ?? 'portfolio';
-      if (action !== 'portfolio') throw invalidInput('FM_INNOVATION_ACTION_INVALID', 'Innovation supports portfolio.');
-      const { createInnovationPortfolio } = await import('./innovation-portfolio.mjs');
-      data = await createInnovationPortfolio({
-        workspace: await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd()),
-        goal: options.goal,
-      });
+      const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
+      if (action === 'portfolio') {
+        const { createInnovationPortfolio } = await import('./innovation-portfolio.mjs');
+        data = await createInnovationPortfolio({ workspace, goal: options.goal });
+      } else if (action === 'saas') {
+        const { createSaasOpportunityEngine } = await import('./saas-opportunity-engine.mjs');
+        data = await createSaasOpportunityEngine({ workspace, goal: options.goal });
+      } else throw invalidInput('FM_INNOVATION_ACTION_INVALID', 'Innovation supports portfolio and saas.');
     } else if (command === 'discovery') {
       const workspace = await resolveWorkspace(options.workspace ?? context.cwd ?? process.cwd());
       const action = positionals[0] ?? 'list';

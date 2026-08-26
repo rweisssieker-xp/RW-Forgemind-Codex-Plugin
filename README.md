@@ -18,6 +18,16 @@ Use **Compass** by default. It persists the PRD → architecture → epics → s
 
 `forgemind insights` reports only local, aggregate command outcomes (success rate and duration); it never stores raw prompts or sends telemetry.
 
+## AI Opportunity Engine for SaaS
+
+Use the advanced CLI command below to turn a SaaS workflow into ranked, AI-central USP hypotheses. It produces bounded experiments for outcome agents, predictive workflows, multimodal intake, company memory, simulations, and autonomous QA triage. Each card states the interaction it replaces, a defensible moat, a feature flag, cohort, metric, guardrails, and kill condition.
+
+```text
+forgemind innovation saas --goal "Reduce renewal-risk research time"
+```
+
+The same report includes an Activation Map, Churn Radar, Pricing Lab, Feature-to-Revenue Trace, Tenant-Safety Gate, Integration Health checks, and staged release cohorts. It writes only local planning evidence; it does not contact customers, change billing, access production tenants, or invoke integrations without an explicitly configured adapter.
+
 ## Developer automode
 
 Use **Autopilot** when the Codex goal itself is the delivery contract:

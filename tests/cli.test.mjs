@@ -57,6 +57,16 @@ test('Compass has a portable CLI entrypoint and routes an explicit goal', async 
   assert.equal(result.data.goalSource, 'user');
 });
 
+test('Innovation SaaS produces AI-central opportunity cards without external actions', async (t) => {
+  const workspace = await mkdtemp(path.join(tmpdir(), 'forgemind-innovation-saas-cli-'));
+  t.after(() => rm(workspace, { recursive: true, force: true }));
+  const result = await runCli(['innovation', 'saas', '--workspace', workspace, '--goal', 'reduce customer onboarding effort', '--artifacts', 'none', '--json'], { stdout: outputBuffer().stream, stderr: outputBuffer().stream });
+
+  assert.equal(result.exitCode, 0);
+  assert.equal(result.data.opportunityCards.length, 6);
+  assert.equal(result.data.saasOperatingPlan.releaseCohorts.killSwitch.startsWith('Disable'), true);
+});
+
 test('Foundation has a zero-input CLI entrypoint', async (t) => {
   const workspace = await mkdtemp(path.join(tmpdir(), 'forgemind-foundation-cli-'));
   t.after(() => rm(workspace, { recursive: true, force: true }));
