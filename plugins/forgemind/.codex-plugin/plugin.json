@@ -39,5 +39,5 @@
   "name": "forgemind",
   "repository": "https://github.com/rweisssieker-xp/RW-Forgemind-Codex-Plugin",
   "skills": "./skills/",
-  "version": "1.46.2+codex.20260826122337"
+  "version": "1.47.0+codex.20260827041719"
 }
