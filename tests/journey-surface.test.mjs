@@ -4,8 +4,8 @@ import path from 'node:path';
 import test from 'node:test';
 
 const root = path.resolve(import.meta.dirname, '..');
-const PUBLIC_JOURNEYS = ['forgemind-commands', 'forgemind-compass', 'forgemind-guide', 'forgemind-innovate', 'forgemind-xray'];
-const INTERNAL_JOURNEYS = ['forgemind-spark', 'forgemind-evolve', 'forgemind-venture', 'forgemind-council', 'forgemind-ship', 'forgemind-leap', 'forgemind-autopilot', 'forgemind-portfolio', 'forgemind-transform', 'forgemind-twin', 'forgemind-evolve-ui', 'forgemind-growth', 'forgemind-design-fidelity'];
+const PUBLIC_JOURNEYS = ['forgemind-commands', 'forgemind-compass', 'forgemind-design-fidelity', 'forgemind-guide', 'forgemind-innovate', 'forgemind-xray'];
+const INTERNAL_JOURNEYS = ['forgemind-spark', 'forgemind-evolve', 'forgemind-venture', 'forgemind-council', 'forgemind-ship', 'forgemind-leap', 'forgemind-autopilot', 'forgemind-portfolio', 'forgemind-transform', 'forgemind-twin', 'forgemind-evolve-ui', 'forgemind-growth'];
 
 test('Marketplace exposes the compact ForgeMind command surface while retaining internal journeys', async () => {
   const manifest = JSON.parse(await readFile(path.join(root, '.codex-plugin', 'plugin.json'), 'utf8'));
@@ -24,7 +24,7 @@ test('Marketplace exposes the compact ForgeMind command surface while retaining 
     if (journey === 'forgemind-compass') assert.match(instructions, /zero-input-defaults\.md/i);
   }
   for (const journey of INTERNAL_JOURNEYS) await readFile(path.join(root, 'playbooks', 'internal-journeys', journey, 'SKILL.md'), 'utf8');
-  assert.match(await readFile(path.join(root, 'docs', 'HIERARCHY.md'), 'utf8'), /Compass[\s\S]*Guide[\s\S]*Innovate[\s\S]*Commands[\s\S]*Xray/);
+  assert.match(await readFile(path.join(root, 'docs', 'HIERARCHY.md'), 'utf8'), /Compass[\s\S]*Guide[\s\S]*Innovate[\s\S]*Design Fidelity[\s\S]*Commands[\s\S]*Xray/);
 });
 
 test('zero-input defaults support Compass without treating assumptions as facts', async () => {
@@ -85,7 +85,16 @@ test('Innovate is explicit and runs the SaaS AI Opportunity Engine', async () =>
 test('Commands is explicit and makes the internal specialist routes discoverable', async () => {
   const instructions = await readFile(path.join(root, 'skills', 'forgemind-commands', 'SKILL.md'), 'utf8');
   const ui = await readFile(path.join(root, 'skills', 'forgemind-commands', 'agents', 'openai.yaml'), 'utf8');
-  for (const label of ['Leap', 'Spark', 'Venture', 'Growth']) assert.match(instructions, new RegExp(label));
+  for (const label of ['Leap', 'Spark', 'Venture', 'Growth', 'GUI Draft umsetzen']) assert.match(instructions, new RegExp(label));
+  assert.match(instructions, /MUST inspect.*edit only matching allowed workspace UI files/i);
   assert.match(instructions, /Do not expose.*separate Marketplace skills/i);
+  assert.match(ui, /allow_implicit_invocation: false/);
+});
+
+test('Design Fidelity is explicit and requires the selected draft to be implemented and measured', async () => {
+  const instructions = await readFile(path.join(root, 'skills', 'forgemind-design-fidelity', 'SKILL.md'), 'utf8');
+  const ui = await readFile(path.join(root, 'skills', 'forgemind-design-fidelity', 'agents', 'openai.yaml'), 'utf8');
+  assert.match(instructions, /Implement only the selected draft/i);
+  assert.match(instructions, /Do not.*claim a match without the current measured report/i);
   assert.match(ui, /allow_implicit_invocation: false/);
 });

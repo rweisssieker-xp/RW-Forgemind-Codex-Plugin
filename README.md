@@ -11,6 +11,7 @@ Start with one of three clear outcomes. Specialist playbooks are packaged intern
 | Compass | `$forgemind-compass Build a CRM for our sales team autonomously.` | Chooses and applies the appropriate internal playbook, then reports the next safe action. |
 | Guide | `$forgemind-guide Help me decide how to improve this application.` | A non-executing route recommendation with confidence and alternatives. |
 | Innovate | `$forgemind-innovate Find disruptive AI opportunities for this SaaS product.` | AI-central USP hypotheses, moats, metrics, and safe cohort experiments. |
+| GUI Draft | `$forgemind-design-fidelity Implement this selected local UI draft.` | Implements the selected draft in UI source and verifies visual improvement. |
 | Commands | `$forgemind-commands` | Compact navigator for Leap, Spark, Venture, Ship, Growth, and other advanced workflows. |
 | Quality/release | `$forgemind-xray Assess this application with read-only local QA.` | Evidence-backed quality findings and release proof. |
 

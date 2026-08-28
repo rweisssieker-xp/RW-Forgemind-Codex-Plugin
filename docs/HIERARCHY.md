@@ -1,11 +1,12 @@
 # ForgeMind Journey Hierarchy
 
-ForgeMind exposes five Marketplace entry points. They are intentionally small: the system chooses and applies the required specialist route internally, while Commands provides a compact discovery layer for deliberate workflow selection.
+ForgeMind exposes six Marketplace entry points. They are intentionally small: the system chooses and applies the required specialist route internally, while Commands provides a compact discovery layer for deliberate workflow selection.
 
 ```text
 Compass — default: choose and apply the smallest safe path
 Guide   — explain the best next route without executing it
 Innovate — explicit AI-central SaaS opportunities and experiments
+Design Fidelity — explicit GUI draft implementation and measured visual proof
 Commands — discover and deliberately select advanced workflows
 Xray    — explicit, read-only quality assessment
 ```
@@ -17,6 +18,7 @@ Xray    — explicit, read-only quality assessment
 | Compass | `$forgemind-compass` | The normal entry point for an idea, existing product, market question, or delivery goal. |
 | Guide | `$forgemind-guide` | Understanding the recommended route, confidence, and alternatives before work begins. |
 | Innovate | `$forgemind-innovate` | Disruptive AI SaaS USPs, moats, metrics, and safe experiment plans. |
+| Design Fidelity | `$forgemind-design-fidelity` | Implement a user-selected local GUI draft and verify visual improvement. |
 | Commands | `$forgemind-commands` | A compact navigator for Leap, Spark, Venture, Ship, Growth, and other advanced routes. |
 | Xray | `$forgemind-xray` | An evidence-backed, read-only QA pass across detected local surfaces. |
 
@@ -25,6 +27,8 @@ Compass is the only implicit route. It classifies the request, records its evide
 Guide is non-executing. It asks only for enough context to return a route recommendation; incomplete or conflicting input falls back to Compass with visible confidence and alternatives.
 
 Innovate is explicit because it is a deliberate product-strategy exercise. It runs the SaaS AI Opportunity Engine and produces evidence-labelled opportunity cards with tenant-safety and release-cohort guardrails; it does not contact customers or invoke external systems.
+
+Design Fidelity is explicit because it changes local UI source to implement a user-selected draft. It requires a selected local PNG, matching control contract, safe project verification, and a measured visual report before it can claim improvement.
 
 Commands is explicit and acts as a menu, not another orchestration route. It makes the advanced internal capabilities discoverable without turning every one of them into a visible Marketplace entry.
 

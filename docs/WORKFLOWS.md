@@ -30,6 +30,10 @@ For scripting and advanced operation, the CLI exposes the corresponding domain c
 
 The report also defines an Activation Map, Churn Radar, Pricing Lab, Feature-to-Revenue Trace, Tenant-Safety Gate, Integration Health plan, and staged release cohorts. Customer demand, churn, pricing, and revenue remain hypotheses unless imported evidence and measured experiments support them. The command does not contact customers, alter billing, read production tenants, or invoke external integrations.
 
+### GUI Draft implementation
+
+Choose **GUI Draft umsetzen** through `$forgemind-commands` for a selected local PNG draft. After Design Fidelity returns `implementation-ready`, the agent must edit the matching allowed UI source files, run the project verification, and execute the measured Design Fidelity command. `prepare` alone is a work order, not an implementation; ForgeMind keeps changes only when the measured visual difference improves.
+
 ## One-Session MVP Launch compatibility
 
 `launch-mvp` remains an advanced CLI compatibility workflow for a resumable staged launch. It records market/MVP preparation, build, verification, and a tester evidence gate. New sessions should prefer Compass for autonomous discovery and delivery, or the advanced Ship CLI command for a deliberately selected scope.

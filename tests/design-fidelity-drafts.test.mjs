@@ -78,6 +78,9 @@ test('Product Design prepare requires an intact selected draft and a matching co
   assert.equal(prepared.status, 'implementation-ready');
   assert.equal(prepared.selection.reason, 'Best fits the navigation hierarchy.');
   assert.equal(prepared.implementation.controlContractId, contract.id);
+  assert.equal(prepared.implementation.sourceEditRequired, true);
+  assert.match(prepared.implementation.executionSequence.join(' '), /edit those UI files/);
+  assert.match(prepared.nextAction, /does not edit source files itself/);
 
   await unlink(path.join(workspace, selected.draft.referencePath));
   await assert.rejects(
